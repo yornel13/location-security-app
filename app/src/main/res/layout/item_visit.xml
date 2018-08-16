@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_place"
+    android:layout_width="match_parent"
+    android:foreground="?selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardElevation="4dp"
+    app:cardCornerRadius="0dp"
+    app:cardBackgroundColor="@color/white"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/place_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_marginStart="8dp"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <android.support.v7.widget.CardView
+                android:layout_margin="16dp"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                app:cardCornerRadius="6dp"
+                app:cardElevation="0dp">
+
+                <ImageView
+                    android:id="@+id/image"
+                    android:src="@drawable/empty_image"
+                    android:scaleType="centerCrop"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </android.support.v7.widget.CardView>
+
+            <LinearLayout
+                android:layout_marginStart="16dp"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <com.icsseseguridad.locationsecurity.util.AppTextView
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    app:fontFamily="GoogleSans-Regular.ttf"
+                    android:maxLines="1"
+                    android:textSize="20sp"
+                    android:textAlignment="viewStart"
+                    android:text="Visitante" />
+
+                <com.icsseseguridad.locationsecurity.util.AppTextView
+                    android:id="@+id/sub_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorGray"
+                    app:fontFamily="Raleway-SemiBold.ttf"
+                    android:layout_marginTop="2dp"
+                    android:maxLines="1"
+                    android:textSize="16sp"
+                    android:textAlignment="viewStart"
+                    android:text="Hora" />
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>

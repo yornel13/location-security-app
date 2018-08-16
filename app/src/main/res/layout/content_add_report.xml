@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/scroll_view"
+    android:paddingBottom="96dp"
+    android:clipToPadding="false"
+    android:scrollbars="none"
+    tools:context=".ui.visit.AddVisitActivity"
+    tools:showIn="@layout/activity_add_report">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Spinner
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:id="@+id/spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/spinner_background">
+        </Spinner>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/observation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="200dp"
+                android:inputType="textAutoCorrect|textAutoComplete|textMultiLine"
+                android:gravity="top|start"
+                android:maxLength="1000"
+                android:textAlignment="gravity"
+                android:nextFocusDown="@id/vehicle"
+                android:textSize="20sp"
+                android:hint="Observación"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <HorizontalScrollView
+            android:id="@+id/scroll_photos"
+            android:visibility="visible"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:layout_width="match_parent"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:clipToPadding="false"
+            android:layout_height="150dp">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+
+                <FrameLayout
+                    android:id="@+id/add_photo"
+                    android:background="@drawable/empty_photo_background"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?actionBarItemBackground"
+                    android:layout_marginEnd="8dp">
+
+                    <ImageView
+                        android:alpha="0.5"
+                        android:paddingTop="6dp"
+                        android:paddingStart="38dp"
+                        android:paddingEnd="38dp"
+                        android:tint="@color/colorGrayAgate"
+                        android:paddingBottom="32dp"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/icon_plus_green"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"/>
+
+                    <com.icsseseguridad.locationsecurity.util.AppTextView
+                        android:paddingBottom="8dp"
+                        android:layout_gravity="bottom|center"
+                        android:text="Agregar Foto"
+                        android:textColor="@color/colorGray"
+                        app:fontFamily="Roboto-Bold.ttf"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/container_photo_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="8dp">
+
+                    <ImageView
+                        android:id="@+id/photo_1"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?selectableItemBackground"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/empty_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"/>
+
+                    <ImageView
+                        android:layout_gravity="end"
+                        android:id="@+id/delete_1"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:visibility="gone"
+                        android:background="@color/colorBlack50"
+                        android:foreground="?actionBarItemBackground"
+                        android:padding="15dp"
+                        android:src="@drawable/ic_close"
+                        android:layout_width="?actionBarSize"
+                        android:layout_height="?actionBarSize" />
+
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/container_photo_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="8dp">
+
+                    <ImageView
+                        android:id="@+id/photo_2"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?selectableItemBackground"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/empty_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"/>
+
+                    <ImageView
+                        android:layout_gravity="end"
+                        android:id="@+id/delete_2"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:visibility="gone"
+                        android:background="@color/colorBlack50"
+                        android:foreground="?actionBarItemBackground"
+                        android:padding="15dp"
+                        android:src="@drawable/ic_close"
+                        android:layout_width="?actionBarSize"
+                        android:layout_height="?actionBarSize" />
+
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/container_photo_3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="8dp">
+
+                    <ImageView
+                        android:id="@+id/photo_3"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?selectableItemBackground"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/empty_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"/>
+
+                    <ImageView
+                        android:layout_gravity="end"
+                        android:id="@+id/delete_3"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:visibility="gone"
+                        android:background="@color/colorBlack50"
+                        android:foreground="?actionBarItemBackground"
+                        android:padding="15dp"
+                        android:src="@drawable/ic_close"
+                        android:layout_width="?actionBarSize"
+                        android:layout_height="?actionBarSize" />
+
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/container_photo_4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="8dp">
+
+                    <ImageView
+                        android:id="@+id/photo_4"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?selectableItemBackground"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/empty_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"/>
+
+                    <ImageView
+                        android:layout_gravity="end"
+                        android:id="@+id/delete_4"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:visibility="gone"
+                        android:background="@color/colorBlack50"
+                        android:foreground="?actionBarItemBackground"
+                        android:padding="15dp"
+                        android:src="@drawable/ic_close"
+                        android:layout_width="?actionBarSize"
+                        android:layout_height="?actionBarSize" />
+
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/container_photo_5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/photo_5"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?selectableItemBackground"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/empty_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"/>
+
+                    <ImageView
+                        android:layout_gravity="end"
+                        android:id="@+id/delete_5"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:visibility="gone"
+                        android:background="@color/colorBlack50"
+                        android:foreground="?actionBarItemBackground"
+                        android:padding="15dp"
+                        android:src="@drawable/ic_close"
+                        android:layout_width="?actionBarSize"
+                        android:layout_height="?actionBarSize" />
+
+                </FrameLayout>
+
+            </LinearLayout>
+
+        </HorizontalScrollView>
+
+        <Button
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:id="@+id/save"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="Enviar Reporte"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textColor="@color/white"
+            android:background="@drawable/button_one"/>
+
+    </LinearLayout>
+
+</ScrollView>

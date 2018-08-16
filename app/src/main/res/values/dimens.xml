@@ -1,0 +1,12 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="nav_header_vertical_spacing">8dp</dimen>
+    <dimen name="nav_header_height">226dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="card_button_height">180dp</dimen>
+    <dimen name="toolbar_end_margin">64dp</dimen>
+    <dimen name="header_activity_add_height">30dp</dimen>
+    <dimen name="scroll_padding_bottom">108dp</dimen>
+</resources>

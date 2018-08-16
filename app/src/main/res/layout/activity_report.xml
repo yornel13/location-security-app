@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true"
+    android:fitsSystemWindows="true"
+    tools:context=".ui.visit.AddVisitActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:elevation="0dp"
+        app:elevation="0dp"
+        android:layout_height="?actionBarSize"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" >
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.icsseseguridad.locationsecurity.util.AppTextView
+                    android:text="@string/title_activity_report"
+                    app:fontFamily="GoogleSans-Medium.ttf"
+                    android:textSize="22sp"
+                    android:textColor="@color/white"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingEnd="?actionBarSize"/>
+
+                <ImageView
+                    android:id="@+id/sos_alarm"
+                    android:padding="8dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:layout_gravity="center_vertical|end"
+                    android:background="?actionBarItemBackground"
+                    android:src="@drawable/sos_alarm"
+                    android:layout_width="?actionBarSize"
+                    android:layout_height="?actionBarSize" />
+
+            </FrameLayout>
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <RelativeLayout
+        android:layout_below="@id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/header_container"
+            android:background="@drawable/header_background"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            android:theme="@style/AppTheme.AppBarOverlay">
+
+            <android.support.v7.widget.Toolbar
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@drawable/header_background"
+                app:popupTheme="@style/AppTheme.PopupOverlay" >
+
+                <RelativeLayout
+                    android:layout_marginEnd="@dimen/toolbar_end_margin"
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.icsseseguridad.locationsecurity.util.AppTextView
+                        android:id="@+id/time"
+                        app:fontFamily="Roboto-Bold.ttf"
+                        android:layout_centerVertical="true"
+                        android:textSize="20sp"
+                        android:layout_marginStart="24dp"
+                        android:textColor="@color/colorGray"
+                        android:text="Entrada el 06/08/2018 a las 15:18:22"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </RelativeLayout>
+
+            </android.support.v7.widget.Toolbar>
+
+        </android.support.design.widget.AppBarLayout>
+
+        <RelativeLayout
+            android:background="@color/colorBackground"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/header_container"
+            android:layout_above="@+id/messing_area">
+
+            <include layout="@layout/content_report"/>
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorAccent"
+            android:layout_above="@id/messing_area"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"/>
+
+        <LinearLayout
+            android:padding="4dp"
+            android:id="@+id/messing_area"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="#ffffff"
+            android:layout_alignParentBottom="true">
+
+            <EditText
+                android:id="@+id/new_message"
+                android:hint="Dejar comentario"
+                android:background="@android:color/transparent"
+                android:layout_gravity="center"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:maxLines="6"/>
+
+            <ImageView
+                android:id="@+id/send"
+                android:background="?actionBarItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:tint="@color/colorPrimary"
+                android:src="@drawable/ic_send_black_24dp"
+                android:gravity="center"
+                android:padding="8dp"
+                android:layout_width="56dp"
+                android:layout_height="56dp" />
+
+            <ProgressBar
+                android:id="@+id/sending"
+                android:visibility="gone"
+                android:padding="8dp"
+                android:layout_width="56dp"
+                android:layout_height="56dp" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</RelativeLayout>

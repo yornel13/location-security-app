@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/image"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_gravity="center_vertical"
+        android:scaleType="centerCrop"/>
+
+    <LinearLayout
+        android:gravity="center_vertical"
+        android:layout_marginStart="16dp"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="56dp">
+
+        <com.icsseseguridad.locationsecurity.util.AppTextView
+            android:id="@+id/text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            app:fontFamily="GoogleSans-Medium.ttf"
+            android:textSize="18sp"/>
+
+        <com.icsseseguridad.locationsecurity.util.AppTextView
+            android:id="@+id/sub_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            app:fontFamily="GoogleSans-Bold.ttf"
+            android:textSize="14sp"/>
+
+
+    </LinearLayout>
+
+</LinearLayout>

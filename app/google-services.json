@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "962881875237",
+    "firebase_url": "https://icsseseguridad-6f751.firebaseio.com",
+    "project_id": "icsseseguridad-6f751",
+    "storage_bucket": "icsseseguridad-6f751.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:962881875237:android:6ee7879c4c43cc7b",
+        "android_client_info": {
+          "package_name": "com.icsseseguridad.locationsecurity"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "962881875237-gkm2ghi36k38s46q8f6c54qr7aqgc91s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD78nnc8bzqjlXHqf53u8Fo2Cw9okrea00"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,62 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.icsseseguridad.locationsecurity"
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:28.0.0-rc01'
+    implementation 'com.android.support:design:28.0.0-rc01'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+    // Firebase
+    implementation 'com.google.firebase:firebase-core:16.0.1'
+    implementation 'com.google.firebase:firebase-storage:16.0.1'
+    // Blur
+    implementation 'jp.wasabeef:blurry:2.1.1'
+    // Event Bus
+    implementation 'org.greenrobot:eventbus:3.1.1'
+    // Retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.4.1'
+    implementation 'com.squareup.retrofit2:converter-gson:2.2.0'
+    implementation 'com.google.code.gson:gson:2.8.2'
+    // Butter Knife
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    // Loading
+    implementation 'cc.cloudist.acplibrary:library:1.2.1'
+    // Glide (load images)
+    implementation 'com.github.bumptech.glide:glide:4.7.1'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
+    // Search dialog
+    implementation 'com.github.mirrajabi:search-dialog:1.2'
+    // Circle Image view
+    implementation 'de.hdodenhof:circleimageview:2.2.0'
+    // Image picker
+    implementation 'com.fxn769:pix:1.2.4'
+    // Image Show
+    implementation 'jp.wasabeef:fresco-processors:2.0.0'
+    implementation 'com.github.stfalcon:frescoimageviewer:0.5.0'
+    // List Permission
+    implementation 'gun0912.ted:tedpermission:2.2.0'
+////////////////////////////////////////////////////////////////////////////////////////////////
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}
+apply plugin: 'com.google.gms.google-services'

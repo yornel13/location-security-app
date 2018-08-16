@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scroll_view"
+    android:paddingBottom="@dimen/scroll_padding_bottom"
+    android:clipToPadding="false"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.visit.AddVisitActivity"
+    tools:showIn="@layout/activity_add_visit">
+
+    <LinearLayout
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/card_vehicle"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?selectableItemBackground"
+            app:cardBackgroundColor="@color/colorGrayAgate"
+            app:cardCornerRadius="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:padding="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/vehicle_photo"
+                    android:layout_alignParentEnd="true"
+                    android:src="@drawable/vehicle_empty"
+                    android:scaleType="centerCrop"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp" />
+
+                <LinearLayout
+                    android:gravity="center_vertical"
+                    android:layout_marginEnd="150dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.icsseseguridad.locationsecurity.util.AppTextView
+                        android:text="Datos del Vehiculo"
+                        app:fontFamily="GoogleSans-Bold.ttf"
+                        android:textSize="22sp"
+                        android:layout_marginBottom="24dp"
+                        android:textColor="@color/black"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <com.icsseseguridad.locationsecurity.util.AppTextView
+                        android:id="@+id/vehicle_plate"
+                        android:text="Placa"
+                        app:fontFamily="GoogleSans-Medium.ttf"
+                        android:textSize="18sp"
+                        android:textColor="@color/black"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <com.icsseseguridad.locationsecurity.util.AppTextView
+                        android:id="@+id/vehicle_vehicle"
+                        android:text="Vehiculo"
+                        app:fontFamily="GoogleSans-Medium.ttf"
+                        android:textSize="18sp"
+                        android:textColor="@color/black"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <com.icsseseguridad.locationsecurity.util.AppTextView
+                        android:id="@+id/vehicle_model"
+                        android:text="Modelo"
+                        app:fontFamily="GoogleSans-Medium.ttf"
+                        android:textSize="18sp"
+                        android:textColor="@color/black"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <com.icsseseguridad.locationsecurity.util.AppTextView
+                        android:id="@+id/vehicle_type"
+                        android:text="Tipo"
+                        app:fontFamily="GoogleSans-Medium.ttf"
+                        android:textSize="18sp"
+                        android:textColor="@color/black"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/card_visitor"
+            android:layout_marginBottom="16dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?selectableItemBackground"
+            app:cardBackgroundColor="@color/colorGrayAgate"
+            app:cardCornerRadius="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:padding="8dp"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/visitor_photo"
+                    android:src="@drawable/user_empty"
+                    android:scaleType="centerCrop"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp" />
+
+                <LinearLayout
+                    android:gravity="end"
+                    android:layout_marginStart="150dp"
+                    android:layout_marginEnd="6dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.icsseseguridad.locationsecurity.util.AppTextView
+                        android:text="Datos del Visitante"
+                        app:fontFamily="GoogleSans-Bold.ttf"
+                        android:textSize="22sp"
+                        android:layout_marginBottom="24dp"
+                        android:textColor="@color/black"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <com.icsseseguridad.locationsecurity.util.AppTextView
+                        android:id="@+id/visitor_dni"
+                        android:text="Cedula"
+                        app:fontFamily="GoogleSans-Medium.ttf"
+                        android:textSize="18sp"
+                        android:textColor="@color/black"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <com.icsseseguridad.locationsecurity.util.AppTextView
+                        android:id="@+id/visitor_name"
+                        android:text="Nombre Completo"
+                        app:fontFamily="GoogleSans-Medium.ttf"
+                        android:textSize="18sp"
+                        android:textColor="@color/black"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <com.icsseseguridad.locationsecurity.util.AppTextView
+                        android:id="@+id/visitor_company"
+                        android:text="Empresa"
+                        app:fontFamily="GoogleSans-Medium.ttf"
+                        android:textSize="18sp"
+                        android:textColor="@color/black"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/card_clerk"
+            android:layout_marginBottom="16dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?selectableItemBackground"
+            app:cardBackgroundColor="@color/colorGrayAgate"
+            app:cardCornerRadius="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:padding="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/clerk_photo"
+                    android:layout_alignParentEnd="true"
+                    android:tint="@color/colorGrayAgate"
+                    android:background="@color/colorBackground"
+                    android:src="@drawable/admin_icon"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp" />
+
+                <LinearLayout
+                    android:gravity="center_vertical"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="150dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.icsseseguridad.locationsecurity.util.AppTextView
+                        android:text="Funcionario Visitado"
+                        app:fontFamily="GoogleSans-Bold.ttf"
+                        android:textSize="22sp"
+                        android:layout_marginBottom="24dp"
+                        android:textColor="@color/black"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <com.icsseseguridad.locationsecurity.util.AppTextView
+                        android:id="@+id/clerk_dni"
+                        android:text="Cedula"
+                        app:fontFamily="GoogleSans-Medium.ttf"
+                        android:textSize="18sp"
+                        android:textColor="@color/black"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <com.icsseseguridad.locationsecurity.util.AppTextView
+                        android:id="@+id/clerk_name"
+                        android:text="Nombre Completo"
+                        app:fontFamily="GoogleSans-Medium.ttf"
+                        android:textSize="18sp"
+                        android:textColor="@color/black"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <com.icsseseguridad.locationsecurity.util.AppTextView
+                        android:id="@+id/clerk_address"
+                        android:text="Direccion"
+                        app:fontFamily="GoogleSans-Medium.ttf"
+                        android:textSize="18sp"
+                        android:textColor="@color/black"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/card_info"
+            android:layout_marginBottom="16dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?selectableItemBackground"
+            app:cardBackgroundColor="@color/colorGrayAgate"
+            app:cardCornerRadius="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:padding="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:gravity="center_vertical|start"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.icsseseguridad.locationsecurity.util.AppTextView
+                        android:text="Informacion de La Visita"
+                        app:fontFamily="GoogleSans-Bold.ttf"
+                        android:textSize="22sp"
+                        android:layout_marginBottom="24dp"
+                        android:textColor="@color/black"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <com.icsseseguridad.locationsecurity.util.AppTextView
+                        android:id="@+id/persons"
+                        android:text="Personas"
+                        app:fontFamily="GoogleSans-Medium.ttf"
+                        android:textSize="18sp"
+                        android:textColor="@color/black"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <com.icsseseguridad.locationsecurity.util.AppTextView
+                        android:id="@+id/date"
+                        android:text="Fecha"
+                        app:fontFamily="GoogleSans-Medium.ttf"
+                        android:textSize="18sp"
+                        android:textColor="@color/black"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <com.icsseseguridad.locationsecurity.util.AppTextView
+                        android:id="@+id/materials"
+                        android:text="Materiales"
+                        app:fontFamily="GoogleSans-Medium.ttf"
+                        android:textSize="18sp"
+                        android:textColor="@color/black"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <LinearLayout
+                        android:id="@+id/photos_container"
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <FrameLayout
+                            android:layout_marginTop="16dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/black" >
+                        </FrameLayout>
+
+                        <com.icsseseguridad.locationsecurity.util.AppTextView
+                            android:layout_marginTop="16dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:fontFamily="Raleway-SemiBold.ttf"
+                            android:text="Fotos"
+                            android:textAlignment="viewStart"
+                            android:textColor="@color/black" />
+
+                        <HorizontalScrollView
+                            android:id="@+id/scroll_photos"
+                            android:layout_marginTop="8dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="100dp">
+
+                            <LinearLayout
+                                android:orientation="horizontal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent">
+
+                                <ImageView
+                                    android:id="@+id/photo_1"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:foreground="?selectableItemBackground"
+                                    android:adjustViewBounds="true"
+                                    android:scaleType="centerCrop"
+                                    android:src="@drawable/empty_image"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginEnd="8dp"/>
+
+                                <ImageView
+                                    android:id="@+id/photo_2"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:foreground="?selectableItemBackground"
+                                    android:adjustViewBounds="true"
+                                    android:scaleType="centerCrop"
+                                    android:src="@drawable/empty_image"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginEnd="8dp"/>
+
+                                <ImageView
+                                    android:id="@+id/photo_3"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:foreground="?selectableItemBackground"
+                                    android:adjustViewBounds="true"
+                                    android:scaleType="centerCrop"
+                                    android:src="@drawable/empty_image"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginEnd="8dp"/>
+
+                                <ImageView
+                                    android:id="@+id/photo_4"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:foreground="?selectableItemBackground"
+                                    android:adjustViewBounds="true"
+                                    android:scaleType="centerCrop"
+                                    android:src="@drawable/empty_image"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginEnd="8dp"/>
+
+                                <ImageView
+                                    android:id="@+id/photo_5"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:foreground="?selectableItemBackground"
+                                    android:adjustViewBounds="true"
+                                    android:scaleType="centerCrop"
+                                    android:src="@drawable/empty_image"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginEnd="8dp"/>
+
+                            </LinearLayout>
+
+                        </HorizontalScrollView>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.CardView>
+
+    </LinearLayout>
+
+</ScrollView>
