@@ -5,16 +5,16 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.icsseseguridad.locationsecurity.SecurityApp;
-import com.icsseseguridad.locationsecurity.util.DefaultPreferences;
+import com.icsseseguridad.locationsecurity.model.Watch;
+import com.icsseseguridad.locationsecurity.util.AppPreferences;
 
 public class OnBootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         try {
             if (!isServiceRunning(LocationService.class, context)) {
-                final Long watchId = new DefaultPreferences(SecurityApp.getAppContext()).getWatchId();
-                if (watchId != 0) {
+                Watch watch = new AppPreferences(context).getWatch();
+                if (watch != null) {
                     Intent myIntent = new Intent(context, LocationService.class);
                     context.startService(myIntent);
                 }

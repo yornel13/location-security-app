@@ -133,19 +133,117 @@
             android:layout_height="match_parent"
             android:layout_below="@+id/header_container">
 
-            <!--<include layout="@layout/item_material"/>-->
+            <LinearLayout
+                android:id="@+id/empty"
+                android:alpha="0.7"
+                android:visibility="gone"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingBottom="50dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:alpha="0.9"
+                    android:src="@drawable/message_empty"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp" />
+
+                <com.icsseseguridad.locationsecurity.util.AppTextView
+                    android:text="Sin chats abiertos."
+                    app:fontFamily="GoogleSans-Medium.ttf"
+                    android:textSize="24sp"
+                    android:textColor="@color/colorGray"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/loading"
+                android:visibility="visible"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ProgressBar
+                    android:indeterminate="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <com.icsseseguridad.locationsecurity.util.AppTextView
+                    android:text="Cargando chats..."
+                    app:fontFamily="GoogleSans-Medium.ttf"
+                    android:textSize="24sp"
+                    android:textColor="@color/colorGray"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:visibility="visible"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/recycler_list"
+                android:paddingTop="8dp"
+                android:paddingBottom="@dimen/scroll_padding_bottom"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:clipToPadding="false">
+
+            </android.support.v7.widget.RecyclerView>
 
         </RelativeLayout>
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/add_button"
-            android:layout_margin="24dp"
-            app:fabSize="normal"
-            android:src="@drawable/new_report"
+        <com.getbase.floatingactionbutton.FloatingActionsMenu
+            android:id="@+id/fab_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_margin="24dp"
+            app:fab_addButtonColorNormal="@color/colorAccent"
+            app:fab_addButtonColorPressed="@color/colorPrimaryLight"
+            app:fab_addButtonPlusIconColor="@color/white"
+            app:fab_labelStyle="@style/menu_labels_style"
+            app:fab_addButtonSize="normal"
+            app:fab_labelsPosition="left">
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/chat_guard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:fab_colorNormal="@color/colorAccent"
+                app:fab_icon="@drawable/ic_chat_normal_white"
+                app:fab_size="mini"
+                app:fab_title="Chat con un Guardia"
+                app:fab_colorPressed="@color/colorPrimaryLight"/>
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/chat_admin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:fab_colorNormal="@color/colorAccent"
+                app:fab_icon="@drawable/ic_chat_normal_white"
+                app:fab_size="mini"
+                app:fab_title="Chat con un Administrador"
+                app:fab_colorPressed="@color/colorPrimaryLight"/>
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/chat_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:fab_colorNormal="@color/colorAccent"
+                app:fab_size="mini"
+                app:fab_icon="@drawable/ic_group_white"
+                app:fab_title="Chat Grupal"
+                app:fab_colorPressed="@color/colorPrimaryLight"/>
+
+        </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
     </RelativeLayout>
 

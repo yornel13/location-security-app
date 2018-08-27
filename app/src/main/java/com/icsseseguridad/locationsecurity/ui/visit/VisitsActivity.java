@@ -128,7 +128,7 @@ public class VisitsActivity extends BaseActivity implements  BottomNavigationVie
     @Override
     protected void onResume() {
         super.onResume();
-        nameText.setText(preferences.getGuard().getFullname());
+        nameText.setText(getPreferences().getGuard().getFullname());
         dateText.setText(UTILITY.getCurrentDate());
     }
 
@@ -187,5 +187,10 @@ public class VisitsActivity extends BaseActivity implements  BottomNavigationVie
     public void onClickVisit(OnClickVisit event) {
         app.visit = event.controlVisit;
         startActivityForResult(new Intent(this, VisitActivity.class), INTENT_SHOW_VISIT);
+    }
+
+    @OnClick(R.id.sos_alarm)
+    public void SOS() {
+        dialogSOS();
     }
 }

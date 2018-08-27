@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:descendantFocusability="beforeDescendants"
     android:focusableInTouchMode="true"
-    android:fitsSystemWindows="true"
+    android:fitsSystemWindows="false"
     android:background="@color/colorPrimary"
     tools:context=".ui.chat.ChatActivity">
 
@@ -58,74 +58,116 @@
 
     </android.support.design.widget.AppBarLayout>
 
-
     <RelativeLayout
         android:background="@drawable/header_background"
+        android:fitsSystemWindows="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/messing_area">
+            android:orientation="vertical">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_list"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:transcriptMode="alwaysScroll">
+
+            </android.support.v7.widget.RecyclerView>
+
+            <LinearLayout
+                android:padding="4dp"
+                android:id="@+id/messing_area"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="#ffffff">
+
+                <EditText
+                    android:id="@+id/new_message"
+                    android:hint="Escribir mensaje..."
+                    android:background="@android:color/transparent"
+                    android:layout_gravity="center"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="16dp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:minHeight="50dp"
+                    android:layout_height="wrap_content"
+                    android:maxLines="6"/>
+
+                <ImageView
+                    android:id="@+id/send"
+                    android:background="?actionBarItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:tint="@color/colorBlue"
+                    android:src="@drawable/ic_send_black_24dp"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp" />
+
+                <ProgressBar
+                    android:id="@+id/sending"
+                    android:visibility="gone"
+                    android:padding="8dp"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="8dp"
+            android:id="@+id/comment_loading"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ProgressBar
+                android:indeterminate="true"
+                android:layout_width="36dp"
+                android:layout_height="36dp" />
+
+            <com.icsseseguridad.locationsecurity.util.AppTextView
+                android:text="Cargando Mensajes..."
+                android:layout_marginStart="16dp"
+                android:layout_gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                app:fontFamily="GoogleSans-Medium.ttf" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <include layout="@layout/item_chat_admin"/>
-                <include layout="@layout/item_chat_guard"/>
-                <include layout="@layout/item_chat_admin"/>
-                <include layout="@layout/item_chat_guard"/>
-                <include layout="@layout/item_chat_admin"/>
+                <include layout="@layout/item_chat_other"/>
+                <include layout="@layout/item_chat_mine"/>
+                <include layout="@layout/item_chat_other"/>
+                <include layout="@layout/item_chat_mine"/>
+                <include layout="@layout/item_chat_other"/>
 
             </LinearLayout>
 
 
         </RelativeLayout>
-
-        <LinearLayout
-            android:padding="4dp"
-            android:id="@+id/messing_area"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="#ffffff"
-            android:layout_alignParentBottom="true">
-
-            <EditText
-                android:id="@+id/new_message"
-                android:hint="Dejar comentario"
-                android:background="@android:color/transparent"
-                android:layout_gravity="center"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:maxLines="6"/>
-
-            <ImageView
-                android:id="@+id/send"
-                android:background="?actionBarItemBackground"
-                android:clickable="true"
-                android:focusable="true"
-                android:tint="@color/colorBlue"
-                android:src="@drawable/ic_send_black_24dp"
-                android:gravity="center"
-                android:padding="8dp"
-                android:layout_width="56dp"
-                android:layout_height="56dp" />
-
-            <ProgressBar
-                android:id="@+id/sending"
-                android:visibility="gone"
-                android:padding="8dp"
-                android:layout_width="56dp"
-                android:layout_height="56dp" />
-
-        </LinearLayout>
 
     </RelativeLayout>
 

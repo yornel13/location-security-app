@@ -352,10 +352,10 @@ public class AddReportActivity extends PhotoActivity {
         Incidence incidence = (Incidence) spinner.getSelectedItem();
         report.incidenceId = incidence.id;
         report.title = incidence.name;
-        report.watchId = preferences.getWatch().id;
+        report.watchId = getPreferences().getWatch().id;
         report.observation = observationText.getText().toString();
-        report.latitude = "-1.831239";
-        report.longitude = "-78.183405";
+        report.latitude = String.valueOf(getPreferences().getLastKnownLoc().getLatitude());
+        report.longitude = String.valueOf(getPreferences().getLastKnownLoc().getLongitude());
 
         builderDialog.text("Enviando...");
         dialog.show();
@@ -442,5 +442,10 @@ public class AddReportActivity extends PhotoActivity {
         } else {
             Snackbar.make(toolbar, event.response.message, Snackbar.LENGTH_LONG).show();
         }
+    }
+
+    @OnClick(R.id.sos_alarm)
+    public void SOS() {
+        dialogSOS();
     }
 }

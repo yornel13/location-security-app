@@ -74,9 +74,11 @@ public class WatchController extends BaseController {
             public void onResponse(Call<MultipleResource> call, Response<MultipleResource> response) {
                 if (!response.isSuccessful()) {
                     try {
-                        MultipleResource resource = gson.fromJson(response.errorBody().string(), MultipleResource.class);
+                        String errorBody = response.errorBody().string();
+                        System.out.println(errorBody);
+                        MultipleResource resource = gson.fromJson(errorBody, MultipleResource.class);
                         EventBus.getDefault().postSticky(new OnFinishWatchFailure(resource));
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         EventBus.getDefault().postSticky(new OnFinishWatchFailure(
                                 new MultipleResource(false, SecurityApp
                                         .getAppContext().getString(R.string.error_connection))

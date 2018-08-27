@@ -251,8 +251,8 @@ public class ReportActivity extends BaseActivity {
         hideKeyboard();
         Reply reply = new Reply();
         reply.reportId = report.id;
-        reply.guardId = preferences.getGuard().id;
-        reply.userName = preferences.getGuard().getFullname();
+        reply.guardId = getPreferences().getGuard().id;
+        reply.userName = getPreferences().getGuard().getFullname();
         reply.text = messageText.getText().toString();
         new BinnacleController().postReply(reply);
 
@@ -283,4 +283,8 @@ public class ReportActivity extends BaseActivity {
         Snackbar.make(toolbar, event.response.message, Snackbar.LENGTH_LONG).show();
     }
 
+    @OnClick(R.id.sos_alarm)
+    public void SOS() {
+        dialogSOS();
+    }
 }

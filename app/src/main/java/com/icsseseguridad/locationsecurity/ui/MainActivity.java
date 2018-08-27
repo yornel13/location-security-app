@@ -3,9 +3,11 @@ package com.icsseseguridad.locationsecurity.ui;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
@@ -13,17 +15,37 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.request.RequestOptions;
+import com.glide.slider.library.Animations.DescriptionAnimation;
+import com.glide.slider.library.SliderLayout;
+import com.glide.slider.library.SliderTypes.BaseSliderView;
+import com.glide.slider.library.SliderTypes.TextSliderView;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.icsseseguridad.locationsecurity.R;
+import com.icsseseguridad.locationsecurity.controller.BannerController;
+import com.icsseseguridad.locationsecurity.controller.MessengerController;
 import com.icsseseguridad.locationsecurity.controller.TabletPositionController;
 import com.icsseseguridad.locationsecurity.controller.WatchController;
 import com.icsseseguridad.locationsecurity.events.OnFinishWatchFailure;
 import com.icsseseguridad.locationsecurity.events.OnFinishWatchSuccess;
+import com.icsseseguridad.locationsecurity.events.OnGetBannersSuccess;
+import com.icsseseguridad.locationsecurity.model.Alert;
 import com.icsseseguridad.locationsecurity.model.TabletPosition;
 import com.icsseseguridad.locationsecurity.model.Watch;
 import com.icsseseguridad.locationsecurity.service.LocationService;
@@ -31,6 +53,7 @@ import com.icsseseguridad.locationsecurity.ui.binnacle.BinnacleActivity;
 import com.icsseseguridad.locationsecurity.ui.chat.MessageActivity;
 import com.icsseseguridad.locationsecurity.ui.visit.VisitsActivity;
 import com.icsseseguridad.locationsecurity.util.AppPreferences;
+import com.icsseseguridad.locationsecurity.util.MyDescriptionAnimation;
 import com.icsseseguridad.locationsecurity.util.UTILITY;
 
 import org.greenrobot.eventbus.EventBus;
@@ -48,6 +71,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
     @BindView(R.id.nav_view) NavigationView navigationView;
     @BindView(R.id.guard_name) TextView nameText;
     @BindView(R.id.guard_date) TextView dateText;
+    @BindView(R.id.slider) SliderLayout sliderView;
     @BindView(R.id.header_container) BottomNavigationView bottomNavigationView;
 
     private Location location;
@@ -78,12 +102,28 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
                 return true;
             }
         });
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+            @Override
+            public void onSuccess(InstanceIdResult instanceIdResult) {
+                String deviceToken = instanceIdResult.getToken();
+                Log.d("MainActivity", "Token Registration: "+deviceToken);
+                new MessengerController().register(getImei(), deviceToken, getPreferences().getGuard().id);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e("MainActivity", "Failed to get registration Token");
+            }
+        });
+
+        new BannerController().getBanners();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        nameText.setText(preferences.getGuard().getFullname());
+        nameText.setText(getPreferences().getGuard().getFullname());
         dateText.setText(UTILITY.getCurrentDate());
         bottomNavigationView.setSelectedItemId(R.id.nav_home);
 
@@ -160,9 +200,9 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
         bottomNavigationView.setSelectedItemId(R.id.nav_alert);
     }
 
-    @OnClick(R.id.sos)
+    @OnClick({R.id.sos, R.id.sos_alarm})
     public void SOS() {
-
+        dialogSOS();
     }
 
     @OnClick(R.id.finish_watch)
@@ -191,7 +231,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
         dialog.show();
         location = getLastKnowLocation();
         WatchController watchController = new WatchController();
-        watchController.finish(getDefaultPreference().getWatchId(),
+        watchController.finish(getPreferences().getWatch().id,
                 String.valueOf(location.getLatitude()),
                 String.valueOf(location.getLongitude()), null);
     }
@@ -201,9 +241,9 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
         EventBus.getDefault().removeStickyEvent(OnFinishWatchSuccess.class);
         dialog.dismiss();
         Toast.makeText(this, "Guardia Finalizada", Toast.LENGTH_LONG).show();
-        updatePosition(getDefaultPreference().getWatchId(), getDefaultPreference().getImei());
-        preferences.clearWatch();
-        getDefaultPreference().clearWatch();
+        updatePosition(getPreferences().getWatch().id, getPreferences().getImei());
+        getPreferences().clearWatch();
+        getPreferences().clearWatch();
         startActivity(new Intent(this, LoginActivity.class));
         stopService(new Intent(this, LocationService.class));
         finish();
@@ -249,40 +289,39 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
     }
 
     public void clearSession() {
-        preferences.clearGuard();
-        getDefaultPreference().clearWatch();
+        getPreferences().clearWatch();
         startActivity(new Intent(this, LoginActivity.class));
         stopService(new Intent(this, LocationService.class));
         finish();
     }
 
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void OnGetBannersSuccess(OnGetBannersSuccess event) {
+        EventBus.getDefault().removeStickyEvent(OnGetBannersSuccess.class);
+        if (event.list.total > 0) {
+            sliderView.setVisibility(View.VISIBLE);
+            RequestOptions requestOptions = new RequestOptions();
+            requestOptions.centerCrop();
+            for (int i = 0; i < event.list.total; i++) {
+                TextSliderView textSliderView = new TextSliderView(this);
+                textSliderView
+                        .image(event.list.banners.get(i).photo)
+                        .setRequestOption(requestOptions)
+                        .setBackgroundColor(Color.WHITE)
+                        .setProgressBarVisible(true);
+                textSliderView.bundle(new Bundle());
+                sliderView.addSlider(textSliderView);
+            }
+            sliderView.setPresetTransformer(SliderLayout.Transformer.Accordion);
+            sliderView.setCustomAnimation(new MyDescriptionAnimation());
+            sliderView.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
+            sliderView.setDuration(5000);
+        }
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        sliderView.stopAutoCycle();
+    }
 }

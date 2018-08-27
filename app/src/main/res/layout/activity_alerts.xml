@@ -133,7 +133,32 @@
             android:layout_height="match_parent"
             android:layout_below="@+id/header_container">
 
-            <!--<include layout="@layout/item_material"/>-->
+            <LinearLayout
+                android:id="@+id/empty"
+                android:alpha="0.7"
+                android:visibility="visible"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingBottom="50dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:alpha="0.9"
+                    android:src="@drawable/notification_empty"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp" />
+
+                <com.icsseseguridad.locationsecurity.util.AppTextView
+                    android:text="No tienes notificaciones."
+                    app:fontFamily="GoogleSans-Medium.ttf"
+                    android:textSize="24sp"
+                    android:textColor="@color/colorGray"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
 
         </RelativeLayout>
 

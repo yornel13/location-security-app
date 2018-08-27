@@ -32,7 +32,7 @@
                 android:layout_height="wrap_content">
 
                 <com.icsseseguridad.locationsecurity.util.AppTextView
-                    android:id="@+id/user_messaget"
+                    android:id="@+id/user_message"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/white"

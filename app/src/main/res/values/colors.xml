@@ -12,6 +12,7 @@
     <color name="colorBackground">#e2e4e6</color>
     <color name="colorGrayAgate">#B5B8B1</color>
     <color name="colorTransparent">#00000000</color>
+    <color name="colorSemiTransparent">#80000000</color>
     <color name="colorDoneGreenLight">#DFFAEA</color>
     <color name="colorGray">#58595B</color>
     <color name="colorBlue">#0336ff</color>

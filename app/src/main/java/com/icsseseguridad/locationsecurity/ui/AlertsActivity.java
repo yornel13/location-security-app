@@ -20,6 +20,7 @@ import com.icsseseguridad.locationsecurity.util.UTILITY;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class AlertsActivity extends BaseActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
@@ -86,12 +87,17 @@ public class AlertsActivity extends BaseActivity implements BottomNavigationView
     @Override
     protected void onResume() {
         super.onResume();
-        nameText.setText(preferences.getGuard().getFullname());
+        nameText.setText(getPreferences().getGuard().getFullname());
         dateText.setText(UTILITY.getCurrentDate());
     }
 
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
 
+    }
+
+    @OnClick(R.id.sos_alarm)
+    public void SOS() {
+        dialogSOS();
     }
 }

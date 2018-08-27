@@ -5,7 +5,9 @@ import com.google.gson.annotations.SerializedName;
 import java.sql.Timestamp;
 import java.sql.Date;
 
-public class Guard {
+import ir.mirrajabi.searchdialog.core.Searchable;
+
+public class Guard implements Searchable {
 
     @SerializedName("id")
     public Long id;
@@ -28,7 +30,7 @@ public class Guard {
     @SerializedName("create_date")
     public Timestamp createDate;
 
-    @SerializedName("updateData")
+    @SerializedName("update_date")
     public Timestamp updateDate;
 
     @SerializedName("active")
@@ -37,10 +39,18 @@ public class Guard {
     @SerializedName("token")
     public String token;
 
+    @SerializedName("photo")
+    public String photo;
+
     @SerializedName("resumed")
     public boolean resumed;
 
     public String getFullname() {
         return name+" "+lastname;
+    }
+
+    @Override
+    public String getTitle() {
+        return this.dni;
     }
 }

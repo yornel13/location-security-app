@@ -347,4 +347,9 @@ public class VisitActivity extends BaseActivity {
         });
         snackbar.show();
     }
+
+    @OnClick(R.id.sos_alarm)
+    public void SOS() {
+        dialogSOS();
+    }
 }

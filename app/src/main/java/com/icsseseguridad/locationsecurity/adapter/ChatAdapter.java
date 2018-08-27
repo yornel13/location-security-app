@@ -9,8 +9,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.icsseseguridad.locationsecurity.R;
-import com.icsseseguridad.locationsecurity.model.AppMessage;
+import com.icsseseguridad.locationsecurity.model.Chat;
+import com.icsseseguridad.locationsecurity.model.ChatLine;
+import com.icsseseguridad.locationsecurity.util.AppPreferences;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,29 +24,32 @@ import java.util.List;
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     // A menu item view type.
-    private static final int ITEM_VIEW_ADMIN = 0;
+    private static final int ITEM_VIEW_OTHER = 0;
 
     // The Native Express ad view type.
-    private static final int ITEM_VIEW_GUARD = 1;
+    private static final int ITEM_VIEW_LOCAL = 1;
 
-    private List<AppMessage> messages;
+    private List<ChatLine> messages;
     private Context context;
 
-    public ChatAdapter(Context context, List<AppMessage> messages) {
+    private Long myId;
+
+    public ChatAdapter(Context context, List<ChatLine> messages) {
         this.messages = messages;
         this.context = context;
+        this.myId = new AppPreferences(context.getApplicationContext()).getGuard().id;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
         switch (viewType) {
-            case ITEM_VIEW_ADMIN:
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat_admin, parent, false);
+            case ITEM_VIEW_OTHER:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat_other, parent, false);
                 return new ViewHolderAdmin(view);
-            case ITEM_VIEW_GUARD:
+            case ITEM_VIEW_LOCAL:
             default:
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat_guard, parent, false);
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat_mine, parent, false);
                 return new ViewHolderGuard(view);
         }
     }
@@ -51,19 +57,25 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (!messages.isEmpty()) {
-            AppMessage message = messages.get(position);
+            ChatLine message = messages.get(position);
+            System.out.println(new Gson().toJson(message));
             switch (holder.getItemViewType()) {
-                case ITEM_VIEW_ADMIN:
+                case ITEM_VIEW_OTHER:
                     ViewHolderAdmin holderA = (ViewHolderAdmin) holder;
-                    holderA.name.setText(message.userName);
-                    holderA.message.setText(message.message);
-                    holderA.time.setText(DateUtils.getRelativeTimeSpanString(message.createDate.getTime()));
+                    holderA.name.setText(message.senderName);
+                    holderA.message.setText(message.text);
+                    if (message.senderType == Chat.TYPE.GUARD) {
+                        holderA.image.setImageDrawable(context.getResources().getDrawable(R.drawable.policeman));
+                    } else {
+                        holderA.image.setImageDrawable(context.getResources().getDrawable(R.drawable.admin_user));
+                    }
+                    holderA.time.setText(DateUtils.getRelativeTimeSpanString(message.createAt.getTime()));
                     break;
-                case ITEM_VIEW_GUARD:
+                case ITEM_VIEW_LOCAL:
                     default:
                     ViewHolderGuard holderG = (ViewHolderGuard) holder;
-                    holderG.message.setText(message.message);
-                    holderG.time.setText(DateUtils.getRelativeTimeSpanString(message.createDate.getTime()));
+                    holderG.message.setText(message.text);
+                    holderG.time.setText(DateUtils.getRelativeTimeSpanString(message.createAt.getTime()));
                     break;
             }
         }
@@ -105,10 +117,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public  int getItemViewType(int position) {
-        if (messages.get(position).from == AppMessage.FROM.ANDROID) {
-            return ITEM_VIEW_GUARD;
+        if (messages.get(position).senderType == Chat.TYPE.GUARD
+                && messages.get(position).senderId.equals(myId)) {
+            return ITEM_VIEW_LOCAL;
         } else {
-            return ITEM_VIEW_ADMIN;
+            return ITEM_VIEW_OTHER;
         }
     }
 
@@ -117,7 +130,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return messages.size();
     }
 
-    public void replaceAll(List<AppMessage> items) {
+    public void replaceAll(List<ChatLine> items) {
         this.messages = new ArrayList<>(items);
         notifyDataSetChanged();
     }
@@ -128,23 +141,23 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return model;
     }
 
-    public void addItems(List<AppMessage> items) {
+    public void addItems(List<ChatLine> items) {
         this.messages.addAll(items);
         notifyDataSetChanged();
     }
 
-    public void addItem(int position, AppMessage model) {
+    public void addItem(int position, ChatLine model) {
         messages.add(position, model);
         notifyItemInserted(position);
     }
 
     public void moveItem(int fromPosition, int toPosition) {
-        final AppMessage model = messages.remove(fromPosition);
+        final ChatLine model = messages.remove(fromPosition);
         messages.add(toPosition, model);
         notifyItemMoved(fromPosition, toPosition);
     }
 
-    public AppMessage getItem(int position) {
+    public ChatLine getItem(int position) {
         return messages.get(position);
     }
 

@@ -27,7 +27,7 @@ public class Visitor implements Searchable {
     @SerializedName("create_date")
     public Timestamp createDate;
 
-    @SerializedName("updateData")
+    @SerializedName("update_date")
     public Timestamp updateDate;
 
     @SerializedName("photo")

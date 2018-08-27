@@ -411,8 +411,10 @@ public class AddVisitActivity extends BaseActivity {
         hideKeyboard();
         visit.visitorId = visitor.id;
         visit.vehicleId = vehicle.id;
+        visit.latitude = String.valueOf(getPreferences().getLastKnownLoc().getLatitude());
+        visit.longitude = String.valueOf(getPreferences().getLastKnownLoc().getLongitude());
         visit.clerkId = clerk.id;
-        visit.guardId = preferences.getGuard().id;
+        visit.guardId = getPreferences().getGuard().id;
 
         builderDialog.text("Guardando...");
         dialog.show();
@@ -519,5 +521,10 @@ public class AddVisitActivity extends BaseActivity {
         timeText.setText("Entrada el "+AppDatetime.longDatetime(System.currentTimeMillis()));
         if (visit != null && visit.persons != null)
             dateText.setText(AppDatetime.longTime(System.currentTimeMillis()));
+    }
+
+    @OnClick(R.id.sos_alarm)
+    public void SOS() {
+        dialogSOS();
     }
 }

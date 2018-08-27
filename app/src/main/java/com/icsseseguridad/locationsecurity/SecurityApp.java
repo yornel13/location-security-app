@@ -24,6 +24,7 @@ import com.icsseseguridad.locationsecurity.events.OnSyncClerks;
 import com.icsseseguridad.locationsecurity.events.OnSyncIncidences;
 import com.icsseseguridad.locationsecurity.events.OnSyncVehicles;
 import com.icsseseguridad.locationsecurity.events.OnSyncVisitors;
+import com.icsseseguridad.locationsecurity.model.Chat;
 import com.icsseseguridad.locationsecurity.model.Clerk;
 import com.icsseseguridad.locationsecurity.model.Company;
 import com.icsseseguridad.locationsecurity.model.ControlVisit;
@@ -33,11 +34,9 @@ import com.icsseseguridad.locationsecurity.model.ListIncidence;
 import com.icsseseguridad.locationsecurity.model.ListVisitor;
 import com.icsseseguridad.locationsecurity.model.ListVisitorVehicle;
 import com.icsseseguridad.locationsecurity.model.SpecialReport;
-import com.icsseseguridad.locationsecurity.model.TabletPosition;
 import com.icsseseguridad.locationsecurity.model.Visitor;
 import com.icsseseguridad.locationsecurity.model.VisitorVehicle;
 import com.icsseseguridad.locationsecurity.util.AppPreferences;
-import com.icsseseguridad.locationsecurity.util.DefaultPreferences;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -65,6 +64,7 @@ public class SecurityApp extends Application {
     private ControlVisit newVisit;
     public ControlVisit visit;
     public SpecialReport report;
+    public Chat chat;
 
     @Override
     public void onCreate() {
@@ -216,7 +216,7 @@ public class SecurityApp extends Application {
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onGetUpdateGpsSuccess(OnGetUpdateGpsSuccess event) {
         EventBus.getDefault().removeStickyEvent(OnGetUpdateGpsSuccess.class);
-        new DefaultPreferences(this).setGpsUpdate(event.utility);
+        new AppPreferences(getApplicationContext()).setGpsUpdate(event.utility);
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)

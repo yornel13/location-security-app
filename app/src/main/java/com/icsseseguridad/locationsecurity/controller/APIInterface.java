@@ -5,6 +5,11 @@ import android.support.annotation.Nullable;
 import com.fxn.utility.Utility;
 import com.icsseseguridad.locationsecurity.model.ConfigUtility;
 import com.icsseseguridad.locationsecurity.model.Guard;
+import com.icsseseguridad.locationsecurity.model.ListAdmin;
+import com.icsseseguridad.locationsecurity.model.ListBanner;
+import com.icsseseguridad.locationsecurity.model.ListChannel;
+import com.icsseseguridad.locationsecurity.model.ListChat;
+import com.icsseseguridad.locationsecurity.model.ListChatLine;
 import com.icsseseguridad.locationsecurity.model.ListClerk;
 import com.icsseseguridad.locationsecurity.model.ListCompany;
 import com.icsseseguridad.locationsecurity.model.ListGuard;
@@ -33,8 +38,11 @@ import retrofit2.http.Query;
 
 interface APIInterface {
 
-    @GET("public/guard")
-    Call<ListGuard> getGuards();
+    @GET("public/guard/active/1")
+    Call<ListGuard> getGuards(@Header("APP-TOKEN") String appToken);
+
+    @GET("public/admin/active/1")
+    Call<ListAdmin> getAdmins(@Header("APP-TOKEN") String appToken);
 
     @FormUrlEncoded
     @POST("public/auth/guard")
@@ -52,12 +60,12 @@ interface APIInterface {
     @FormUrlEncoded
     @PUT("public/watch/{watch_id}")
     Call<MultipleResource> finishWatch(@Header("APP-TOKEN") String appToken,
-           @Path("watch_id") Long watchId,
+           @Path("watch_id") Long watch_id,
            @Field("latitude") String latitude,
            @Field("longitude") String longitude,
            @Nullable @Field("observation") String observation);
 
-    @GET("public/visitor/active/1")
+    @GET("public/visitor")
     Call<ListVisitor> getVisitors(@Header("APP-TOKEN") String appToken);
 
     @FormUrlEncoded
@@ -70,7 +78,7 @@ interface APIInterface {
             @Field("company") String company,
             @Field("photo") String photo);
 
-    @GET("public/visitor-vehicle/active/1")
+    @GET("public/visitor-vehicle")
     Call<ListVisitorVehicle> getVisitorVehicles(@Header("APP-TOKEN") String appToken);
 
     @FormUrlEncoded
@@ -83,7 +91,7 @@ interface APIInterface {
             @Field("type") String type,
             @Field("photo") String photo);
 
-    @GET("public/clerk/active/1")
+    @GET("public/clerk")
     Call<ListClerk> getClerks(@Header("APP-TOKEN") String appToken);
 
     @FormUrlEncoded
@@ -141,19 +149,11 @@ interface APIInterface {
             @Field("image_4") String image4,
             @Field("image_5") String image5);
 
-    @GET("public/binnacle/guard/{id}")
+    @GET("public/binnacle/resolved/all/guard/{id}")
     Call<ListReport> getGuardReports(@Header("APP-TOKEN") String appToken, @Path("id") Long id);
 
     @GET("public/binnacle/{id}/replies")
     Call<ListReply> getReplies(@Header("APP-TOKEN") String appToken, @Path("id") Long reportId);
-
-    @FormUrlEncoded
-    @POST("public/binnacle")
-    Call<MultipleResource> addReply(
-            @Header("APP-TOKEN") String appToken,
-            @Field("report_id") Long reportId,
-            @Field("guard_id") Long guardId,
-            @Field("text") String text);
 
     @FormUrlEncoded
     @POST("public/binnacle-reply")
@@ -178,4 +178,63 @@ interface APIInterface {
             @Field("message") String message,
             @Field("message_time") String messageTime);
 
+    @FormUrlEncoded
+    @POST("public/messenger/register/tablet")
+    Call<MultipleResource> registerToken(
+            @Header("APP-TOKEN") String appToken,
+            @Field("imei") String imei,
+            @Field("registration_id") String registrationId,
+            @Field("guard_id") Long guard_id);
+
+    @FormUrlEncoded
+    @POST("public/messenger/chat")
+    Call<MultipleResource> createChat(
+            @Header("APP-TOKEN") String appToken,
+            @Field("user_1_id") Long user1Id,
+            @Field("user_1_type") String user1Type,
+            @Field("user_1_name") String user1Name,
+            @Field("user_2_id") Long user2Id,
+            @Field("user_2_type") String user2Type,
+            @Field("user_2_name") String user2Name);
+
+    @GET("public/messenger/conversations/guard/{id}")
+    Call<ListChat> getConversations(@Header("APP-TOKEN") String appToken , @Path("id") Long guardId);
+
+    @GET("public/messenger/conversations/chat/{id}")
+    Call<ListChatLine> getMessages(@Header("APP-TOKEN") String appToken , @Path("id") Long chatId);
+
+    @GET("public/messenger/channel/guard/{id}")
+    Call<ListChannel> getChannels(@Header("APP-TOKEN") String appToken , @Path("id") Long guardId);
+
+    @FormUrlEncoded
+    @POST("public/messenger/send")
+    Call<MultipleResource> sendMessage(
+            @Header("APP-TOKEN") String appToken,
+            @Field("chat_id") Long chatId,
+            @Field("channel_id") Long channelId,
+            @Field("sender_id") Long senderId,
+            @Field("sender_type") String senderType,
+            @Field("sender_name") String senderName,
+            @Field("text") String text);
+
+    @FormUrlEncoded
+    @POST("public/messenger/channel")
+    Call<MultipleResource> createChannel(
+            @Header("APP-TOKEN") String appToken,
+            @Field("name") String name,
+            @Field("creator_id") Long creatorId,
+            @Field("creator_type") String creatorType,
+            @Field("creator_name") String creatorName);
+
+    @FormUrlEncoded
+    @POST("public/alert")
+    Call<MultipleResource> sendAlert(
+            @Field("guard_id") Long guardId,
+            @Field("cause") String cause,
+            @Field("message") String message,
+            @Field("latitude") String latitude,
+            @Field("longitude") String longitude);
+
+    @GET("public/banner")
+    Call<ListBanner> getBanners(@Header("APP-TOKEN") String appToken);
 }

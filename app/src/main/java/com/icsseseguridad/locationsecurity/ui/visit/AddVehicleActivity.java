@@ -220,4 +220,9 @@ public class AddVehicleActivity extends PhotoActivity {
         }
 
     }
+
+    @OnClick(R.id.sos_alarm)
+    public void SOS() {
+        dialogSOS();
+    }
 }

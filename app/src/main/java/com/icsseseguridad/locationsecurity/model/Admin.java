@@ -4,7 +4,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.sql.Timestamp;
 
-public class Admin {
+import ir.mirrajabi.searchdialog.core.Searchable;
+
+public class Admin implements Searchable {
 
     @SerializedName("id")
     public Long id;
@@ -27,16 +29,24 @@ public class Admin {
     @SerializedName("create_date")
     public Timestamp createDate;
 
-    @SerializedName("updateData")
+    @SerializedName("update_date")
     public Timestamp updateDate;
 
     @SerializedName("active")
     public Boolean active;
+
+    @SerializedName("photo")
+    public String photo;
 
     @SerializedName("token")
     public String token;
 
     public String getFullname() {
         return name+" "+lastname;
+    }
+
+    @Override
+    public String getTitle() {
+        return this.dni;
     }
 }

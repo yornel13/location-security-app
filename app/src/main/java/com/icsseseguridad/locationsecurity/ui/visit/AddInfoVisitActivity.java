@@ -330,4 +330,9 @@ public class AddInfoVisitActivity extends PhotoActivity {
         setResult(RESULT_OK, getIntent());
         finish();
     }
+
+    @OnClick(R.id.sos_alarm)
+    public void SOS() {
+        dialogSOS();
+    }
 }

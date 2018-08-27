@@ -125,7 +125,7 @@ public class LoginActivity extends BaseActivity {
     }
 
     public void loadView() {
-        if (preferences.getGuard() != null) {
+        if (getPreferences().getGuard() != null) {
             startActivity(new Intent(this, MainActivity.class));
             finish();
         } else {
@@ -155,7 +155,7 @@ public class LoginActivity extends BaseActivity {
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void signInSuccess(OnSignInSuccess event) {
         EventBus.getDefault().removeStickyEvent(OnSignInSuccess.class);
-        builderDialog.text("Iniciando Guardia");
+        builderDialog.text("Iniciando");
         guard = event.guard;
         WatchController watchController = new WatchController();
         location = getLastKnowLocation();
@@ -177,9 +177,8 @@ public class LoginActivity extends BaseActivity {
     public void initWatchSuccess(OnInitWatchSuccess event) {
         EventBus.getDefault().removeStickyEvent(OnInitWatchSuccess.class);
         dialog.dismiss();
-        preferences.setGuard(guard);
-        System.out.println(new Gson().toJson(guard));
-        preferences.setWatch(event.watch);
+        getPreferences().setGuard(guard);
+        getPreferences().setWatch(event.watch);
         updatePosition(event.watch);
         startActivity(new Intent(this, MainActivity.class));
         finish();
@@ -196,7 +195,7 @@ public class LoginActivity extends BaseActivity {
 
     private void updatePosition(Watch watch) {
         TabletPositionController positionController = new TabletPositionController();
-        TabletPosition tabletPosition = new TabletPosition(location, getImeiAndSave(watch));
+        TabletPosition tabletPosition = new TabletPosition(location, getImeiAndSave());
         if (watch.resumed)
             tabletPosition.message = TabletPosition.MESSAGE.RESUMED_WATCH.name();
         else
@@ -220,7 +219,7 @@ public class LoginActivity extends BaseActivity {
         if (!isServiceRunning(LocationService.class)) {
             startService(new Intent(this, LocationService.class));
             Toast.makeText(this, "Iniciando servicio de Localización.", Toast.LENGTH_SHORT).show();
-            builderDialog.text("Cargando");
+            builderDialog.text("Iniciando");
             dialog.show();
             passwordText.postDelayed(new Runnable() {
                 @Override
@@ -244,7 +243,7 @@ public class LoginActivity extends BaseActivity {
         AuthController authController = new AuthController();
         authController.singIn(dniText.getText().toString(), passwordText.getText().toString());
         if (showDialog) {
-            builderDialog.text("Cargando");
+            builderDialog.text("Iniciando");
             dialog.show();
         }
     }
@@ -254,6 +253,14 @@ public class LoginActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == INTENT_TURN_ON_GPS) {
             turnGPSOn();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (getPreferences().getWatch() == null) {
+            stopService(new Intent(this, LocationService.class));
         }
     }
 }

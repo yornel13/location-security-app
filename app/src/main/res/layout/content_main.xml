@@ -13,18 +13,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp">
+            android:layout_height="wrap_content">
 
-            <ImageView
-                android:scaleType="centerCrop"
-                android:adjustViewBounds="true"
-                android:src="@drawable/image_security_1"
+            <com.glide.slider.library.SliderLayout
+                android:id="@+id/slider"
+                android:visibility="gone"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="200dp"/>
 
-        </LinearLayout>
+        </RelativeLayout>
 
         <LinearLayout
             android:orientation="horizontal"

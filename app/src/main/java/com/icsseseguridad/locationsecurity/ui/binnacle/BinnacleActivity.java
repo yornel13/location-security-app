@@ -69,7 +69,7 @@ public class BinnacleActivity extends BaseActivity implements BottomNavigationVi
         setupAdapter(new ArrayList<SpecialReport>());
         emptyView.setVisibility(View.GONE);
         loadingView.setVisibility(View.VISIBLE);
-        new BinnacleController().getGuardReports(preferences.getGuard().id);
+        new BinnacleController().getGuardReports(getPreferences().getGuard().id);
 
         bottomNavigationView.setSelectedItemId(R.id.nav_binnacle);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
@@ -148,7 +148,7 @@ public class BinnacleActivity extends BaseActivity implements BottomNavigationVi
     @Override
     protected void onResume() {
         super.onResume();
-        nameText.setText(preferences.getGuard().getFullname());
+        nameText.setText(getPreferences().getGuard().getFullname());
         dateText.setText(UTILITY.getCurrentDate());
     }
 
@@ -186,5 +186,10 @@ public class BinnacleActivity extends BaseActivity implements BottomNavigationVi
     public void onClickVisit(OnClickReport event) {
         app.report = event.report;
         startActivityForResult(new Intent(this, ReportActivity.class), INTENT_SHOW_REPORT);
+    }
+
+    @OnClick(R.id.sos_alarm)
+    public void SOS() {
+        dialogSOS();
     }
 }

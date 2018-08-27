@@ -165,4 +165,9 @@ public class AddClerkActivity extends BaseActivity {
             Snackbar.make(toolbar, event.response.message, Snackbar.LENGTH_LONG).show();
         }
     }
+
+    @OnClick(R.id.sos_alarm)
+    public void SOS() {
+        dialogSOS();
+    }
 }
