@@ -24,6 +24,9 @@ public class Channel {
     @SerializedName("create_at")
     public Timestamp createAt;
 
+    @SerializedName("update_at")
+    public Timestamp updateAt;
+
     @SerializedName("state")
     public Integer state;
 }

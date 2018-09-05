@@ -22,4 +22,5 @@
     <color name="colorYellowDark">#c7ad00</color>
     <color name="colorYellowLight">#ffff54</color>
     <color name="colorBlack50">#80000000</color>
+    <color name="greenSemitransparent">#557ccd7c</color>
 </resources>

@@ -390,12 +390,12 @@ public class AddVisitActivity extends BaseActivity {
 
     @OnClick(R.id.add_button)
     public void save() {
-        if (vehicle == null) {
-            cardVehicle.setCardBackgroundColor(getResources().getColor(R.color.colorPrimaryVeryLight));
-            Snackbar.make(toolbar, "Debes seleccionar un vehiculo", Snackbar.LENGTH_LONG).show();
-            cardVehicle.requestFocus();
-            return;
-        }
+//        if (vehicle == null) {
+//            cardVehicle.setCardBackgroundColor(getResources().getColor(R.color.colorPrimaryVeryLight));
+//            Snackbar.make(toolbar, "Debes seleccionar un vehiculo", Snackbar.LENGTH_LONG).show();
+//            cardVehicle.requestFocus();
+//            return;
+//        }
         if (visitor == null) {
             cardVisitor.setCardBackgroundColor(getResources().getColor(R.color.colorPrimaryVeryLight));
             Snackbar.make(toolbar, "Debes seleccionar un visitante", Snackbar.LENGTH_LONG).show();
@@ -410,7 +410,8 @@ public class AddVisitActivity extends BaseActivity {
         }
         hideKeyboard();
         visit.visitorId = visitor.id;
-        visit.vehicleId = vehicle.id;
+        if (vehicle != null)
+            visit.vehicleId = vehicle.id;
         visit.latitude = String.valueOf(getPreferences().getLastKnownLoc().getLatitude());
         visit.longitude = String.valueOf(getPreferences().getLastKnownLoc().getLongitude());
         visit.clerkId = clerk.id;

@@ -10,7 +10,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,11 +19,12 @@ import android.widget.Toast;
 
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.icsseseguridad.locationsecurity.R;
-import com.icsseseguridad.locationsecurity.adapter.AdminModelAdapter;
 import com.icsseseguridad.locationsecurity.adapter.MessengerAdapter;
 import com.icsseseguridad.locationsecurity.controller.MessengerController;
 import com.icsseseguridad.locationsecurity.dialog.AdminSearchDialog;
 import com.icsseseguridad.locationsecurity.dialog.GuardSearchDialog;
+import com.icsseseguridad.locationsecurity.events.OnClickChannel;
+import com.icsseseguridad.locationsecurity.events.OnClickChannelAdd;
 import com.icsseseguridad.locationsecurity.events.OnClickChat;
 import com.icsseseguridad.locationsecurity.events.OnCreateChannelFailure;
 import com.icsseseguridad.locationsecurity.events.OnCreateChannelSuccess;
@@ -32,12 +32,15 @@ import com.icsseseguridad.locationsecurity.events.OnCreateChatFailure;
 import com.icsseseguridad.locationsecurity.events.OnCreateChatSuccess;
 import com.icsseseguridad.locationsecurity.events.OnListAdminFailure;
 import com.icsseseguridad.locationsecurity.events.OnListAdminSuccess;
+import com.icsseseguridad.locationsecurity.events.OnListChannelFailure;
+import com.icsseseguridad.locationsecurity.events.OnListChannelSuccess;
 import com.icsseseguridad.locationsecurity.events.OnListChatFailure;
 import com.icsseseguridad.locationsecurity.events.OnListChatSuccess;
 import com.icsseseguridad.locationsecurity.events.OnListGuardFailure;
 import com.icsseseguridad.locationsecurity.events.OnListGuardSuccess;
 import com.icsseseguridad.locationsecurity.model.Admin;
 import com.icsseseguridad.locationsecurity.model.Channel;
+import com.icsseseguridad.locationsecurity.model.ChannelRegistered;
 import com.icsseseguridad.locationsecurity.model.Chat;
 import com.icsseseguridad.locationsecurity.model.Guard;
 import com.icsseseguridad.locationsecurity.ui.AlertsActivity;
@@ -50,7 +53,10 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -62,6 +68,7 @@ import ir.mirrajabi.searchdialog.core.SearchResultListener;
 public class MessageActivity extends BaseActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
     public static final Integer INTENT_NEW_CHAT = 11;
+    public static final Integer INTENT_ADD_USERS = 12;
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.recycler_list) RecyclerView recyclerView;
@@ -75,7 +82,7 @@ public class MessageActivity extends BaseActivity implements BottomNavigationVie
 
     private MessengerAdapter adapter;
 
-    List<Chat> chats;
+    List<Object> chats;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,20 +92,18 @@ public class MessageActivity extends BaseActivity implements BottomNavigationVie
         setSupportActionBarBack(toolbar);
         emptyView.setVisibility(View.GONE);
         loadingView.setVisibility(View.VISIBLE);
-        setupAdapter(new ArrayList<Chat>());
-        new MessengerController().getConversations(getPreferences().getGuard().id);
-        new MessengerController().getGroups(getPreferences().getGuard().id);
+        chats = new ArrayList<>();
+        setupAdapter();
 
         bottomNavigationView.setSelectedItemId(R.id.nav_chat);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
     }
 
-    private void setupAdapter(List<Chat> visits) {
-        this.chats = visits;
+    private void setupAdapter() {
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(mLayoutManager);
-        adapter = new MessengerAdapter(this, visits);
+        adapter = new MessengerAdapter(this, chats);
         recyclerView.setAdapter(adapter);
     }
 
@@ -149,6 +154,11 @@ public class MessageActivity extends BaseActivity implements BottomNavigationVie
         super.onResume();
         nameText.setText(getPreferences().getGuard().getFullname());
         dateText.setText(UTILITY.getCurrentDate());
+        if (!EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().register(this);
+
+        new MessengerController().getConversations(getPreferences().getGuard().id);
+        new MessengerController().getGroups(getPreferences().getGuard().id);
     }
 
     @OnClick(R.id.chat_guard)
@@ -263,11 +273,14 @@ public class MessageActivity extends BaseActivity implements BottomNavigationVie
 
     public void createChat(Guard guard) {
         if (chats != null) {
-            for (Chat chat: chats) {
-                if ((chat.user1Id.equals(guard.id) && chat.user1Type == Chat.TYPE.GUARD) ||
-                        (chat.user2Id.equals(guard.id) && chat.user2Type == Chat.TYPE.GUARD)) {
-                    onClickChat(new OnClickChat(chat));
-                    return;
+            for (Object object: chats) {
+                if (object instanceof Chat) {
+                    Chat chat = (Chat) object;
+                    if ((chat.user1Id.equals(guard.id) && chat.user1Type == Chat.TYPE.GUARD) ||
+                            (chat.user2Id.equals(guard.id) && chat.user2Type == Chat.TYPE.GUARD)) {
+                        onClickChat(new OnClickChat(chat));
+                        return;
+                    }
                 }
             }
         }
@@ -285,11 +298,14 @@ public class MessageActivity extends BaseActivity implements BottomNavigationVie
 
     public void createChat(Admin admin) {
         if (chats != null) {
-            for (Chat chat: chats) {
-                if ((chat.user1Id.equals(admin.id) && chat.user1Type == Chat.TYPE.ADMIN) ||
-                        (chat.user2Id.equals(admin.id) && chat.user2Type == Chat.TYPE.ADMIN)) {
-                    onClickChat(new OnClickChat(chat));
-                    return;
+            for (Object object: chats) {
+                if (object instanceof Chat) {
+                    Chat chat = (Chat) object;
+                    if ((chat.user1Id.equals(admin.id) && chat.user1Type == Chat.TYPE.ADMIN) ||
+                            (chat.user2Id.equals(admin.id) && chat.user2Type == Chat.TYPE.ADMIN)) {
+                        onClickChat(new OnClickChat(chat));
+                        return;
+                    }
                 }
             }
         }
@@ -311,9 +327,7 @@ public class MessageActivity extends BaseActivity implements BottomNavigationVie
         dialog.dismiss();
         chats.add(0, event.chat);
         adapter.setItems(chats);
-        Intent intent = new Intent(this, ChatActivity.class);
-        intent.putExtra("chat_id", event.chat.id);
-        startActivityForResult(intent, INTENT_NEW_CHAT);
+        onClickChat(new OnClickChat(event.chat));
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
@@ -333,7 +347,33 @@ public class MessageActivity extends BaseActivity implements BottomNavigationVie
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onListChatSuccess(OnListChatSuccess event) {
         EventBus.getDefault().removeStickyEvent(OnListChatSuccess.class);
-        chats = event.list.chats;
+        List<Object> remove = new ArrayList<>();
+        for (Object obj: chats) {
+            if (obj instanceof Chat)
+                remove.add(obj);
+        }
+        chats.removeAll(remove);
+        chats.addAll(event.list.chats);
+        checkView();
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onListChannelFailure(OnListChannelFailure event) {
+        EventBus.getDefault().removeStickyEvent(OnListChannelFailure.class);
+        loadingView.setVisibility(View.GONE);
+        Snackbar.make(toolbar, event.message, Snackbar.LENGTH_LONG).show();
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onListChannelSuccess(OnListChannelSuccess event) {
+        EventBus.getDefault().removeStickyEvent(OnListChannelSuccess.class);
+        List<Object> remove = new ArrayList<>();
+        for (Object obj: chats) {
+            if (obj instanceof ChannelRegistered)
+                remove.add(obj);
+        }
+        chats.removeAll(remove);
+        chats.addAll(event.list.channels);
         checkView();
     }
 
@@ -341,18 +381,55 @@ public class MessageActivity extends BaseActivity implements BottomNavigationVie
         loadingView.setVisibility(View.GONE);
         if (chats.size() > 0) {
             emptyView.setVisibility(View.GONE);
+            orderList();
             adapter.replaceAll(chats);
         } else {
-            adapter.replaceAll(new ArrayList<Chat>());
+            adapter.replaceAll(new ArrayList<>());
             emptyView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void orderList() {
+        Collections.sort(chats, new Comparator<Object>(){
+            public int compare(Object obj1, Object obj2) {
+                return getUpdateTime(obj2).compareTo(getUpdateTime(obj1));
+            }
+        });
+    }
+
+    public Timestamp getUpdateTime(Object obj) {
+        if (obj instanceof Chat) {
+            Chat chat = (Chat) obj;
+            System.out.println(chat.updateAt);
+            return chat.updateAt;
+        } else {
+            ChannelRegistered channel = (ChannelRegistered) obj;
+            System.out.println(channel.channelUpdateAt);
+            return channel.channelUpdateAt;
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onClickChat(OnClickChat event) {
         Intent intent = new Intent(this, ChatActivity.class);
-        intent.putExtra("chat_id", event.chat.id);
+        intent.putExtra(ChatActivity.CHAT_TYPE, ChatActivity.CHAT);
+        intent.putExtra(ChatActivity.CHAT_ID, event.chat.id);
         startActivityForResult(intent, INTENT_NEW_CHAT);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onClickChannel(OnClickChannel event) {
+        Intent intent = new Intent(this, ChatActivity.class);
+        intent.putExtra(ChatActivity.CHAT_TYPE, ChatActivity.CHANNEL);
+        intent.putExtra(ChatActivity.CHANNEL_ID, event.channel.channelId);
+        startActivityForResult(intent, INTENT_NEW_CHAT);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void OnClickChannelAdd(OnClickChannelAdd event) {
+        Intent intent = new Intent(this, AddUsersActivity.class);
+        intent.putExtra(ChatActivity.CHANNEL_ID, event.channel.channelId);
+        startActivityForResult(intent, INTENT_ADD_USERS);
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
@@ -360,7 +437,9 @@ public class MessageActivity extends BaseActivity implements BottomNavigationVie
         EventBus.getDefault().removeStickyEvent(OnCreateChannelSuccess.class);
         dialog.dismiss();
         Snackbar.make(toolbar, "Grupo Creado!", Snackbar.LENGTH_LONG).show();
-
+        Intent intent = new Intent(this, AddUsersActivity.class);
+        intent.putExtra(ChatActivity.CHANNEL_ID, event.channel.id);
+        startActivityForResult(intent, INTENT_ADD_USERS);
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
@@ -373,5 +452,11 @@ public class MessageActivity extends BaseActivity implements BottomNavigationVie
     @OnClick(R.id.sos_alarm)
     public void SOS() {
         dialogSOS();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        EventBus.getDefault().unregister(this);
     }
 }

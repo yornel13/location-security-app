@@ -45,6 +45,8 @@ public class Guard implements Searchable {
     @SerializedName("resumed")
     public boolean resumed;
 
+    public boolean check = false;
+
     public String getFullname() {
         return name+" "+lastname;
     }

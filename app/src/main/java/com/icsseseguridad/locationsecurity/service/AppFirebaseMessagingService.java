@@ -62,8 +62,13 @@ public class AppFirebaseMessagingService extends FirebaseMessagingService {
 
     private void sendNotification(ChatLine message) {
         Intent intent = new Intent(this, ChatActivity.class);
-        intent.putExtra("chat_id", message.chatId);
-        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        if (message.chatId != null) {
+            intent.putExtra(ChatActivity.CHAT_TYPE, ChatActivity.CHAT);
+            intent.putExtra(ChatActivity.CHAT_ID, message.chatId);
+        } else {
+            intent.putExtra(ChatActivity.CHAT_TYPE, ChatActivity.CHANNEL);
+            intent.putExtra(ChatActivity.CHANNEL_ID, message.channelId);
+        }
         intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);

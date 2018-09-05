@@ -337,9 +337,9 @@ public class VisitController extends BaseController {
         });
     }
 
-    public void finish(Long visitId) {
+    public void finish(Long visitId, String comment) {
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-        Call<MultipleResource> call = apiInterface.finishVisit(preferences.getToken(), visitId);
+        Call<MultipleResource> call = apiInterface.finishVisit(preferences.getToken(), visitId, comment);
         call.enqueue(new Callback<MultipleResource>() {
             @Override
             public void onFailure(Call<MultipleResource> call, Throwable t) {

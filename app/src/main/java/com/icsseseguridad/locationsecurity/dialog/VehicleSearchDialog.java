@@ -69,6 +69,7 @@ public class VehicleSearchDialog<T extends Searchable> extends BaseSearchDialogC
             @Override
             public void onTextChanged(CharSequence s, int start,
                                       int before, int count) {
+
             }
         });
         view.findViewById(ir.mirrajabi.searchdialog.R.id.dummy_background)
@@ -85,10 +86,8 @@ public class VehicleSearchDialog<T extends Searchable> extends BaseSearchDialogC
         setFilterResultListener(new FilterResultListener<T>() {
             @Override
             public void onFilter(ArrayList<T> items) {
-
-                ((VehicleModelAdapter) getAdapter())
-                        .setSearchTag(searchBox.getText().toString())
-                        .setItems(customFilter((searchBox.getText().toString())));
+                System.out.println("on filter");
+                ((VehicleModelAdapter) getAdapter()).setSearchTag(searchBox.getText().toString()).setItems(customFilter((searchBox.getText().toString())));
             }
         });
         setAdapter(adapter);
@@ -136,14 +135,12 @@ public class VehicleSearchDialog<T extends Searchable> extends BaseSearchDialogC
                 filteredList.add(item);
             }
         }
+        System.out.println("tamaño: "+ filteredList.size());
         return filteredList;
     }
 
     private String normalize(String input) {
-        if (input == null) {
-            return "";
-        }
-        return Normalizer.normalize(input, Normalizer.Form.NFD)
-                .replaceAll("[^\\p{ASCII}]", "").toLowerCase();
+        if (input == null) { return ""; }
+        return input.replaceAll("[^a-zA-Z0-9]+","").toLowerCase();
     }
 }

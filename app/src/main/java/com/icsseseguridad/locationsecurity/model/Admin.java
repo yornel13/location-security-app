@@ -41,6 +41,8 @@ public class Admin implements Searchable {
     @SerializedName("token")
     public String token;
 
+    public boolean check = false;
+
     public String getFullname() {
         return name+" "+lastname;
     }

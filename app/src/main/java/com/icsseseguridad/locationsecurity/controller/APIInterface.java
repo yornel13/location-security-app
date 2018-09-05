@@ -20,9 +20,11 @@ import com.icsseseguridad.locationsecurity.model.ListVisit;
 import com.icsseseguridad.locationsecurity.model.ListVisitor;
 import com.icsseseguridad.locationsecurity.model.ListVisitorVehicle;
 import com.icsseseguridad.locationsecurity.model.MultipleResource;
+import com.icsseseguridad.locationsecurity.model.User;
 
 import java.util.List;
 
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
@@ -49,20 +51,24 @@ interface APIInterface {
     Call<MultipleResource> signIn(@Field("dni") String dni, @Field("password") String password);
 
     @FormUrlEncoded
-    @POST("public/watch")
+    @POST("public/auth/admin")
+    Call<MultipleResource> signInAdmin(@Field("dni") String dni, @Field("password") String password);
+
+    @FormUrlEncoded
+    @POST("public/watch/start")
     Call<MultipleResource> initWatch(
             @Header("APP-TOKEN") String appToken,
             @Field("guard_id") Long guardId,
             @Field("latitude") String latitude,
             @Field("longitude") String longitude,
-            @Nullable @Field("observation") String observation);
+            @Field("tablet_imei") String imei);
 
     @FormUrlEncoded
-    @PUT("public/watch/{watch_id}")
+    @PUT("public/watch/{watch_id}/end")
     Call<MultipleResource> finishWatch(@Header("APP-TOKEN") String appToken,
            @Path("watch_id") Long watch_id,
-           @Field("latitude") String latitude,
-           @Field("longitude") String longitude,
+           @Field("f_latitude") String latitude,
+           @Field("f_longitude") String longitude,
            @Nullable @Field("observation") String observation);
 
     @GET("public/visitor")
@@ -127,8 +133,12 @@ interface APIInterface {
             @Field("image_4") String image4,
             @Field("image_5") String image5);
 
+    @FormUrlEncoded
     @PUT("public/visit/{id}")
-    Call<MultipleResource> finishVisit(@Header("APP-TOKEN") String appToken, @Path("id") Long id);
+    Call<MultipleResource> finishVisit(
+            @Header("APP-TOKEN") String appToken,
+            @Path("id") Long id,
+            @Field("comment") String comment);
 
     @GET("public/incidence")
     Call<ListIncidence> getIncidences(@Header("APP-TOKEN") String appToken);
@@ -168,7 +178,7 @@ interface APIInterface {
     Call<ConfigUtility> getUpdateGPS(@Header("APP-TOKEN") String appToken);
 
     @FormUrlEncoded
-    @POST("public/tablet")
+    @POST("public/tablet/position")
     Call<MultipleResource> postPosition(
             @Header("APP-TOKEN") String appToken,
             @Field("latitude") String latitude,
@@ -203,6 +213,9 @@ interface APIInterface {
     @GET("public/messenger/conversations/chat/{id}")
     Call<ListChatLine> getMessages(@Header("APP-TOKEN") String appToken , @Path("id") Long chatId);
 
+    @GET("public/messenger/conversations/channel/{id}")
+    Call<ListChatLine> getChannelMessages(@Header("APP-TOKEN") String appToken , @Path("id") Long chatId);
+
     @GET("public/messenger/channel/guard/{id}")
     Call<ListChannel> getChannels(@Header("APP-TOKEN") String appToken , @Path("id") Long guardId);
 
@@ -226,15 +239,26 @@ interface APIInterface {
             @Field("creator_type") String creatorType,
             @Field("creator_name") String creatorName);
 
+    @POST("public/messenger/channel/{channel_id}/add")
+    Call<MultipleResource> addToChannel(
+            @Header("APP-TOKEN") String appToken,
+            @Path("channel_id") Long channelId,
+            @Body List<User> body);
+
     @FormUrlEncoded
     @POST("public/alert")
     Call<MultipleResource> sendAlert(
             @Field("guard_id") Long guardId,
             @Field("cause") String cause,
+            @Field("type") String type,
             @Field("message") String message,
             @Field("latitude") String latitude,
             @Field("longitude") String longitude);
 
     @GET("public/banner")
     Call<ListBanner> getBanners(@Header("APP-TOKEN") String appToken);
+
+    @FormUrlEncoded
+    @POST("public/tablet")
+    Call<MultipleResource> registered(@Field("imei") String imei);
 }

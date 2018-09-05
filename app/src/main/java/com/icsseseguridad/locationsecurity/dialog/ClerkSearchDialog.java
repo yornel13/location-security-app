@@ -137,10 +137,7 @@ public class ClerkSearchDialog<T extends Searchable> extends BaseSearchDialogCom
     }
 
     private String normalize(String input) {
-        if (input == null) {
-            return "";
-        }
-        return Normalizer.normalize(input, Normalizer.Form.NFD)
-                .replaceAll("[^\\p{ASCII}]", "").toLowerCase();
+        if (input == null) { return ""; }
+        return input.replaceAll("[^a-zA-Z0-9]+","").toLowerCase();
     }
 }

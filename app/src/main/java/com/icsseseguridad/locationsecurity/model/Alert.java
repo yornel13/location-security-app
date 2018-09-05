@@ -20,6 +20,9 @@ public class Alert {
     @SerializedName("cause")
     public CAUSE cause;
 
+    @SerializedName("Type")
+    public CAUSE type;
+
     @SerializedName("message")
     public String message;
 

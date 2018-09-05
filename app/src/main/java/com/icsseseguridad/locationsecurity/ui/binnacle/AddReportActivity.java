@@ -115,6 +115,13 @@ public class AddReportActivity extends PhotoActivity {
         adapterSpinner = new IncidenceSpinnerAdapter(this,
                 R.layout.spinner_item, app.incidences.incidences);
         spinner.setAdapter(adapterSpinner);
+        int defaultIndex = 0;
+        for (Incidence incidence: app.incidences.incidences) {
+            if (incidence.name.toLowerCase().equals("general".toLowerCase())) {
+                defaultIndex = app.incidences.incidences.indexOf(incidence);
+            }
+        }
+        spinner.setSelection(defaultIndex);
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)

@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -32,6 +33,9 @@ import com.icsseseguridad.locationsecurity.controller.TabletPositionController;
 import com.icsseseguridad.locationsecurity.controller.WatchController;
 import com.icsseseguridad.locationsecurity.events.OnInitWatchFailure;
 import com.icsseseguridad.locationsecurity.events.OnInitWatchSuccess;
+import com.icsseseguridad.locationsecurity.events.OnRegisteredTabletFailure;
+import com.icsseseguridad.locationsecurity.events.OnRegisteredTabletSuccess;
+import com.icsseseguridad.locationsecurity.events.OnSignAdminSuccess;
 import com.icsseseguridad.locationsecurity.events.OnSignInFailure;
 import com.icsseseguridad.locationsecurity.events.OnSignInSuccess;
 import com.icsseseguridad.locationsecurity.model.Guard;
@@ -58,6 +62,7 @@ public class LoginActivity extends BaseActivity {
     @BindView(R.id.container_2) RelativeLayout container2;
     @BindView(R.id.dni) EditText dniText;
     @BindView(R.id.password) EditText passwordText;
+    @BindView(R.id.login) Button loginButton;
 
     private Guard guard;
 
@@ -103,6 +108,10 @@ public class LoginActivity extends BaseActivity {
                 return false;
             }
         });
+
+        if (!getPreferences().isRegistered()) {
+            loginButton.setText("Registrar Dispositivo");
+        }
     }
 
     private void turnGPSOn() {
@@ -161,13 +170,14 @@ public class LoginActivity extends BaseActivity {
         location = getLastKnowLocation();
         watchController.register(guard.id,
                 String.valueOf(location.getLatitude()),
-                String.valueOf(location.getLongitude()), null);
+                String.valueOf(location.getLongitude()),
+                getImei());
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void signInFailure(OnSignInFailure event) {
         EventBus.getDefault().removeStickyEvent(OnSignInFailure.class);
-        Snackbar.make(container, event.message, Snackbar.LENGTH_LONG).show();
+        Toast.makeText(this, event.message, Toast.LENGTH_LONG).show();
         dniText.setEnabled(true);
         passwordText.setEnabled(true);
         dialog.dismiss();
@@ -187,7 +197,7 @@ public class LoginActivity extends BaseActivity {
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void initWatchFailure(OnInitWatchFailure event) {
         EventBus.getDefault().removeStickyEvent(OnInitWatchFailure.class);
-        Snackbar.make(container, event.message, Snackbar.LENGTH_LONG).show();
+        Toast.makeText(this, event.message, Toast.LENGTH_LONG).show();
         dniText.setEnabled(true);
         passwordText.setEnabled(true);
         dialog.dismiss();
@@ -215,7 +225,14 @@ public class LoginActivity extends BaseActivity {
             dniText.requestFocus();
             return;
         }
+
         hideKeyboard();
+
+        if (!getPreferences().isRegistered()) {
+            signInAdmin();
+            return;
+        }
+
         if (!isServiceRunning(LocationService.class)) {
             startService(new Intent(this, LocationService.class));
             Toast.makeText(this, "Iniciando servicio de Localización.", Toast.LENGTH_SHORT).show();
@@ -230,6 +247,13 @@ public class LoginActivity extends BaseActivity {
             return;
         }
         continueLogin(true);
+    }
+
+    public void signInAdmin() {
+        AuthController authController = new AuthController();
+        authController.singInAdmin(dniText.getText().toString(), passwordText.getText().toString());
+        builderDialog.text("Registrando");
+        dialog.show();
     }
 
     public void continueLogin(boolean showDialog) {
@@ -262,5 +286,30 @@ public class LoginActivity extends BaseActivity {
         if (getPreferences().getWatch() == null) {
             stopService(new Intent(this, LocationService.class));
         }
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void signAdminSuccess(OnSignAdminSuccess event) {
+        EventBus.getDefault().removeStickyEvent(OnSignAdminSuccess.class);
+        new AuthController().registeredTablet(getImei());
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void registeredTabletSuccess(OnRegisteredTabletSuccess event) {
+        EventBus.getDefault().removeStickyEvent(OnRegisteredTabletSuccess.class);
+        dialog.dismiss();
+        Toast.makeText(this, "Tablet Registrada con Exito!", Toast.LENGTH_SHORT).show();
+        getPreferences().setRegistred();
+        finish();
+        startActivity(getIntent());
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void registeredTabletFailure(OnRegisteredTabletFailure event) {
+        EventBus.getDefault().removeStickyEvent(OnSignInFailure.class);
+        Toast.makeText(this, event.response, Toast.LENGTH_LONG).show();
+        dniText.setEnabled(true);
+        passwordText.setEnabled(true);
+        dialog.dismiss();
     }
 }

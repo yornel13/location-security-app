@@ -2,7 +2,9 @@ package com.icsseseguridad.locationsecurity.ui.visit;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.CardView;
@@ -46,10 +48,8 @@ import static com.bumptech.glide.request.RequestOptions.centerCropTransform;
 
 public class VisitActivity extends BaseActivity {
 
-    public static final Integer INTENT_ADD_VEHICLE = 1;
-    public static final Integer INTENT_ADD_VISITOR = 2;
-    public static final Integer INTENT_ADD_CLERK = 3;
-    public static final Integer INTENT_ADD_MATERIAL = 4;
+    public static final Integer INTENT_FINISH = 55;
+
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.title) TextView titleBar;
@@ -301,55 +301,22 @@ public class VisitActivity extends BaseActivity {
 
     @OnClick(R.id.add_button)
     public void onFinish() {
-        dialogFinishVisit();
-    }
-
-    public void dialogFinishVisit() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this,
-                android.R.style.Theme_Material_Dialog_Alert);
-        builder.setMessage(R.string.finish_visit_text_dialog)
-                .setPositiveButton(R.string.finish, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        finishVisit();
-                    }
-                })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // nothing to do
-                    }
-                }).show();
-    }
-
-    public void finishVisit() {
-        builderDialog.text("Guardando...");
-        dialog.show();
-        new VisitController().finish(visit.id);
-    }
-
-    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    public void onFinishVisitSuccess(OnFinishVisitSuccess event) {
-        EventBus.getDefault().removeStickyEvent(OnFinishVisitSuccess.class);
-        dialog.dismiss();
-        setResult(RESULT_OK, getIntent());
-        finish();
-    }
-
-    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    public void onFinishVisitFailure(OnFinishVisitFailure event) {
-        EventBus.getDefault().removeStickyEvent(OnFinishVisitFailure.class);
-        dialog.dismiss();
-        final Snackbar snackbar = Snackbar.make(toolbar, event.response.message, Snackbar.LENGTH_INDEFINITE);
-        snackbar.setAction("OK", new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                snackbar.dismiss();
-            }
-        });
-        snackbar.show();
+        Intent intent = new Intent(this, FinishVisitActivity.class);
+        intent.putExtra(ControlVisit.class.getName(), gson().toJson(visit));
+        startActivityForResult(intent, INTENT_FINISH);
     }
 
     @OnClick(R.id.sos_alarm)
     public void SOS() {
         dialogSOS();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == INTENT_FINISH && resultCode == RESULT_OK) {
+            setResult(RESULT_OK, getIntent());
+            finish();
+        }
     }
 }

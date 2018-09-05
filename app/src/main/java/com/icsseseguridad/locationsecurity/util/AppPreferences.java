@@ -22,6 +22,7 @@ public class AppPreferences {
     private static final String IMEI = "imei";
     private static final String DROP = "drop";
     private static final String GPS_UPDATE = "gps_update";
+    private static final String REGISTERED = "registered";
 
     private Context context;
     private SharedPreferences preferences;
@@ -80,6 +81,14 @@ public class AppPreferences {
         if (imei != null) {
             preferences.edit().putString(IMEI, imei).apply();
         }
+    }
+
+    public void setRegistred() {
+        preferences.edit().putBoolean(REGISTERED, true).apply();
+    }
+
+    public Boolean isRegistered() {
+        return preferences.getBoolean(REGISTERED, false);
     }
 
     public String getImei() {

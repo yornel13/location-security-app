@@ -12,10 +12,39 @@
     app:cardBackgroundColor="@color/white"
     android:layout_height="wrap_content">
 
-    <RelativeLayout
+    <FrameLayout
         android:id="@+id/place_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/add_users"
+            android:padding="14dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_alignParentEnd="true"
+            android:background="?actionBarItemBackground"
+            android:layout_margin="8dp"
+            android:src="@drawable/add_users"
+            android:tint="@color/colorPrimary"
+            android:layout_gravity="end"
+            android:layout_width="?actionBarSize"
+            android:layout_height="?actionBarSize" />
+
+        <com.icsseseguridad.locationsecurity.util.AppTextView
+            android:id="@+id/time"
+            android:layout_marginEnd="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorGray"
+            app:fontFamily="Roboto-Bold.ttf"
+            android:maxLines="1"
+            android:textSize="16sp"
+            android:layout_gravity="bottom"
+            android:gravity="end"
+            android:textAlignment="viewEnd"
+            android:layout_marginBottom="16dp"
+            android:text="hace..." />
 
         <LinearLayout
             android:layout_marginStart="8dp"
@@ -34,6 +63,7 @@
 
             <LinearLayout
                 android:layout_marginStart="16dp"
+                android:layout_marginEnd="56dp"
                 android:layout_gravity="center_vertical"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
@@ -62,21 +92,10 @@
                     android:textAlignment="viewStart"
                     android:text="texto del reporte" />
 
-                <com.icsseseguridad.locationsecurity.util.AppTextView
-                    android:id="@+id/time"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/colorGray"
-                    app:fontFamily="Roboto-Bold.ttf"
-                    android:maxLines="1"
-                    android:textSize="16sp"
-                    android:textAlignment="viewEnd"
-                    android:text="hace..." />
-
             </LinearLayout>
 
         </LinearLayout>
 
-    </RelativeLayout>
+    </FrameLayout>
 
 </android.support.v7.widget.CardView>

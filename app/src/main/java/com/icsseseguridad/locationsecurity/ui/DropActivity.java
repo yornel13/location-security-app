@@ -101,6 +101,7 @@ public class DropActivity extends AppCompatActivity {
     public void sendAlert() {
         Alert alert = new Alert();
         alert.cause = Alert.CAUSE.DROP;
+        alert.type = Alert.CAUSE.DROP;
         AppPreferences preferences = new AppPreferences(getApplicationContext());
         alert.message = "Alerta de posible caida del guardia: "+preferences.getGuard().getFullname();
         alert.guardId = preferences.getGuard().id;

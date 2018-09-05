@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class ListChannel {
 
     @SerializedName("data")
-    public ArrayList<Channel> messages;
+    public ArrayList<ChannelRegistered> channels;
 
     @SerializedName("total")
     public Integer total;

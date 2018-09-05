@@ -23,6 +23,7 @@ public class AlertController extends BaseController {
         Call<MultipleResource> call = apiInterface.sendAlert(
                 alert.guardId,
                 alert.cause.name(),
+                alert.type.name(),
                 alert.message,
                 alert.latitude,
                 alert.longitude);

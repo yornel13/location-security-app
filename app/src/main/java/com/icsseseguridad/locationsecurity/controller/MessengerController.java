@@ -5,6 +5,8 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.icsseseguridad.locationsecurity.R;
 import com.icsseseguridad.locationsecurity.SecurityApp;
+import com.icsseseguridad.locationsecurity.events.OnAddUsersToChannelFailure;
+import com.icsseseguridad.locationsecurity.events.OnAddUsersToChannelSuccess;
 import com.icsseseguridad.locationsecurity.events.OnCreateChannelFailure;
 import com.icsseseguridad.locationsecurity.events.OnCreateChannelSuccess;
 import com.icsseseguridad.locationsecurity.events.OnCreateChatFailure;
@@ -30,10 +32,12 @@ import com.icsseseguridad.locationsecurity.model.ListChat;
 import com.icsseseguridad.locationsecurity.model.ListChatLine;
 import com.icsseseguridad.locationsecurity.model.ListGuard;
 import com.icsseseguridad.locationsecurity.model.MultipleResource;
+import com.icsseseguridad.locationsecurity.model.User;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -178,6 +182,29 @@ public class MessengerController extends BaseController {
         });
     }
 
+    public void getChannelMessages(Long chatId) {
+        APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
+        Call<ListChatLine> call = apiInterface.getChannelMessages(preferences.getToken(), chatId);
+        call.enqueue(new Callback<ListChatLine>() {
+            @Override
+            public void onFailure(Call<ListChatLine> call, Throwable t) {
+                t.printStackTrace();
+                call.cancel();
+                EventBus.getDefault().postSticky(new OnListMessageFailure(
+                        SecurityApp.getAppContext().getString(R.string.error_connection)
+                ));
+            }
+            @Override
+            public void onResponse(Call<ListChatLine> call, Response<ListChatLine> response) {
+                if (!response.isSuccessful()) {
+                    EventBus.getDefault().postSticky(new OnListMessageFailure(response.message()));
+                } else {
+                    EventBus.getDefault().postSticky(new OnListMessageSuccess(response.body()));
+                }
+            }
+        });
+    }
+
     public void getConversations(Long guardId) {
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
         Call<ListChat> call = apiInterface.getConversations(preferences.getToken(), guardId);
@@ -202,10 +229,11 @@ public class MessengerController extends BaseController {
     }
 
     public void send(ChatLine message) {
+        System.out.println(new Gson().toJson(message));
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
         Call<MultipleResource> call = apiInterface.sendMessage(preferences.getToken(),
                 message.chatId,
-                null,
+                message.channelId,
                 message.senderId,
                 message.senderType.name(),
                 message.senderName,
@@ -233,6 +261,7 @@ public class MessengerController extends BaseController {
                     return;
                 }
                 MultipleResource resource = response.body();
+                System.out.println(new Gson().toJson(resource));
                 if (!resource.response) {
                     EventBus.getDefault().postSticky(new OnSendMessageFailure(resource.message));
                 } else {
@@ -302,7 +331,47 @@ public class MessengerController extends BaseController {
                 if (!response.isSuccessful()) {
                     EventBus.getDefault().postSticky(new OnListChannelFailure(response.message()));
                 } else {
+                    System.out.println(response.toString());
                     EventBus.getDefault().postSticky(new OnListChannelSuccess(response.body()));
+                }
+            }
+        });
+    }
+
+    public void addToChannel(List<User> users, Long channelId) {
+        APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
+        Call<MultipleResource> call = apiInterface.addToChannel(preferences.getToken(),
+                channelId,
+                users);
+        call.enqueue(new Callback<MultipleResource>() {
+            @Override
+            public void onFailure(Call<MultipleResource> call, Throwable t) {
+                t.printStackTrace();
+                call.cancel();
+                EventBus.getDefault().postSticky(new OnAddUsersToChannelFailure(
+                        SecurityApp.getAppContext().getString(R.string.error_connection)
+                ));
+            }
+            @Override
+            public void onResponse(Call<MultipleResource> call, Response<MultipleResource> response) {
+                if (!response.isSuccessful()) {
+                    try {
+                        MultipleResource resource = gson.fromJson(response.errorBody().string(), MultipleResource.class);
+                        Log.e("MessengerController", new Gson().toJson(resource));
+                        EventBus.getDefault().postSticky(new OnAddUsersToChannelFailure(resource.message));
+                    } catch (IOException e) {
+                        EventBus.getDefault().postSticky(new OnAddUsersToChannelFailure(
+                                SecurityApp.getAppContext().getString(R.string.error_connection)
+                        ));
+                    }
+                    return;
+                }
+                MultipleResource resource = response.body();
+                if (!resource.response) {
+                    Log.e("MessengerController", new Gson().toJson(resource));
+                    EventBus.getDefault().postSticky(new OnAddUsersToChannelFailure(resource.message));
+                } else {
+                    EventBus.getDefault().postSticky(new OnAddUsersToChannelSuccess(resource));
                 }
             }
         });

@@ -41,6 +41,12 @@ import butterknife.OnClick;
 
 public class ChatActivity extends BaseActivity {
 
+    public static final String CHAT_TYPE = "chat_type";
+    public static final String CHAT_ID = "chat_id";
+    public static final String CHANNEL_ID = "channel_id";
+    public static final String CHAT = "CHAT";
+    public static final String CHANNEL = "CHANNEL";
+
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.recycler_list) RecyclerView recyclerView;
     @BindView(R.id.comment_loading) View commentLoading;
@@ -53,6 +59,8 @@ public class ChatActivity extends BaseActivity {
     private ChatAdapter chatAdapter;
 
     private Long chatId;
+    private Long channelId;
+    private String chatType;
 
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
@@ -70,22 +78,26 @@ public class ChatActivity extends BaseActivity {
                     }
                 });
             }
+            if (chatLine.channelId != null && channelId != null && chatLine.channelId.equals(channelId)) {
+                recyclerView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        addLine(chatLine);
+                        NotificationManagerCompat notificationManager = NotificationManagerCompat
+                                .from(ChatActivity.this);
+                        notificationManager.cancel(AppFirebaseMessagingService.ID_MESSAGE);
+                    }
+                });
+            }
         }
     };
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        Long chatId = intent.getLongExtra("chat_id", 0);
-        if (chatId == 0) {
-            Toast.makeText(this, "Chat invalido", Toast.LENGTH_LONG).show();
-            finish();
-            return;
-        }
-        this.chatId = chatId;
         messages.clear();
         chatAdapter.notifyDataSetChanged();
-        getMessages();
+        setupChat(intent);
     }
 
     @Override
@@ -94,19 +106,44 @@ public class ChatActivity extends BaseActivity {
         setContentView(R.layout.activity_chat);
         ButterKnife.bind(this);
         setSupportActionBarBack(toolbar);
-        Long chatId = getIntent().getLongExtra("chat_id", 0);
-        if (chatId == 0) {
-            Toast.makeText(this, "Chat invalido", Toast.LENGTH_LONG).show();
+        setupChat(getIntent());
+    }
+
+    private void setupChat(Intent intent) {
+        chatId = null;
+        channelId = null;
+        chatType = intent.getStringExtra(CHAT_TYPE);
+        if (chatType == null) {
             finish();
-            return;
+            System.out.println("without chat type");
         }
-        this.chatId = chatId;
+        if (chatType.equals(CHAT)) {
+            Long chatId = intent.getLongExtra(CHAT_ID, 0);
+            if (chatId == 0) {
+                Toast.makeText(this, "Chat invalido", Toast.LENGTH_LONG).show();
+                finish();
+                return;
+            }
+            this.chatId = chatId;
+        }
+        if (chatType.equals(CHANNEL)) {
+            Long channelId = intent.getLongExtra(CHANNEL_ID, 0);
+            if (channelId == 0) {
+                Toast.makeText(this, "Chat invalido", Toast.LENGTH_LONG).show();
+                finish();
+                return;
+            }
+            this.channelId = channelId;
+        }
         getMessages();
     }
 
     public void getMessages()  {
         commentLoading.setVisibility(View.VISIBLE);
-        new MessengerController().getMessages(chatId);
+        if (chatType.equals(CHAT))
+            new MessengerController().getMessages(chatId);
+        else
+            new MessengerController().getChannelMessages(channelId);
         messingArea.setVisibility(View.GONE);
     }
 
@@ -147,7 +184,10 @@ public class ChatActivity extends BaseActivity {
         }
         ChatLine chatLine = new ChatLine();
         chatLine.text = message;
-        chatLine.chatId = chatId;
+        if (chatType.equals(CHAT))
+            chatLine.chatId = chatId;
+        else
+            chatLine.channelId = channelId;
         chatLine.senderId = getPreferences().getGuard().id;
         chatLine.senderType = Chat.TYPE.GUARD;
         chatLine.senderName = getPreferences().getGuard().getFullname();

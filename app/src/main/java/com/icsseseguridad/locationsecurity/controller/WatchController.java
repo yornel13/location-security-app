@@ -2,6 +2,7 @@ package com.icsseseguridad.locationsecurity.controller;
 
 import android.support.annotation.Nullable;
 
+import com.google.gson.Gson;
 import com.icsseseguridad.locationsecurity.R;
 import com.icsseseguridad.locationsecurity.SecurityApp;
 import com.icsseseguridad.locationsecurity.events.OnFinishWatchFailure;
@@ -21,9 +22,9 @@ import retrofit2.Response;
 
 public class WatchController extends BaseController {
 
-    public void register(Long guardId, String latitude, String longitude, @Nullable String observation) {
+    public void register(Long guardId, String latitude, String longitude, @Nullable String imei) {
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-        Call<MultipleResource> call = apiInterface.initWatch(preferences.getToken(), guardId, latitude, longitude, observation);
+        Call<MultipleResource> call = apiInterface.initWatch(preferences.getToken(), guardId, latitude, longitude, imei);
         call.enqueue(new Callback<MultipleResource>() {
             @Override
             public void onFailure(Call<MultipleResource> call, Throwable t) {
@@ -38,6 +39,7 @@ public class WatchController extends BaseController {
                 if (!response.isSuccessful()) {
                     try {
                         MultipleResource resource = gson.fromJson(response.errorBody().string(), MultipleResource.class);
+                        System.out.println(new Gson().toJson(resource));
                         EventBus.getDefault().postSticky(new OnInitWatchFailure(resource.message));
                     } catch (IOException e) {
                         EventBus.getDefault().postSticky(new OnInitWatchFailure(
@@ -47,6 +49,7 @@ public class WatchController extends BaseController {
                     return;
                 }
                 MultipleResource resource = response.body();
+                System.out.println(new Gson().toJson(resource));
                 if (!resource.response) {
                     EventBus.getDefault().postSticky(new OnInitWatchFailure(resource.message));
                 } else {

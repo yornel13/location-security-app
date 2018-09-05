@@ -23,10 +23,7 @@ import java.util.List;
  */
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    // A menu item view type.
     private static final int ITEM_VIEW_OTHER = 0;
-
-    // The Native Express ad view type.
     private static final int ITEM_VIEW_LOCAL = 1;
 
     private List<ChatLine> messages;

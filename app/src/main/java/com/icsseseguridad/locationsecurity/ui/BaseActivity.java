@@ -53,8 +53,6 @@ public class BaseActivity extends AppCompatActivity {
 
     protected SecurityApp app;
 
-    private AppPreferences preferences;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -215,6 +213,7 @@ public class BaseActivity extends AppCompatActivity {
     public void sendAlert() {
         Alert alert = new Alert();
         alert.cause = Alert.CAUSE.SOS1;
+        alert.type = Alert.CAUSE.SOS1;
         AppPreferences preferences = getPreferences();
         alert.message = "Alerta activada por el guardia "+preferences.getGuard().getFullname();
         alert.guardId = preferences.getGuard().id;
