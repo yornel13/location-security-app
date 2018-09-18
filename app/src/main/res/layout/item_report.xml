@@ -18,6 +18,33 @@
         android:layout_height="wrap_content">
 
         <LinearLayout
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="12dp"
+            android:layout_alignParentEnd="true"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="?actionBarSize">
+
+            <com.icsseseguridad.locationsecurity.util.AppTextView
+                android:id="@+id/unread"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                app:fontFamily="Roboto-Bold.ttf"
+                android:maxLines="1"
+                android:textSize="16sp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:background="@drawable/badge"
+                android:text="0" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/data_container"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="16dp"
             android:orientation="horizontal"
@@ -75,6 +102,15 @@
             </LinearLayout>
 
         </LinearLayout>
+
+        <FrameLayout
+            android:layout_marginStart="128dp"
+            android:layout_marginEnd="16dp"
+            android:layout_below="@+id/data_container"
+            android:layout_width="match_parent"
+            android:layout_height="2px"
+            android:background="#E6E6E6" >
+        </FrameLayout>
 
     </RelativeLayout>
 

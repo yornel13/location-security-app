@@ -55,7 +55,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (!messages.isEmpty()) {
             ChatLine message = messages.get(position);
-            System.out.println(new Gson().toJson(message));
             switch (holder.getItemViewType()) {
                 case ITEM_VIEW_OTHER:
                     ViewHolderAdmin holderA = (ViewHolderAdmin) holder;

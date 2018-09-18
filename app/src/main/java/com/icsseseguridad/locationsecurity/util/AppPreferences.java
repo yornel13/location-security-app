@@ -83,7 +83,7 @@ public class AppPreferences {
         }
     }
 
-    public void setRegistred() {
+    public void setRegistered() {
         preferences.edit().putBoolean(REGISTERED, true).apply();
     }
 

@@ -55,6 +55,7 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.View
             TextView title = holder.getViewById(R.id.title);
             TextView subTitle = holder.getViewById(R.id.sub_title);
             TextView time = holder.getViewById(R.id.time);
+            TextView unread = holder.getViewById(R.id.unread);
             ImageView addUsers = holder.getViewById(R.id.add_users);
 
             if (getItemViewType(position) == ITEM_VIEW_CHAT) {
@@ -68,6 +69,12 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.View
                 } else {
                     userName = chat.user1Name;
                     userType = chat.user1Type;
+                }
+                if (chat.unread != null && chat.unread > 0) {
+                    unread.setVisibility(View.VISIBLE);
+                    unread.setText(chat.unread.toString());
+                } else {
+                    unread.setVisibility(View.GONE);
                 }
 
                 title.setText(userName);
@@ -85,8 +92,8 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.View
                 });
             } else {
                 addUsers.setVisibility(View.VISIBLE);
+                unread.setVisibility(View.GONE);
                 final ChannelRegistered channel = (ChannelRegistered) list.get(position);
-                System.out.println(new Gson().toJson(channel));
                 title.setText(channel.channelName);
                 time.setText(DateUtils.getRelativeTimeSpanString(channel.channelUpdateAt.getTime()));
                 image.setImageDrawable(mContext.getResources().getDrawable(R.drawable.group_icon));

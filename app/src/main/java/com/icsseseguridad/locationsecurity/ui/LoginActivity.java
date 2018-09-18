@@ -1,17 +1,13 @@
 package com.icsseseguridad.locationsecurity.ui;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.telephony.TelephonyManager;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -24,7 +20,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.icsseseguridad.locationsecurity.R;
@@ -38,6 +33,8 @@ import com.icsseseguridad.locationsecurity.events.OnRegisteredTabletSuccess;
 import com.icsseseguridad.locationsecurity.events.OnSignAdminSuccess;
 import com.icsseseguridad.locationsecurity.events.OnSignInFailure;
 import com.icsseseguridad.locationsecurity.events.OnSignInSuccess;
+import com.icsseseguridad.locationsecurity.events.OnVerifySessionFailure;
+import com.icsseseguridad.locationsecurity.events.OnVerifySessionSuccess;
 import com.icsseseguridad.locationsecurity.model.Guard;
 import com.icsseseguridad.locationsecurity.model.TabletPosition;
 import com.icsseseguridad.locationsecurity.model.Watch;
@@ -47,7 +44,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -63,6 +59,7 @@ public class LoginActivity extends BaseActivity {
     @BindView(R.id.dni) EditText dniText;
     @BindView(R.id.password) EditText passwordText;
     @BindView(R.id.login) Button loginButton;
+    @BindView(R.id.imei) TextView imeiText;
 
     private Guard guard;
 
@@ -135,11 +132,28 @@ public class LoginActivity extends BaseActivity {
 
     public void loadView() {
         if (getPreferences().getGuard() != null) {
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
+            new AuthController().verify();
+            builderDialog.text("Autenticando");
+            dialog.show();
         } else {
             vanishImage();
         }
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void verifySessionSuccess(OnVerifySessionSuccess event) {
+        EventBus.getDefault().removeStickyEvent(OnVerifySessionSuccess.class);
+        dialog.dismiss();
+        startActivity(new Intent(this, MainActivity.class));
+        finish();
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void verifySessionFailure(OnVerifySessionFailure event) {
+        EventBus.getDefault().removeStickyEvent(OnVerifySessionFailure.class);
+        dialog.dismiss();
+        Toast.makeText(this, "Error de conexión", Toast.LENGTH_LONG).show();
+        finish();
     }
 
     private void vanishImage() {
@@ -156,6 +170,9 @@ public class LoginActivity extends BaseActivity {
             @Override
             public void onAnimationEnd(Animation animation) {
                 container2.setVisibility(View.GONE);
+                if (getPreferences().isRegistered()) {
+                    imeiText.setText("IMEI " + getImei());
+                }
             }
         });
         container2.startAnimation(animation);
@@ -168,7 +185,9 @@ public class LoginActivity extends BaseActivity {
         guard = event.guard;
         WatchController watchController = new WatchController();
         location = getLastKnowLocation();
-        watchController.register(guard.id,
+        watchController.register(
+                guard.token,
+                guard.id,
                 String.valueOf(location.getLatitude()),
                 String.valueOf(location.getLongitude()),
                 getImei());
@@ -189,7 +208,7 @@ public class LoginActivity extends BaseActivity {
         dialog.dismiss();
         getPreferences().setGuard(guard);
         getPreferences().setWatch(event.watch);
-        updatePosition(event.watch);
+        //updatePosition(event.watch);
         startActivity(new Intent(this, MainActivity.class));
         finish();
     }
@@ -299,7 +318,7 @@ public class LoginActivity extends BaseActivity {
         EventBus.getDefault().removeStickyEvent(OnRegisteredTabletSuccess.class);
         dialog.dismiss();
         Toast.makeText(this, "Tablet Registrada con Exito!", Toast.LENGTH_SHORT).show();
-        getPreferences().setRegistred();
+        getPreferences().setRegistered();
         finish();
         startActivity(getIntent());
     }

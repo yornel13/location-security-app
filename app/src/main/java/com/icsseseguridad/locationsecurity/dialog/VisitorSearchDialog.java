@@ -130,7 +130,7 @@ public class VisitorSearchDialog<T extends Searchable> extends BaseSearchDialogC
         ArrayList<T> filteredList = new ArrayList<>();
         for (T item : getItems()) {
             if (normalize(((Visitor) item).dni).contains(normalize(text))
-                    || ((Visitor) item).id == null){
+                    || ((Visitor) item).id == null || normalize(((Visitor) item).getFullname()).contains(normalize(text))){
                 filteredList.add(item);
             }
         }
@@ -139,6 +139,7 @@ public class VisitorSearchDialog<T extends Searchable> extends BaseSearchDialogC
 
     private String normalize(String input) {
         if (input == null) { return ""; }
-        return input.replaceAll("[^a-zA-Z0-9]+","").toLowerCase();
+        return Normalizer.normalize(input, Normalizer.Form.NFD)
+                .replaceAll("[^a-zA-Z0-9]+","").toLowerCase();
     }
 }

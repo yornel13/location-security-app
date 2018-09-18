@@ -73,6 +73,7 @@ public class AddVisitActivity extends BaseActivity {
     @BindView(R.id.vehicle_vehicle) TextView vehicleVehicle;
     @BindView(R.id.vehicle_model) TextView vehicleModel;
     @BindView(R.id.vehicle_type) TextView vehicleType;
+    @BindView(R.id.remove_vehicle) View removeVehicle;
 
     @BindView(R.id.card_visitor) CardView cardVisitor;
     @BindView(R.id.visitor_photo) ImageView visitorPhoto;
@@ -256,13 +257,14 @@ public class AddVisitActivity extends BaseActivity {
         this.vehicle = vehicle;
 
         if (vehicle.lastVisit != null) {
+            System.out.println(gson().toJson(vehicle.lastVisit));
             for (Visitor visitor : app.getVisitors().visitors) {
-                if (visitor.id == vehicle.lastVisit.visitorId) {
+                if (visitor.id.longValue() == vehicle.lastVisit.visitorId.longValue()) {
                     setupVisitor(visitor);
                 }
             }
             for (Clerk clerk : app.getClerks().clerks) {
-                if (clerk.id == vehicle.lastVisit.clerkId) {
+                if (clerk.id.longValue() == vehicle.lastVisit.clerkId.longValue()) {
                     setupClerk(clerk);
                 }
             }
@@ -274,7 +276,20 @@ public class AddVisitActivity extends BaseActivity {
                 }
             }, 500);
         }
+        removeVehicle.setVisibility(View.VISIBLE);
+    }
 
+    @OnClick(R.id.remove_vehicle)
+    public void removeVehicle() {
+        visit.vehicle = null;
+        this.vehicle = null;
+        vehiclePlate.setText("Place");
+        vehicleVehicle.setText("Vehiculo");
+        vehicleModel.setText("Modelo");
+        vehicleType.setText("Color");
+        cardVehicle.setCardBackgroundColor(getResources().getColor(R.color.colorGrayAgate));
+        vehiclePhoto.setImageDrawable(getResources().getDrawable(R.drawable.vehicle_empty));
+        removeVehicle.setVisibility(View.GONE);
     }
 
     public void setupVisitor(Visitor visitor) {

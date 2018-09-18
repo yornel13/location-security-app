@@ -21,6 +21,8 @@ import com.icsseseguridad.locationsecurity.events.OnListGuardFailure;
 import com.icsseseguridad.locationsecurity.events.OnListGuardSuccess;
 import com.icsseseguridad.locationsecurity.events.OnListMessageFailure;
 import com.icsseseguridad.locationsecurity.events.OnListMessageSuccess;
+import com.icsseseguridad.locationsecurity.events.OnListUnreadMessagesFailure;
+import com.icsseseguridad.locationsecurity.events.OnListUnreadMessagesSuccess;
 import com.icsseseguridad.locationsecurity.events.OnSendMessageFailure;
 import com.icsseseguridad.locationsecurity.events.OnSendMessageSuccess;
 import com.icsseseguridad.locationsecurity.model.Channel;
@@ -30,6 +32,7 @@ import com.icsseseguridad.locationsecurity.model.ListAdmin;
 import com.icsseseguridad.locationsecurity.model.ListChannel;
 import com.icsseseguridad.locationsecurity.model.ListChat;
 import com.icsseseguridad.locationsecurity.model.ListChatLine;
+import com.icsseseguridad.locationsecurity.model.ListChatWithUnread;
 import com.icsseseguridad.locationsecurity.model.ListGuard;
 import com.icsseseguridad.locationsecurity.model.MultipleResource;
 import com.icsseseguridad.locationsecurity.model.User;
@@ -368,11 +371,55 @@ public class MessengerController extends BaseController {
                 }
                 MultipleResource resource = response.body();
                 if (!resource.response) {
-                    Log.e("MessengerController", new Gson().toJson(resource));
                     EventBus.getDefault().postSticky(new OnAddUsersToChannelFailure(resource.message));
                 } else {
                     EventBus.getDefault().postSticky(new OnAddUsersToChannelSuccess(resource));
                 }
+            }
+        });
+    }
+
+    public void getUnreadMessages() {
+        APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
+        Call<ListChatWithUnread> call = apiInterface.getUnreadMessages(preferences.getToken(), preferences.getGuard().id);
+        call.enqueue(new Callback<ListChatWithUnread>() {
+            @Override
+            public void onFailure(Call<ListChatWithUnread> call, Throwable t) {
+                t.printStackTrace();
+                call.cancel();
+                EventBus.getDefault().postSticky(new OnListUnreadMessagesFailure(
+                        SecurityApp.getAppContext().getString(R.string.error_connection)
+                ));
+            }
+            @Override
+            public void onResponse(Call<ListChatWithUnread> call, Response<ListChatWithUnread> response) {
+                if (!response.isSuccessful()) {
+                    EventBus.getDefault().postSticky(new OnListUnreadMessagesFailure(response.message()));
+                } else {
+                    EventBus.getDefault().postSticky(new OnListUnreadMessagesSuccess(response.body()));
+                }
+            }
+        });
+    }
+
+    public void putChatRead(final Long chatId) {
+        APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
+        Call<MultipleResource> call = apiInterface.putChatRead(preferences.getToken(), preferences.getGuard().id, chatId);
+        call.enqueue(new Callback<MultipleResource>() {
+            @Override
+            public void onFailure(Call<MultipleResource> call, Throwable t) {
+                t.printStackTrace();
+                call.cancel();
+                Log.e("Controller", "Failure Make messages read for chat id = " + chatId);
+            }
+            @Override
+            public void onResponse(Call<MultipleResource> call, Response<MultipleResource> response) {
+                if (!response.isSuccessful()) {
+                    Log.e("Controller", "Failure Make messages read for chat id = " + chatId);
+                    return;
+                }
+                Log.e("Controller", "Success Make messages read for chat id = " + chatId);
+                getUnreadMessages();
             }
         });
     }

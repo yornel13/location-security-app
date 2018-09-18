@@ -35,13 +35,34 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <ImageView
-                    android:id="@+id/vehicle_photo"
+                <RelativeLayout
                     android:layout_alignParentEnd="true"
-                    android:src="@drawable/vehicle_empty"
-                    android:scaleType="centerCrop"
                     android:layout_width="150dp"
-                    android:layout_height="150dp" />
+                    android:layout_height="150dp">
+
+                    <ImageView
+                        android:id="@+id/vehicle_photo"
+                        android:layout_alignParentEnd="true"
+                        android:src="@drawable/vehicle_empty"
+                        android:scaleType="centerCrop"
+                        android:layout_width="150dp"
+                        android:layout_height="150dp" />
+
+                    <TextView
+                        android:id="@+id/remove_vehicle"
+                        android:visibility="gone"
+                        android:foreground="?selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:padding="10dp"
+                        android:background="@color/colorBlack50"
+                        android:layout_alignParentEnd="true"
+                        android:text="QUITAR"
+                        android:textColor="@color/white"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </RelativeLayout>
 
                 <LinearLayout
                     android:gravity="center_vertical"
@@ -88,7 +109,7 @@
 
                     <com.icsseseguridad.locationsecurity.util.AppTextView
                         android:id="@+id/vehicle_type"
-                        android:text="Tipo"
+                        android:text="Color"
                         app:fontFamily="GoogleSans-Medium.ttf"
                         android:textSize="18sp"
                         android:textColor="@color/black"

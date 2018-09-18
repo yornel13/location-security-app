@@ -1,7 +1,13 @@
 package com.icsseseguridad.locationsecurity.ui.binnacle;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -17,14 +23,17 @@ import com.google.gson.Gson;
 import com.icsseseguridad.locationsecurity.R;
 import com.icsseseguridad.locationsecurity.adapter.ReplyAdapter;
 import com.icsseseguridad.locationsecurity.controller.BinnacleController;
+import com.icsseseguridad.locationsecurity.controller.MessengerController;
 import com.icsseseguridad.locationsecurity.events.OnGetRepliesFailure;
 import com.icsseseguridad.locationsecurity.events.OnGetRepliesSuccess;
 import com.icsseseguridad.locationsecurity.events.OnPostReplyFailure;
 import com.icsseseguridad.locationsecurity.events.OnPostReplySuccess;
 import com.icsseseguridad.locationsecurity.model.Reply;
 import com.icsseseguridad.locationsecurity.model.SpecialReport;
+import com.icsseseguridad.locationsecurity.service.AppFirebaseMessagingService;
 import com.icsseseguridad.locationsecurity.ui.BaseActivity;
 import com.icsseseguridad.locationsecurity.util.AppDatetime;
+import com.icsseseguridad.locationsecurity.util.Const;
 import com.stfalcon.frescoimageviewer.ImageViewer;
 
 import org.greenrobot.eventbus.EventBus;
@@ -42,8 +51,11 @@ import static com.bumptech.glide.request.RequestOptions.centerCropTransform;
 
 public class ReportActivity extends BaseActivity {
 
+    public static final String REPORT_ID = "report_id";
+
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.scroll_photos) HorizontalScrollView scrollPhotos;
+    @BindView(R.id.scroll_view) NestedScrollView mainScroll;
 
     @BindView(R.id.container_photo_1) View containerPhoto1;
     @BindView(R.id.container_photo_2) View containerPhoto2;
@@ -76,6 +88,26 @@ public class ReportActivity extends BaseActivity {
     private SpecialReport report;
     private List<Reply> replies;
     private ReplyAdapter adapter;
+
+    private BroadcastReceiver replyReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String messageString = intent.getStringExtra(Const.NEW_REPLY);
+            final Reply reply = gson().fromJson(messageString, Reply.class);
+            if (reply != null && reply.reportId != null && report != null && reply.reportId.equals(report.id)) {
+                recyclerView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        addReply(reply);
+                        putAllRead(false);
+                        NotificationManagerCompat notificationManager = NotificationManagerCompat
+                                .from(ReportActivity.this);
+                        notificationManager.cancel(AppFirebaseMessagingService.ID_REPLY);
+                    }
+                });
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -172,6 +204,34 @@ public class ReportActivity extends BaseActivity {
         commentLayout.setVisibility(View.VISIBLE);
         commentLoading.setVisibility(View.GONE);
         messingArea.setVisibility(View.VISIBLE);
+        putAllRead(true);
+        if (report.resolved == 0) {
+            messingArea.setVisibility(View.GONE);
+        }
+    }
+
+    public void addReply(Reply reply) {
+        replies.add(0, reply);
+        adapter.replaceAll(replies);
+        commentSizeText.setText("Comentarios ("+replies.size()+")");
+        mainScroll.scrollTo(0,0);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(replyReceiver, new IntentFilter(Const.NEW_REPLY));
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.cancel(AppFirebaseMessagingService.ID_REPLY);
+        if (messingArea.getVisibility() == View.VISIBLE) {
+            new BinnacleController().getReplies(report.id);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(replyReceiver);
     }
 
     private void setImage(ImageView imageView, String url) {
@@ -243,8 +303,8 @@ public class ReportActivity extends BaseActivity {
         if (messageText.getText().toString().trim().isEmpty()) {
             return;
         }
-        if (messageText.getText().toString().length() < 10) {
-            Toast.makeText(this, "El comentario debe contener al menos 10 caracteres",
+        if (messageText.getText().toString().length() < 4) {
+            Toast.makeText(this, "El comentario debe contener al menos 4 caracteres",
                     Toast.LENGTH_LONG).show();
             return;
         }
@@ -268,9 +328,7 @@ public class ReportActivity extends BaseActivity {
         messageSend.setVisibility(View.VISIBLE);
         messageSending.setVisibility(View.GONE);
         messageText.setText("");
-        replies.add(0, event.reply);
-        adapter.replaceAll(replies);
-        commentSizeText.setText("Comentarios ("+replies.size()+")");
+        addReply(event.reply);
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
@@ -286,5 +344,16 @@ public class ReportActivity extends BaseActivity {
     @OnClick(R.id.sos_alarm)
     public void SOS() {
         dialogSOS();
+    }
+
+    void putAllRead(boolean checkUnreadSize) {
+        if (this.replies != null
+                && this.replies.size() > 0
+                && this.report != null
+                && app.unreadReplies != null) {
+            if (!checkUnreadSize || app.unreadReplies.unread > 0) {
+                new BinnacleController().putReportRead(report.id);
+            }
+        }
     }
 }

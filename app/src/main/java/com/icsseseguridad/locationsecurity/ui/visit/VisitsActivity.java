@@ -3,6 +3,7 @@ package com.icsseseguridad.locationsecurity.ui.visit;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.icsseseguridad.locationsecurity.R;
@@ -19,6 +21,8 @@ import com.icsseseguridad.locationsecurity.controller.VisitController;
 import com.icsseseguridad.locationsecurity.events.OnClickVisit;
 import com.icsseseguridad.locationsecurity.events.OnListActiveVisitFailure;
 import com.icsseseguridad.locationsecurity.events.OnListActiveVisitSuccess;
+import com.icsseseguridad.locationsecurity.events.OnSyncUnreadMessages;
+import com.icsseseguridad.locationsecurity.events.OnSyncUnreadReplies;
 import com.icsseseguridad.locationsecurity.model.ControlVisit;
 import com.icsseseguridad.locationsecurity.model.ListVisit;
 import com.icsseseguridad.locationsecurity.ui.AlertsActivity;
@@ -34,12 +38,15 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnTextChanged;
+import q.rorbin.badgeview.QBadgeView;
 
 public class VisitsActivity extends BaseActivity implements  BottomNavigationView.OnNavigationItemSelectedListener {
 
@@ -51,11 +58,14 @@ public class VisitsActivity extends BaseActivity implements  BottomNavigationVie
     @BindView(R.id.guard_name) TextView nameText;
     @BindView(R.id.guard_date) TextView dateText;
     @BindView(R.id.header_container) BottomNavigationView bottomNavigationView;
+    @BindView(R.id.search_field) EditText searchField;
 
     @BindView(R.id.loading) View loadingView;
     @BindView(R.id.empty) View emptyView;
 
     private VisitAdapter adapter;
+    private QBadgeView badgeChat;
+    private QBadgeView badgeBinnacle;
 
     List<ControlVisit> visits;
 
@@ -68,10 +78,20 @@ public class VisitsActivity extends BaseActivity implements  BottomNavigationVie
         setupAdapter(new ArrayList<ControlVisit>());
         emptyView.setVisibility(View.GONE);
         loadingView.setVisibility(View.VISIBLE);
+        searchField.setVisibility(View.GONE);
         new VisitController().getActiveVisits();
 
         bottomNavigationView.setSelectedItemId(R.id.nav_visit);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
+
+        BottomNavigationMenuView bottomNavigationMenuView =
+                (BottomNavigationMenuView) bottomNavigationView.getChildAt(0);
+
+        badgeChat = new QBadgeView(this);
+        badgeChat.bindTarget(bottomNavigationMenuView.getChildAt(3));
+
+        badgeBinnacle = new QBadgeView(this);
+        badgeBinnacle.bindTarget(bottomNavigationMenuView.getChildAt(1));
     }
 
     private void setupAdapter(List<ControlVisit> visits) {
@@ -81,6 +101,7 @@ public class VisitsActivity extends BaseActivity implements  BottomNavigationVie
         recyclerView.setLayoutManager(mLayoutManager);
         adapter = new VisitAdapter(this, visits);
         recyclerView.setAdapter(adapter);
+        recyclerView.setNestedScrollingEnabled(false);
     }
 
     @Override
@@ -130,6 +151,36 @@ public class VisitsActivity extends BaseActivity implements  BottomNavigationVie
         super.onResume();
         nameText.setText(getPreferences().getGuard().getFullname());
         dateText.setText(UTILITY.getCurrentDate());
+
+        if (app.unreadMessages != null) {
+            if (app.unreadMessages.unread > 0) {
+                badgeChat.setBadgeNumber(app.unreadMessages.unread);
+            } else {
+                if (badgeChat.getBadgeNumber() > 0)
+                    badgeChat.hide(true);
+                badgeChat.setBadgeNumber(0);
+            }
+        }
+
+        if (app.unreadReplies != null) {
+            if (app.unreadReplies.unread > 0) {
+                badgeBinnacle.setBadgeNumber(app.unreadReplies.unread);
+            } else {
+                if (badgeBinnacle.getBadgeNumber() > 0)
+                    badgeBinnacle.hide(true);
+                badgeBinnacle.setBadgeNumber(0);
+            }
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSyncUnreadMessages(OnSyncUnreadMessages event) {
+        onResume();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSyncUnreadReplies(OnSyncUnreadReplies event) {
+        onResume();
     }
 
     @OnClick(R.id.add_button)
@@ -143,17 +194,22 @@ public class VisitsActivity extends BaseActivity implements  BottomNavigationVie
         if (requestCode == INTENT_REGISTER_VISIT && resultCode == RESULT_OK) {
             Snackbar.make(toolbar, "Visita Registrada con Exito.", Snackbar.LENGTH_LONG).show();
             if (visits != null) {
-                visits.add(0, app.visit);
-                checkView();
-                app.visit = null;
+                if (app != null && app.visit != null) {
+                    app.visit = null;
+                }
+                new VisitController().getActiveVisits();
+//                visits.add(0, app.visit);
+//                checkView();
             }
         }
         if (requestCode == INTENT_SHOW_VISIT && resultCode == RESULT_OK) {
             Snackbar.make(toolbar, "Visita Finaliza con Exito.", Snackbar.LENGTH_LONG).show();
             if (visits != null) {
-                visits.remove(app.visit);
+                if (app != null && app.visit != null) {
+                    visits.remove(app.visit);
+                    app.visit = null;
+                }
                 checkView();
-                app.visit = null;
             }
         }
     }
@@ -177,9 +233,12 @@ public class VisitsActivity extends BaseActivity implements  BottomNavigationVie
         if (visits.size() > 0) {
             emptyView.setVisibility(View.GONE);
             adapter.replaceAll(visits);
+            searchField.setText("");
+            searchField.setVisibility(View.VISIBLE);
         } else {
             adapter.replaceAll(new ArrayList<ControlVisit>());
             emptyView.setVisibility(View.VISIBLE);
+            searchField.setVisibility(View.GONE);
         }
     }
 
@@ -192,5 +251,35 @@ public class VisitsActivity extends BaseActivity implements  BottomNavigationVie
     @OnClick(R.id.sos_alarm)
     public void SOS() {
         dialogSOS();
+    }
+
+    @OnTextChanged(R.id.search_field)
+    protected void onTextChanged(CharSequence text) {
+        String filter = text.toString();
+        if (filter.isEmpty()) {
+            adapter.setItems(visits);
+        } else {
+            adapter.setItems(filter(filter));
+        }
+    }
+
+    public ArrayList<ControlVisit> filter(String text) {
+        ArrayList<ControlVisit> filteredList = new ArrayList<>();
+        for (ControlVisit item : visits) {
+            if ((item.vehicle != null && normalize(item.vehicle.plate).contains(normalize(text)))
+                    || normalize(item.visitor.dni).contains(normalize(text))
+                    || normalize(item.visitor.getFullname()).contains(normalize(text))
+                    || normalize(item.clerk.dni).contains(normalize(text))
+                    || normalize(item.clerk.getFullname()).contains(normalize(text))){
+                filteredList.add(item);
+            }
+        }
+        return filteredList;
+    }
+
+    private String normalize(String input) {
+        if (input == null) { return ""; }
+        return Normalizer.normalize(input, Normalizer.Form.NFD)
+                .replaceAll("[^a-zA-Z0-9]+","").toLowerCase();
     }
 }

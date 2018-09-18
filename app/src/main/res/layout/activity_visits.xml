@@ -7,6 +7,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true"
     tools:context=".ui.MainActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -184,18 +186,45 @@
 
             </LinearLayout>
 
-            <android.support.v7.widget.RecyclerView
-                android:visibility="visible"
+            <android.support.v4.widget.NestedScrollView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/recycler_list"
-                android:paddingTop="8dp"
-                android:paddingBottom="@dimen/scroll_padding_bottom"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:clipToPadding="false">
+                android:layout_height="wrap_content">
 
-            </android.support.v7.widget.RecyclerView>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/search_field"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textCapWords"
+                        android:nextFocusDown="@id/model"
+                        android:drawableEnd="@drawable/search_dialog_ic_search"
+                        android:maxLines="1"
+                        android:textSize="20sp"
+                        android:hint="Buscar..."/>
+
+                    <android.support.v7.widget.RecyclerView
+                        android:visibility="visible"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/recycler_list"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="@dimen/scroll_padding_bottom"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:clipToPadding="false">
+
+                    </android.support.v7.widget.RecyclerView>
+
+                </LinearLayout>
+
+            </android.support.v4.widget.NestedScrollView>
 
         </RelativeLayout>
 

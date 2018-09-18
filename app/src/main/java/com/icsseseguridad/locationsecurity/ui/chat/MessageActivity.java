@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -38,11 +39,15 @@ import com.icsseseguridad.locationsecurity.events.OnListChatFailure;
 import com.icsseseguridad.locationsecurity.events.OnListChatSuccess;
 import com.icsseseguridad.locationsecurity.events.OnListGuardFailure;
 import com.icsseseguridad.locationsecurity.events.OnListGuardSuccess;
+import com.icsseseguridad.locationsecurity.events.OnSyncUnreadMessages;
+import com.icsseseguridad.locationsecurity.events.OnSyncUnreadReplies;
 import com.icsseseguridad.locationsecurity.model.Admin;
 import com.icsseseguridad.locationsecurity.model.Channel;
 import com.icsseseguridad.locationsecurity.model.ChannelRegistered;
 import com.icsseseguridad.locationsecurity.model.Chat;
+import com.icsseseguridad.locationsecurity.model.ChatWithUnread;
 import com.icsseseguridad.locationsecurity.model.Guard;
+import com.icsseseguridad.locationsecurity.model.ListChatWithUnread;
 import com.icsseseguridad.locationsecurity.ui.AlertsActivity;
 import com.icsseseguridad.locationsecurity.ui.BaseActivity;
 import com.icsseseguridad.locationsecurity.ui.binnacle.BinnacleActivity;
@@ -64,6 +69,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ir.mirrajabi.searchdialog.core.BaseSearchDialogCompat;
 import ir.mirrajabi.searchdialog.core.SearchResultListener;
+import q.rorbin.badgeview.QBadgeView;
 
 public class MessageActivity extends BaseActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
@@ -81,6 +87,8 @@ public class MessageActivity extends BaseActivity implements BottomNavigationVie
     @BindView(R.id.empty) View emptyView;
 
     private MessengerAdapter adapter;
+    private QBadgeView badgeChat;
+    private QBadgeView badgeBinnacle;
 
     List<Object> chats;
 
@@ -97,6 +105,15 @@ public class MessageActivity extends BaseActivity implements BottomNavigationVie
 
         bottomNavigationView.setSelectedItemId(R.id.nav_chat);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
+
+        BottomNavigationMenuView bottomNavigationMenuView =
+                (BottomNavigationMenuView) bottomNavigationView.getChildAt(0);
+
+        badgeChat = new QBadgeView(this);
+        badgeChat.bindTarget(bottomNavigationMenuView.getChildAt(3));
+
+        badgeBinnacle = new QBadgeView(this);
+        badgeBinnacle.bindTarget(bottomNavigationMenuView.getChildAt(1));
     }
 
     private void setupAdapter() {
@@ -159,6 +176,37 @@ public class MessageActivity extends BaseActivity implements BottomNavigationVie
 
         new MessengerController().getConversations(getPreferences().getGuard().id);
         new MessengerController().getGroups(getPreferences().getGuard().id);
+
+        if (app.unreadMessages != null) {
+            if (app.unreadMessages.unread > 0) {
+                badgeChat.setBadgeNumber(app.unreadMessages.unread);
+            } else {
+                if (badgeChat.getBadgeNumber() > 0)
+                    badgeChat.hide(true);
+                badgeChat.setBadgeNumber(0);
+            }
+        }
+
+        if (app.unreadReplies != null) {
+            if (app.unreadReplies.unread > 0) {
+                badgeBinnacle.setBadgeNumber(app.unreadReplies.unread);
+            } else {
+                if (badgeBinnacle.getBadgeNumber() > 0)
+                    badgeBinnacle.hide(true);
+                badgeBinnacle.setBadgeNumber(0);
+            }
+        }
+        checkView();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSyncUnreadMessages(OnSyncUnreadMessages event) {
+        onResume();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSyncUnreadReplies(OnSyncUnreadReplies event) {
+        onResume();
     }
 
     @OnClick(R.id.chat_guard)
@@ -382,6 +430,7 @@ public class MessageActivity extends BaseActivity implements BottomNavigationVie
         if (chats.size() > 0) {
             emptyView.setVisibility(View.GONE);
             orderList();
+            checkUnread();
             adapter.replaceAll(chats);
         } else {
             adapter.replaceAll(new ArrayList<>());
@@ -400,11 +449,9 @@ public class MessageActivity extends BaseActivity implements BottomNavigationVie
     public Timestamp getUpdateTime(Object obj) {
         if (obj instanceof Chat) {
             Chat chat = (Chat) obj;
-            System.out.println(chat.updateAt);
             return chat.updateAt;
         } else {
             ChannelRegistered channel = (ChannelRegistered) obj;
-            System.out.println(channel.channelUpdateAt);
             return channel.channelUpdateAt;
         }
     }
@@ -458,5 +505,19 @@ public class MessageActivity extends BaseActivity implements BottomNavigationVie
     protected void onPause() {
         super.onPause();
         EventBus.getDefault().unregister(this);
+    }
+
+    void checkUnread() {
+        for (Object ch: chats) {
+            if (ch instanceof Chat) {
+                Chat chat = (Chat) ch;
+                chat.unread = 0;
+                for (ChatWithUnread chatWithUnread : app.unreadMessages.chatsUnread) {
+                    if (chat.id.longValue() == chatWithUnread.chat.id.longValue()) {
+                        chat.unread = chatWithUnread.unread;
+                    }
+                }
+            }
+        }
     }
 }

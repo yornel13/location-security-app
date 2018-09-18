@@ -50,21 +50,19 @@ public class VisitAdapter extends RecyclerView.Adapter<VisitAdapter.ViewHolder> 
             TextView subTitle = holder.getViewById(R.id.sub_title);
             title.setText(visit.visitor.getFullname());
             subTitle.setText(DateUtils.getRelativeTimeSpanString(visit.createDate.getTime()));
-            if (visit.vehicle != null && visit.vehicle.photo != null)
-                Glide.with(mContext)
-                        .load(visit.vehicle.photo)
-                        .apply(centerCropTransform()
-                                .placeholder(R.drawable.empty_image)
-                                .error(R.drawable.empty_image))
-                        .into(image);
-            else
-                if (visit.visitor != null && visit.visitor.photo != null)
-                    Glide.with(mContext)
-                            .load(visit.visitor.photo)
-                            .apply(centerCropTransform()
-                                    .placeholder(R.drawable.empty_image)
-                                    .error(R.drawable.empty_image))
-                            .into(image);
+            String photo = null;
+            if (visit.vehicle != null && visit.vehicle.photo != null) {
+                photo = visit.vehicle.photo;
+            } else if (visit.visitor != null && visit.visitor.photo != null) {
+                photo = visit.visitor.photo;
+            }
+            Glide.with(mContext)
+                    .load(photo)
+                    .apply(centerCropTransform()
+                            .placeholder(R.drawable.empty_image)
+                            .error(R.drawable.empty_image))
+                    .into(image);
+
             holder.getBaseView().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

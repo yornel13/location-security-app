@@ -18,8 +18,10 @@ import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.icsseseguridad.locationsecurity.R;
+import com.icsseseguridad.locationsecurity.controller.BinnacleController;
 import com.icsseseguridad.locationsecurity.controller.MessengerController;
 import com.icsseseguridad.locationsecurity.model.ChatLine;
+import com.icsseseguridad.locationsecurity.model.Reply;
 import com.icsseseguridad.locationsecurity.ui.chat.ChatActivity;
 import com.icsseseguridad.locationsecurity.util.AppPreferences;
 import com.icsseseguridad.locationsecurity.util.Const;
@@ -28,11 +30,15 @@ import org.json.JSONObject;
 
 import java.util.Map;
 
+import static com.icsseseguridad.locationsecurity.ui.binnacle.ReportActivity.REPORT_ID;
+
 public class AppFirebaseMessagingService extends FirebaseMessagingService {
 
     public static final String MESSAGE = "MESSAGE";
+    public static final String REPORT = "REPORT";
     private static final String TAG = "AppFirebaseMsgService";
-    public static final int ID_MESSAGE = 0;
+    public static final int ID_MESSAGE = 11;
+    public static final int ID_REPLY = 22;
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -54,6 +60,16 @@ public class AppFirebaseMessagingService extends FirebaseMessagingService {
                 } else {
                     Log.d(TAG, "Message is to another guard");
                 }
+            } else if (type.equals(REPORT)) {
+                Reply reply = gson().fromJson(notifyMap.get("message"), Reply.class);
+                if (new AppPreferences(getApplicationContext()).getGuard() != null) {
+                    sendReportNotification(reply);
+                    Intent intent = new Intent(Const.NEW_REPLY);
+                    intent.putExtra(Const.NEW_REPLY, gson().toJson(reply));
+                    sendBroadcast(intent);
+                } else {
+                    Log.d(TAG, "No session available");
+                }
             }
         } else {
             Log.d(TAG, "Message Notification is null");
@@ -61,6 +77,9 @@ public class AppFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     private void sendNotification(ChatLine message) {
+
+        new MessengerController().getUnreadMessages();
+
         Intent intent = new Intent(this, ChatActivity.class);
         if (message.chatId != null) {
             intent.putExtra(ChatActivity.CHAT_TYPE, ChatActivity.CHAT);
@@ -96,6 +115,42 @@ public class AppFirebaseMessagingService extends FirebaseMessagingService {
         }
 
         notificationManager.notify(ID_MESSAGE, notificationBuilder.build());
+    }
+
+    private void sendReportNotification(Reply reply) {
+
+        new BinnacleController().getUnreadReports();
+
+        Intent intent = new Intent(this, ChatActivity.class);
+        intent.putExtra(ChatActivity.CHAT_TYPE, ChatActivity.CHANNEL);
+        intent.putExtra(REPORT_ID, reply.reportId);
+        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+                PendingIntent.FLAG_ONE_SHOT);
+
+        String channelId = "Reportes";
+        Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(this, channelId)
+                        .setSmallIcon(R.drawable.ic_message_black)
+                        .setContentTitle("Comentario de Bitacora")
+                        .setContentText(reply.text)
+                        .setAutoCancel(true)
+                        .setSound(defaultSoundUri)
+                        .setContentIntent(pendingIntent);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // Since android Oreo notification channel is needed.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(channelId,
+                    "Reportes",
+                    NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        notificationManager.notify(ID_REPLY, notificationBuilder.build());
     }
 
     @Override

@@ -28,6 +28,8 @@ public class ChannelRegistered {
     public Integer state;
 
 
+    public Integer unread;
+
     /****    Channel data       *****/
     @SerializedName("channel_id")
     public Long channelId;

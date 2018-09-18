@@ -16,21 +16,29 @@ import com.icsseseguridad.locationsecurity.events.OnListCompanyFailure;
 import com.icsseseguridad.locationsecurity.events.OnListCompanySuccess;
 import com.icsseseguridad.locationsecurity.events.OnListIncidenceFailure;
 import com.icsseseguridad.locationsecurity.events.OnListIncidenceSuccess;
+import com.icsseseguridad.locationsecurity.events.OnListUnreadMessagesFailure;
+import com.icsseseguridad.locationsecurity.events.OnListUnreadMessagesSuccess;
+import com.icsseseguridad.locationsecurity.events.OnListUnreadRepliesFailure;
+import com.icsseseguridad.locationsecurity.events.OnListUnreadRepliesSuccess;
 import com.icsseseguridad.locationsecurity.events.OnListVisitorFailure;
 import com.icsseseguridad.locationsecurity.events.OnListVisitorSuccess;
 import com.icsseseguridad.locationsecurity.events.OnListVisitorVehicleFailure;
 import com.icsseseguridad.locationsecurity.events.OnListVisitorVehicleSuccess;
 import com.icsseseguridad.locationsecurity.events.OnSyncClerks;
 import com.icsseseguridad.locationsecurity.events.OnSyncIncidences;
+import com.icsseseguridad.locationsecurity.events.OnSyncUnreadMessages;
+import com.icsseseguridad.locationsecurity.events.OnSyncUnreadReplies;
 import com.icsseseguridad.locationsecurity.events.OnSyncVehicles;
 import com.icsseseguridad.locationsecurity.events.OnSyncVisitors;
 import com.icsseseguridad.locationsecurity.model.Chat;
 import com.icsseseguridad.locationsecurity.model.Clerk;
 import com.icsseseguridad.locationsecurity.model.Company;
 import com.icsseseguridad.locationsecurity.model.ControlVisit;
+import com.icsseseguridad.locationsecurity.model.ListChatWithUnread;
 import com.icsseseguridad.locationsecurity.model.ListClerk;
 import com.icsseseguridad.locationsecurity.model.ListCompany;
 import com.icsseseguridad.locationsecurity.model.ListIncidence;
+import com.icsseseguridad.locationsecurity.model.ListRepliesWithUnread;
 import com.icsseseguridad.locationsecurity.model.ListVisitor;
 import com.icsseseguridad.locationsecurity.model.ListVisitorVehicle;
 import com.icsseseguridad.locationsecurity.model.SpecialReport;
@@ -65,6 +73,8 @@ public class SecurityApp extends Application {
     public ControlVisit visit;
     public SpecialReport report;
     public Chat chat;
+    public ListChatWithUnread unreadMessages;
+    public ListRepliesWithUnread unreadReplies;
 
     @Override
     public void onCreate() {
@@ -243,6 +253,34 @@ public class SecurityApp extends Application {
 
     public AppPreferences getPreferences() {
         return preferences;
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onListUnreadMessagesSuccess(OnListUnreadMessagesSuccess event) {
+        EventBus.getDefault().removeStickyEvent(OnListUnreadMessagesSuccess.class);
+        this.unreadMessages = event.list;
+        Log.i("SecurityApp", this.unreadMessages.unread + " unread messages");
+        EventBus.getDefault().post(new OnSyncUnreadMessages(this.unreadMessages));
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onListUnreadMessagesFailure(OnListUnreadMessagesFailure event) {
+        EventBus.getDefault().removeStickyEvent(OnListUnreadMessagesFailure.class);
+        Log.e("SecurityApp", "Failed to get unread messages");
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onListUnreadRepliesSuccess(OnListUnreadRepliesSuccess event) {
+        EventBus.getDefault().removeStickyEvent(OnListUnreadRepliesSuccess.class);
+        this.unreadReplies = event.list;
+        Log.i("SecurityApp", this.unreadReplies.unread + " unread replies");
+        EventBus.getDefault().post(new OnSyncUnreadReplies(this.unreadReplies));
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onListUnreadRepliesFailure(OnListUnreadRepliesFailure event) {
+        EventBus.getDefault().removeStickyEvent(OnListUnreadRepliesFailure.class);
+        Log.e("SecurityApp", "Failed to get unread replies");
     }
 
     @Override

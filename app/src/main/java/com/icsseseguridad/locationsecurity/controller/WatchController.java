@@ -22,9 +22,10 @@ import retrofit2.Response;
 
 public class WatchController extends BaseController {
 
-    public void register(Long guardId, String latitude, String longitude, @Nullable String imei) {
+    public void register(String authorization, Long guardId, String latitude, String longitude, @Nullable String imei) {
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-        Call<MultipleResource> call = apiInterface.initWatch(preferences.getToken(), guardId, latitude, longitude, imei);
+        Call<MultipleResource> call = apiInterface.initWatch(authorization, guardId, latitude, longitude, imei);
+        System.out.println(preferences.getToken() + " " + guardId + " " +  latitude + " " +  longitude + " " +  imei);
         call.enqueue(new Callback<MultipleResource>() {
             @Override
             public void onFailure(Call<MultipleResource> call, Throwable t) {

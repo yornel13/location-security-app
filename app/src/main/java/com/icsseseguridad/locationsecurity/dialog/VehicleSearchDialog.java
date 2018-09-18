@@ -135,12 +135,12 @@ public class VehicleSearchDialog<T extends Searchable> extends BaseSearchDialogC
                 filteredList.add(item);
             }
         }
-        System.out.println("tamaño: "+ filteredList.size());
         return filteredList;
     }
 
     private String normalize(String input) {
         if (input == null) { return ""; }
-        return input.replaceAll("[^a-zA-Z0-9]+","").toLowerCase();
+        return Normalizer.normalize(input, Normalizer.Form.NFD)
+                .replaceAll("[^a-zA-Z0-9]+","").toLowerCase();
     }
 }

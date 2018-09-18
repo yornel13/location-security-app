@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
@@ -33,8 +34,10 @@ import com.icsseseguridad.locationsecurity.SecurityApp;
 import com.icsseseguridad.locationsecurity.controller.AlertController;
 import com.icsseseguridad.locationsecurity.events.OnSendAlertFailure;
 import com.icsseseguridad.locationsecurity.events.OnSendAlertSuccess;
+import com.icsseseguridad.locationsecurity.events.OnUserUnauthorized;
 import com.icsseseguridad.locationsecurity.model.Alert;
 import com.icsseseguridad.locationsecurity.model.Watch;
+import com.icsseseguridad.locationsecurity.service.LocationService;
 import com.icsseseguridad.locationsecurity.util.AppPreferences;
 
 import org.greenrobot.eventbus.EventBus;
@@ -252,5 +255,22 @@ public class BaseActivity extends AppCompatActivity {
                     }
                 })
                 .create();
+    }
+
+    public void clearSession() {
+        getPreferences().clearWatch();
+        startActivity(new Intent(this, LoginActivity.class));
+        stopService(new Intent(this, LocationService.class));
+        finish();
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onUserUnauthorized(OnUserUnauthorized event) {
+        EventBus.getDefault().removeStickyEvent(OnUserUnauthorized.class);
+        if (dialog != null)
+            dialog.dismiss();
+
+        Toast.makeText(this, "Sesión Expirada", Toast.LENGTH_LONG).show();
+        clearSession();
     }
 }

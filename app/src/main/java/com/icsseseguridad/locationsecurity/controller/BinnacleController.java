@@ -1,5 +1,7 @@
 package com.icsseseguridad.locationsecurity.controller;
 
+import android.util.Log;
+
 import com.icsseseguridad.locationsecurity.R;
 import com.icsseseguridad.locationsecurity.SecurityApp;
 import com.icsseseguridad.locationsecurity.events.OnGetRepliesFailure;
@@ -8,11 +10,14 @@ import com.icsseseguridad.locationsecurity.events.OnListGuardReportFailure;
 import com.icsseseguridad.locationsecurity.events.OnListGuardReportSuccess;
 import com.icsseseguridad.locationsecurity.events.OnListIncidenceFailure;
 import com.icsseseguridad.locationsecurity.events.OnListIncidenceSuccess;
+import com.icsseseguridad.locationsecurity.events.OnListUnreadRepliesFailure;
+import com.icsseseguridad.locationsecurity.events.OnListUnreadRepliesSuccess;
 import com.icsseseguridad.locationsecurity.events.OnPostReplyFailure;
 import com.icsseseguridad.locationsecurity.events.OnPostReplySuccess;
 import com.icsseseguridad.locationsecurity.events.OnRegisterReportFailure;
 import com.icsseseguridad.locationsecurity.events.OnRegisterReportSuccess;
 import com.icsseseguridad.locationsecurity.model.ListIncidence;
+import com.icsseseguridad.locationsecurity.model.ListRepliesWithUnread;
 import com.icsseseguridad.locationsecurity.model.ListReply;
 import com.icsseseguridad.locationsecurity.model.ListReport;
 import com.icsseseguridad.locationsecurity.model.MultipleResource;
@@ -185,6 +190,51 @@ public class BinnacleController extends BaseController {
                     Reply postReply = gson.fromJson(gson.toJson(resource.result), Reply.class);
                     EventBus.getDefault().postSticky(new OnPostReplySuccess(postReply));
                 }
+            }
+        });
+    }
+
+    public void getUnreadReports() {
+        APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
+        Call<ListRepliesWithUnread> call = apiInterface.getUnreadReplies(preferences.getToken(), preferences.getGuard().id);
+        call.enqueue(new Callback<ListRepliesWithUnread>() {
+            @Override
+            public void onFailure(Call<ListRepliesWithUnread> call, Throwable t) {
+                t.printStackTrace();
+                call.cancel();
+                EventBus.getDefault().postSticky(new OnListUnreadRepliesFailure(
+                        SecurityApp.getAppContext().getString(R.string.error_connection)
+                ));
+            }
+            @Override
+            public void onResponse(Call<ListRepliesWithUnread> call, Response<ListRepliesWithUnread> response) {
+                if (!response.isSuccessful()) {
+                    EventBus.getDefault().postSticky(new OnListUnreadRepliesFailure(response.message()));
+                } else {
+                    EventBus.getDefault().postSticky(new OnListUnreadRepliesSuccess(response.body()));
+                }
+            }
+        });
+    }
+
+    public void putReportRead(final Long reportId) {
+        APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
+        Call<MultipleResource> call = apiInterface.putReportRead(preferences.getToken(), reportId);
+        call.enqueue(new Callback<MultipleResource>() {
+            @Override
+            public void onFailure(Call<MultipleResource> call, Throwable t) {
+                t.printStackTrace();
+                call.cancel();
+                Log.e("Controller", "Failure Make replies read for report id = " + reportId);
+            }
+            @Override
+            public void onResponse(Call<MultipleResource> call, Response<MultipleResource> response) {
+                if (!response.isSuccessful()) {
+                    Log.e("Controller", "Failure Make replies read for report id = " + reportId);
+                    return;
+                }
+                Log.e("Controller", "Success Make replies read for report id = " + reportId);
+                getUnreadReports();
             }
         });
     }

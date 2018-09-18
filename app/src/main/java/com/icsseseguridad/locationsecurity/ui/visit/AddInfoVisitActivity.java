@@ -313,6 +313,13 @@ public class AddInfoVisitActivity extends PhotoActivity {
             personsText.requestFocus();
             return;
         }
+        int persons = Integer.valueOf(personsText.getText().toString());
+        if (persons < 1) {
+            personsText.setError("Debe ser mayor a 0");
+            personsText.requestFocus();
+            return;
+        }
+
         for (View view : views) {
             TextView text = view.findViewById(R.id.text);
             if (text.getText().toString().isEmpty()) {
@@ -323,7 +330,7 @@ public class AddInfoVisitActivity extends PhotoActivity {
             materials.add(text.getText().toString());
         }
         JSONArray jsonArray = new JSONArray(materials);
-        visit.persons = Integer.valueOf(personsText.getText().toString());
+        visit.persons = persons;
         visit.materials = jsonArray.toString();
         visit.setUris(photos);
         app.setNewVisit(visit);

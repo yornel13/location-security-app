@@ -129,7 +129,7 @@ public class ClerkSearchDialog<T extends Searchable> extends BaseSearchDialogCom
         ArrayList<T> filteredList = new ArrayList<>();
         for (T item : getItems()) {
             if (normalize(((Clerk) item).dni).contains(normalize(text))
-                    || ((Clerk) item).id == null){
+                    || normalize(((Clerk) item).getFullname()).contains(normalize(text))){
                 filteredList.add(item);
             }
         }
@@ -138,6 +138,7 @@ public class ClerkSearchDialog<T extends Searchable> extends BaseSearchDialogCom
 
     private String normalize(String input) {
         if (input == null) { return ""; }
-        return input.replaceAll("[^a-zA-Z0-9]+","").toLowerCase();
+        return Normalizer.normalize(input, Normalizer.Form.NFD)
+                .replaceAll("[^a-zA-Z0-9]+","").toLowerCase();
     }
 }

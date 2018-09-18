@@ -2,6 +2,7 @@ package com.icsseseguridad.locationsecurity.ui.binnacle;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.icsseseguridad.locationsecurity.R;
@@ -22,7 +24,10 @@ import com.icsseseguridad.locationsecurity.controller.VisitController;
 import com.icsseseguridad.locationsecurity.events.OnClickReport;
 import com.icsseseguridad.locationsecurity.events.OnListGuardReportFailure;
 import com.icsseseguridad.locationsecurity.events.OnListGuardReportSuccess;
+import com.icsseseguridad.locationsecurity.events.OnSyncUnreadMessages;
+import com.icsseseguridad.locationsecurity.events.OnSyncUnreadReplies;
 import com.icsseseguridad.locationsecurity.model.ControlVisit;
+import com.icsseseguridad.locationsecurity.model.ReportWithUnread;
 import com.icsseseguridad.locationsecurity.model.SpecialReport;
 import com.icsseseguridad.locationsecurity.ui.AlertsActivity;
 import com.icsseseguridad.locationsecurity.ui.BaseActivity;
@@ -35,12 +40,17 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnTextChanged;
+import q.rorbin.badgeview.QBadgeView;
 
 public class BinnacleActivity extends BaseActivity implements BottomNavigationView
         .OnNavigationItemSelectedListener {
@@ -55,8 +65,11 @@ public class BinnacleActivity extends BaseActivity implements BottomNavigationVi
     @BindView(R.id.header_container) BottomNavigationView bottomNavigationView;
     @BindView(R.id.loading) View loadingView;
     @BindView(R.id.empty) View emptyView;
+    @BindView(R.id.search_field) EditText searchField;
 
     private ReportAdapter adapter;
+    private QBadgeView badgeChat;
+    private QBadgeView badgeBinnacle;
 
     List<SpecialReport> reports;
 
@@ -69,10 +82,20 @@ public class BinnacleActivity extends BaseActivity implements BottomNavigationVi
         setupAdapter(new ArrayList<SpecialReport>());
         emptyView.setVisibility(View.GONE);
         loadingView.setVisibility(View.VISIBLE);
+        searchField.setVisibility(View.GONE);
         new BinnacleController().getGuardReports(getPreferences().getGuard().id);
 
         bottomNavigationView.setSelectedItemId(R.id.nav_binnacle);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
+
+        BottomNavigationMenuView bottomNavigationMenuView =
+                (BottomNavigationMenuView) bottomNavigationView.getChildAt(0);
+
+        badgeChat = new QBadgeView(this);
+        badgeChat.bindTarget(bottomNavigationMenuView.getChildAt(3));
+
+        badgeBinnacle = new QBadgeView(this);
+        badgeBinnacle.bindTarget(bottomNavigationMenuView.getChildAt(1));
     }
 
     private void setupAdapter(List<SpecialReport> reports) {
@@ -150,6 +173,37 @@ public class BinnacleActivity extends BaseActivity implements BottomNavigationVi
         super.onResume();
         nameText.setText(getPreferences().getGuard().getFullname());
         dateText.setText(UTILITY.getCurrentDate());
+
+        if (app.unreadMessages != null) {
+            if (app.unreadMessages.unread > 0) {
+                badgeChat.setBadgeNumber(app.unreadMessages.unread);
+            } else {
+                if (badgeChat.getBadgeNumber() > 0)
+                    badgeChat.hide(true);
+                badgeChat.setBadgeNumber(0);
+            }
+        }
+
+        if (app.unreadReplies != null) {
+            if (app.unreadReplies.unread > 0) {
+                badgeBinnacle.setBadgeNumber(app.unreadReplies.unread);
+            } else {
+                if (badgeBinnacle.getBadgeNumber() > 0)
+                    badgeBinnacle.hide(true);
+                badgeBinnacle.setBadgeNumber(0);
+            }
+        }
+        checkView();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSyncUnreadMessages(OnSyncUnreadMessages event) {
+        onResume();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSyncUnreadReplies(OnSyncUnreadReplies event) {
+        onResume();
     }
 
     @OnClick(R.id.add_button)
@@ -175,10 +229,15 @@ public class BinnacleActivity extends BaseActivity implements BottomNavigationVi
         loadingView.setVisibility(View.GONE);
         if (reports.size() > 0) {
             emptyView.setVisibility(View.GONE);
+            checkUnread();
+            orderList();
             adapter.replaceAll(reports);
+            searchField.setText("");
+            searchField.setVisibility(View.VISIBLE);
         } else {
             adapter.replaceAll(new ArrayList<SpecialReport>());
             emptyView.setVisibility(View.VISIBLE);
+            searchField.setVisibility(View.GONE);
         }
     }
 
@@ -191,5 +250,51 @@ public class BinnacleActivity extends BaseActivity implements BottomNavigationVi
     @OnClick(R.id.sos_alarm)
     public void SOS() {
         dialogSOS();
+    }
+
+    void checkUnread() {
+        for (SpecialReport report: reports) {
+            report.unread = 0;
+            for (ReportWithUnread reportWithUnread : app.unreadReplies.reportsUnread) {
+                if (report.id.longValue() == reportWithUnread.report.id.longValue()) {
+                    report.unread = reportWithUnread.unread;
+                }
+            }
+        }
+    }
+
+    public void orderList() {
+        Collections.sort(reports, new Comparator<SpecialReport>(){
+            public int compare(SpecialReport obj1, SpecialReport obj2) {
+                return obj2.unread.compareTo(obj1.unread);
+            }
+        });
+    }
+
+    @OnTextChanged(R.id.search_field)
+    protected void onTextChanged(CharSequence text) {
+        String filter = text.toString();
+        if (filter.isEmpty()) {
+            adapter.setItems(reports);
+        } else {
+            adapter.setItems(filter(filter));
+        }
+    }
+
+    public ArrayList<SpecialReport> filter(String text) {
+        ArrayList<SpecialReport> filteredList = new ArrayList<>();
+        for (SpecialReport item : reports) {
+            if (normalize(item.title).contains(normalize(text))
+                    || normalize(item.observation).contains(normalize(text))){
+                filteredList.add(item);
+            }
+        }
+        return filteredList;
+    }
+
+    private String normalize(String input) {
+        if (input == null) { return ""; }
+        return Normalizer.normalize(input, Normalizer.Form.NFD)
+                .replaceAll("[^a-zA-Z0-9]+","").toLowerCase();
     }
 }

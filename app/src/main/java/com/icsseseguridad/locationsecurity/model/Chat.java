@@ -36,6 +36,8 @@ public class Chat {
     @SerializedName("state")
     public Integer state;
 
+    public Integer unread;
+
     public enum TYPE {
         GUARD, ADMIN
     }

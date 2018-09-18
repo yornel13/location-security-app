@@ -11,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -72,6 +73,7 @@ public class ChatActivity extends BaseActivity {
                     @Override
                     public void run() {
                         addLine(chatLine);
+                        putAllRead(false);
                         NotificationManagerCompat notificationManager = NotificationManagerCompat
                                 .from(ChatActivity.this);
                         notificationManager.cancel(AppFirebaseMessagingService.ID_MESSAGE);
@@ -163,17 +165,16 @@ public class ChatActivity extends BaseActivity {
 
     private void setupMessages(List<ChatLine> messages) {
         Collections.reverse(messages);
-        System.out.println(gson().toJson(messages));
         this.messages = messages;
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
-        //mLayoutManager.setReverseLayout(true);
         mLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(mLayoutManager);
         chatAdapter = new ChatAdapter(this, messages);
         recyclerView.setAdapter(chatAdapter);
         commentLoading.setVisibility(View.GONE);
         messingArea.setVisibility(View.VISIBLE);
+        putAllRead(true);
     }
 
     @OnClick(R.id.send)
@@ -234,6 +235,23 @@ public class ChatActivity extends BaseActivity {
         registerReceiver(messageReceiver, new IntentFilter(Const.NEW_MESSAGE));
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         notificationManager.cancel(AppFirebaseMessagingService.ID_MESSAGE);
+        if (messingArea.getVisibility() == View.VISIBLE) {
+            if (chatType.equals(CHAT))
+                new MessengerController().getMessages(chatId);
+            else
+                new MessengerController().getChannelMessages(channelId);
+        }
+    }
+
+    void putAllRead(boolean checkUnreadSize) {
+        if (this.messages != null
+                && this.messages.size() > 0
+                && this.chatId != null
+                && app.unreadMessages != null) {
+            if (!checkUnreadSize || app.unreadMessages.unread > 0) {
+                new MessengerController().putChatRead(chatId);
+            }
+        }
     }
 
     @Override

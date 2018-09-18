@@ -54,6 +54,8 @@ public class SpecialReport {
     @SerializedName("resolved")
     public Integer resolved;
 
+    public Integer unread;
+
     public Incidence incidence;
 
     public Watch watch;

@@ -113,7 +113,7 @@ public class AdminModelAdapter<T extends Searchable>
         //subText.setText(((Guard) object).dni);
         subText.setVisibility(View.GONE);
         if (((Admin) object).photo == null) {
-            image.setImageDrawable(mContext.getDrawable(R.drawable.policeman));
+            image.setImageDrawable(mContext.getDrawable(R.drawable.admin_user));
         } else {
             RequestOptions options = new RequestOptions()
                     .centerCrop()

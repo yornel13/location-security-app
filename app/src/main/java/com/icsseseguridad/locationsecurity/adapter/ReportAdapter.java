@@ -51,9 +51,16 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ViewHolder
             TextView title = holder.getViewById(R.id.title);
             TextView subTitle = holder.getViewById(R.id.sub_title);
             TextView time = holder.getViewById(R.id.time);
+            TextView unread = holder.getViewById(R.id.unread);
             title.setText(report.title);
             subTitle.setText(report.observation);
             time.setText(DateUtils.getRelativeTimeSpanString(report.createDate.getTime()));
+            if (report.unread != null && report.unread > 0) {
+                unread.setVisibility(View.VISIBLE);
+                unread.setText(report.unread.toString());
+            } else {
+                unread.setVisibility(View.GONE);
+            }
             if (report.image1 != null && !report.image1.isEmpty())
                 Glide.with(mContext)
                         .load(report.image1)

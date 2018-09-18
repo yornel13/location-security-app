@@ -10,6 +10,8 @@ import com.icsseseguridad.locationsecurity.events.OnSendAlertSuccess;
 import com.icsseseguridad.locationsecurity.events.OnSignAdminSuccess;
 import com.icsseseguridad.locationsecurity.events.OnSignInFailure;
 import com.icsseseguridad.locationsecurity.events.OnSignInSuccess;
+import com.icsseseguridad.locationsecurity.events.OnVerifySessionFailure;
+import com.icsseseguridad.locationsecurity.events.OnVerifySessionSuccess;
 import com.icsseseguridad.locationsecurity.model.Admin;
 import com.icsseseguridad.locationsecurity.model.Alert;
 import com.icsseseguridad.locationsecurity.model.Guard;
@@ -128,6 +130,31 @@ public class AuthController extends BaseController {
                     EventBus.getDefault().postSticky(new OnRegisteredTabletFailure(resource.message));
                 } else {
                     EventBus.getDefault().postSticky(new OnRegisteredTabletSuccess(resource));
+                }
+            }
+        });
+    }
+
+    public void verify() {
+        APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
+        System.out.println(preferences.getToken());
+        Call<Guard> call = apiInterface.verifySession(preferences.getToken());
+        call.enqueue(new Callback<Guard>() {
+            @Override
+            public void onFailure(Call<Guard> call, Throwable t) {
+                t.printStackTrace();
+                call.cancel();
+                EventBus.getDefault().postSticky(new OnVerifySessionFailure(
+                        SecurityApp.getAppContext().getString(R.string.error_connection)
+                ));
+            }
+            @Override
+            public void onResponse(Call<Guard> call, Response<Guard> response) {
+                if (!response.isSuccessful()) {
+                    if (response.code() != 401)
+                        EventBus.getDefault().postSticky(new OnVerifySessionFailure(response.message()));
+                } else {
+                    EventBus.getDefault().postSticky(new OnVerifySessionSuccess(response.body()));
                 }
             }
         });

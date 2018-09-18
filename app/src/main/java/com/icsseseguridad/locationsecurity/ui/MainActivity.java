@@ -9,6 +9,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
+import android.support.design.internal.BottomNavigationMenuView;
+import android.support.design.internal.NavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -39,12 +41,15 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.icsseseguridad.locationsecurity.R;
 import com.icsseseguridad.locationsecurity.controller.BannerController;
+import com.icsseseguridad.locationsecurity.controller.BinnacleController;
 import com.icsseseguridad.locationsecurity.controller.MessengerController;
 import com.icsseseguridad.locationsecurity.controller.TabletPositionController;
 import com.icsseseguridad.locationsecurity.controller.WatchController;
 import com.icsseseguridad.locationsecurity.events.OnFinishWatchFailure;
 import com.icsseseguridad.locationsecurity.events.OnFinishWatchSuccess;
 import com.icsseseguridad.locationsecurity.events.OnGetBannersSuccess;
+import com.icsseseguridad.locationsecurity.events.OnSyncUnreadMessages;
+import com.icsseseguridad.locationsecurity.events.OnSyncUnreadReplies;
 import com.icsseseguridad.locationsecurity.model.Alert;
 import com.icsseseguridad.locationsecurity.model.TabletPosition;
 import com.icsseseguridad.locationsecurity.model.Watch;
@@ -63,6 +68,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import q.rorbin.badgeview.QBadgeView;
 
 public class MainActivity extends BaseActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
@@ -75,6 +81,8 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
     @BindView(R.id.header_container) BottomNavigationView bottomNavigationView;
 
     private Location location;
+    private QBadgeView badgeChat;
+    private QBadgeView badgeBinnacle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,7 +125,19 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
             }
         });
 
+        bottomNavigationView.setOnNavigationItemSelectedListener(this);
+        BottomNavigationMenuView bottomNavigationMenuView =
+                (BottomNavigationMenuView) bottomNavigationView.getChildAt(0);
+
+        badgeChat = new QBadgeView(this);
+        badgeChat.bindTarget(bottomNavigationMenuView.getChildAt(3));
+
+        badgeBinnacle = new QBadgeView(this);
+        badgeBinnacle.bindTarget(bottomNavigationMenuView.getChildAt(1));
+
         new BannerController().getBanners();
+        new MessengerController().getUnreadMessages();
+        new BinnacleController().getUnreadReports();
     }
 
     @Override
@@ -133,6 +153,36 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
 
         if (!isServiceRunning(LocationService.class))
             startService(new Intent(this, LocationService.class));
+
+        if (app.unreadMessages != null) {
+            if (app.unreadMessages.unread > 0) {
+                badgeChat.setBadgeNumber(app.unreadMessages.unread);
+            } else {
+                if (badgeChat.getBadgeNumber() > 0)
+                    badgeChat.hide(true);
+                badgeChat.setBadgeNumber(0);
+            }
+        }
+
+        if (app.unreadReplies != null) {
+            if (app.unreadReplies.unread > 0) {
+                badgeBinnacle.setBadgeNumber(app.unreadReplies.unread);
+            } else {
+                if (badgeBinnacle.getBadgeNumber() > 0)
+                    badgeBinnacle.hide(true);
+                badgeBinnacle.setBadgeNumber(0);
+            }
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSyncUnreadMessages(OnSyncUnreadMessages event) {
+        onResume();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSyncUnreadReplies(OnSyncUnreadReplies event) {
+        onResume();
     }
 
     @Override
@@ -241,8 +291,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
         EventBus.getDefault().removeStickyEvent(OnFinishWatchSuccess.class);
         dialog.dismiss();
         Toast.makeText(this, "Guardia Finalizada", Toast.LENGTH_LONG).show();
-        updatePosition(getPreferences().getWatch().id, getPreferences().getImei());
-        getPreferences().clearWatch();
+        //updatePosition(getPreferences().getWatch().id, getPreferences().getImei());
         getPreferences().clearWatch();
         startActivity(new Intent(this, LoginActivity.class));
         stopService(new Intent(this, LocationService.class));
@@ -286,13 +335,6 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
                         // nothing to do
                     }
                 }).show();
-    }
-
-    public void clearSession() {
-        getPreferences().clearWatch();
-        startActivity(new Intent(this, LoginActivity.class));
-        stopService(new Intent(this, LocationService.class));
-        finish();
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)

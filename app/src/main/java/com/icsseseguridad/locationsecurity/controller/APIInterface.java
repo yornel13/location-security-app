@@ -10,10 +10,12 @@ import com.icsseseguridad.locationsecurity.model.ListBanner;
 import com.icsseseguridad.locationsecurity.model.ListChannel;
 import com.icsseseguridad.locationsecurity.model.ListChat;
 import com.icsseseguridad.locationsecurity.model.ListChatLine;
+import com.icsseseguridad.locationsecurity.model.ListChatWithUnread;
 import com.icsseseguridad.locationsecurity.model.ListClerk;
 import com.icsseseguridad.locationsecurity.model.ListCompany;
 import com.icsseseguridad.locationsecurity.model.ListGuard;
 import com.icsseseguridad.locationsecurity.model.ListIncidence;
+import com.icsseseguridad.locationsecurity.model.ListRepliesWithUnread;
 import com.icsseseguridad.locationsecurity.model.ListReply;
 import com.icsseseguridad.locationsecurity.model.ListReport;
 import com.icsseseguridad.locationsecurity.model.ListVisit;
@@ -53,6 +55,9 @@ interface APIInterface {
     @FormUrlEncoded
     @POST("public/auth/admin")
     Call<MultipleResource> signInAdmin(@Field("dni") String dni, @Field("password") String password);
+
+    @GET("public/auth/verify")
+    Call<Guard> verifySession(@Header("APP-TOKEN") String appToken);
 
     @FormUrlEncoded
     @POST("public/watch/start")
@@ -174,6 +179,12 @@ interface APIInterface {
             @Field("user_name") String userName,
             @Field("text") String text);
 
+    @GET("public/binnacle-reply/guard/{guard_id}/comment/unread")
+    Call<ListRepliesWithUnread> getUnreadReplies(@Header("APP-TOKEN") String appToken , @Path("guard_id") Long guardId);
+
+    @PUT("public/binnacle-reply/guard/report/{report_id}/read")
+    Call<MultipleResource> putReportRead(@Header("APP-TOKEN") String appToken, @Path("report_id") Long reportId);
+
     @GET("public/utility/name/TABLET_GPS_UPDATE")
     Call<ConfigUtility> getUpdateGPS(@Header("APP-TOKEN") String appToken);
 
@@ -244,6 +255,12 @@ interface APIInterface {
             @Header("APP-TOKEN") String appToken,
             @Path("channel_id") Long channelId,
             @Body List<User> body);
+
+    @GET("public/messenger/conversations/guard/{guard_id}/chat/unread")
+    Call<ListChatWithUnread> getUnreadMessages(@Header("APP-TOKEN") String appToken , @Path("guard_id") Long guardId);
+
+    @PUT("public/messenger/conversations/guard/{guard_id}/chat/{chat_id}/read")
+    Call<MultipleResource> putChatRead(@Header("APP-TOKEN") String appToken, @Path("guard_id") Long guardId, @Path("chat_id") Long chatId);
 
     @FormUrlEncoded
     @POST("public/alert")
