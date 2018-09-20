@@ -37,5 +37,5 @@
     <string name="cancel">Cancelar</string>
     <string name="exit">Salir</string>
     <string name="finish">Finalizar</string>
-    <string name="default_notification_channel_id">default_channel</string>
+    <string name="default_notification_channel_id">"Mensajes"</string>
 </resources>

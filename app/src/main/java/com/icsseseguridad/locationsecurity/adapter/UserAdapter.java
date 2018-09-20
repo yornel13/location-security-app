@@ -91,7 +91,9 @@ public class UserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder implements CompoundButton.OnCheckedChangeListener {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements
+            CompoundButton.OnCheckedChangeListener,
+            View.OnClickListener {
 
         LinearLayout row;
 
@@ -110,11 +112,19 @@ public class UserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             item = itemView.findViewById(R.id.item);
             checkbox = itemView.findViewById(R.id.checkbox);
             checkbox.setOnCheckedChangeListener(this);
+            row.setOnClickListener(this);
         }
 
         @Override
         public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
             EventBus.getDefault().post(new OnUserCheck(getAdapterPosition(), isChecked));
+        }
+
+        @Override
+        public void onClick(View view) {
+            System.out.println("click");
+            checkbox.setChecked(!checkbox.isChecked());
+            // EventBus.getDefault().post(new OnUserCheck(getAdapterPosition(), checkbox.isChecked()));
         }
     }
 
