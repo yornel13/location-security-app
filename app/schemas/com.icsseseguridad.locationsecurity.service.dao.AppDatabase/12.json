@@ -1,0 +1,727 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 12,
+    "identityHash": "3cb35958f1331fb405c2cc8c24cb3dd1",
+    "entities": [
+      {
+        "tableName": "visitor",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` TEXT, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `dni` TEXT, `name` TEXT, `lastname` TEXT, `company` TEXT, `create_date` INTEGER, `update_date` INTEGER, `photo` TEXT, `active` INTEGER, `sync` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "uid",
+            "columnName": "uid",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "dni",
+            "columnName": "dni",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lastname",
+            "columnName": "lastname",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "company",
+            "columnName": "company",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "createDate",
+            "columnName": "create_date",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "updateDate",
+            "columnName": "update_date",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "photo",
+            "columnName": "photo",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "active",
+            "columnName": "active",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "sync",
+            "columnName": "sync",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_visitor_id",
+            "unique": true,
+            "columnNames": [
+              "id"
+            ],
+            "createSql": "CREATE UNIQUE INDEX `index_visitor_id` ON `${TABLE_NAME}` (`id`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "clerk",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `dni` TEXT, `name` TEXT, `lastname` TEXT, `address` TEXT, `create_date` INTEGER, `update_date` INTEGER, `active` INTEGER)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "dni",
+            "columnName": "dni",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lastname",
+            "columnName": "lastname",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "address",
+            "columnName": "address",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "createDate",
+            "columnName": "create_date",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "updateDate",
+            "columnName": "update_date",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "active",
+            "columnName": "active",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_clerk_id",
+            "unique": true,
+            "columnNames": [
+              "id"
+            ],
+            "createSql": "CREATE UNIQUE INDEX `index_clerk_id` ON `${TABLE_NAME}` (`id`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "vehicle",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` TEXT, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `plate` TEXT, `vehicle` TEXT, `model` TEXT, `type` TEXT, `create_date` INTEGER, `update_date` INTEGER, `photo` TEXT, `active` INTEGER, `sync` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "uid",
+            "columnName": "uid",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "plate",
+            "columnName": "plate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "vehicle",
+            "columnName": "vehicle",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "model",
+            "columnName": "model",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "createDate",
+            "columnName": "create_date",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "updateDate",
+            "columnName": "update_date",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "photo",
+            "columnName": "photo",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "active",
+            "columnName": "active",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "sync",
+            "columnName": "sync",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_vehicle_id",
+            "unique": true,
+            "columnNames": [
+              "id"
+            ],
+            "createSql": "CREATE UNIQUE INDEX `index_vehicle_id` ON `${TABLE_NAME}` (`id`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "company",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_company_id",
+            "unique": true,
+            "columnNames": [
+              "id"
+            ],
+            "createSql": "CREATE UNIQUE INDEX `index_company_id` ON `${TABLE_NAME}` (`id`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "control_visit",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` TEXT, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `vehicle_id` INTEGER, `visitor_id` INTEGER, `guard_id` INTEGER, `clerk_id` INTEGER, `dni` INTEGER, `update_date` INTEGER, `persons` INTEGER, `observation` TEXT, `latitude` TEXT, `longitude` TEXT, `image_1` TEXT, `image_2` TEXT, `image_3` TEXT, `image_4` TEXT, `image_5` TEXT, `comment` TEXT, `status` INTEGER, `sync` INTEGER NOT NULL, `vehicleuid` TEXT, `vehicleid` INTEGER, `vehicleplate` TEXT, `vehiclevehicle` TEXT, `vehiclemodel` TEXT, `vehicletype` TEXT, `vehiclecreate_date` INTEGER, `vehicleupdate_date` INTEGER, `vehiclephoto` TEXT, `vehicleactive` INTEGER, `vehiclesync` INTEGER, `visitoruid` TEXT, `visitorid` INTEGER, `visitordni` TEXT, `visitorname` TEXT, `visitorlastname` TEXT, `visitorcompany` TEXT, `visitorcreate_date` INTEGER, `visitorupdate_date` INTEGER, `visitorphoto` TEXT, `visitoractive` INTEGER, `visitorsync` INTEGER, `clerkid` INTEGER, `clerkdni` TEXT, `clerkname` TEXT, `clerklastname` TEXT, `clerkaddress` TEXT, `clerkcreate_date` INTEGER, `clerkupdate_date` INTEGER, `clerkactive` INTEGER, FOREIGN KEY(`vehicle_id`) REFERENCES `vehicle`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`visitor_id`) REFERENCES `visitor`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`clerk_id`) REFERENCES `clerk`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "uid",
+            "columnName": "uid",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "vehicleId",
+            "columnName": "vehicle_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "visitorId",
+            "columnName": "visitor_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "guardId",
+            "columnName": "guard_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "clerkId",
+            "columnName": "clerk_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "createDate",
+            "columnName": "dni",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "updateDate",
+            "columnName": "update_date",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "persons",
+            "columnName": "persons",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "materials",
+            "columnName": "observation",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "latitude",
+            "columnName": "latitude",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "longitude",
+            "columnName": "longitude",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "image1",
+            "columnName": "image_1",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "image2",
+            "columnName": "image_2",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "image3",
+            "columnName": "image_3",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "image4",
+            "columnName": "image_4",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "image5",
+            "columnName": "image_5",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "comment",
+            "columnName": "comment",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "sync",
+            "columnName": "sync",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "vehicle.uid",
+            "columnName": "vehicleuid",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "vehicle.id",
+            "columnName": "vehicleid",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "vehicle.plate",
+            "columnName": "vehicleplate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "vehicle.vehicle",
+            "columnName": "vehiclevehicle",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "vehicle.model",
+            "columnName": "vehiclemodel",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "vehicle.type",
+            "columnName": "vehicletype",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "vehicle.createDate",
+            "columnName": "vehiclecreate_date",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "vehicle.updateDate",
+            "columnName": "vehicleupdate_date",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "vehicle.photo",
+            "columnName": "vehiclephoto",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "vehicle.active",
+            "columnName": "vehicleactive",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "vehicle.sync",
+            "columnName": "vehiclesync",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "visitor.uid",
+            "columnName": "visitoruid",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "visitor.id",
+            "columnName": "visitorid",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "visitor.dni",
+            "columnName": "visitordni",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "visitor.name",
+            "columnName": "visitorname",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "visitor.lastname",
+            "columnName": "visitorlastname",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "visitor.company",
+            "columnName": "visitorcompany",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "visitor.createDate",
+            "columnName": "visitorcreate_date",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "visitor.updateDate",
+            "columnName": "visitorupdate_date",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "visitor.photo",
+            "columnName": "visitorphoto",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "visitor.active",
+            "columnName": "visitoractive",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "visitor.sync",
+            "columnName": "visitorsync",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "clerk.id",
+            "columnName": "clerkid",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "clerk.dni",
+            "columnName": "clerkdni",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "clerk.name",
+            "columnName": "clerkname",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "clerk.lastname",
+            "columnName": "clerklastname",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "clerk.address",
+            "columnName": "clerkaddress",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "clerk.createDate",
+            "columnName": "clerkcreate_date",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "clerk.updateDate",
+            "columnName": "clerkupdate_date",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "clerk.active",
+            "columnName": "clerkactive",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_control_visit_id",
+            "unique": true,
+            "columnNames": [
+              "id"
+            ],
+            "createSql": "CREATE UNIQUE INDEX `index_control_visit_id` ON `${TABLE_NAME}` (`id`)"
+          },
+          {
+            "name": "index_control_visit_vehicle_id",
+            "unique": false,
+            "columnNames": [
+              "vehicle_id"
+            ],
+            "createSql": "CREATE  INDEX `index_control_visit_vehicle_id` ON `${TABLE_NAME}` (`vehicle_id`)"
+          },
+          {
+            "name": "index_control_visit_visitor_id",
+            "unique": false,
+            "columnNames": [
+              "visitor_id"
+            ],
+            "createSql": "CREATE  INDEX `index_control_visit_visitor_id` ON `${TABLE_NAME}` (`visitor_id`)"
+          },
+          {
+            "name": "index_control_visit_clerk_id",
+            "unique": false,
+            "columnNames": [
+              "clerk_id"
+            ],
+            "createSql": "CREATE  INDEX `index_control_visit_clerk_id` ON `${TABLE_NAME}` (`clerk_id`)"
+          },
+          {
+            "name": "index_control_visit_guard_id",
+            "unique": false,
+            "columnNames": [
+              "guard_id"
+            ],
+            "createSql": "CREATE  INDEX `index_control_visit_guard_id` ON `${TABLE_NAME}` (`guard_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "vehicle",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "vehicle_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "visitor",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "visitor_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "clerk",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "clerk_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "banner",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `photo` TEXT, `create_at` INTEGER, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "photo",
+            "columnName": "photo",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "createAt",
+            "columnName": "create_at",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_banner_id",
+            "unique": true,
+            "columnNames": [
+              "id"
+            ],
+            "createSql": "CREATE UNIQUE INDEX `index_banner_id` ON `${TABLE_NAME}` (`id`)"
+          }
+        ],
+        "foreignKeys": []
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"3cb35958f1331fb405c2cc8c24cb3dd1\")"
+    ]
+  }
+}

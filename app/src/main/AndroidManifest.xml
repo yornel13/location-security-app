@@ -22,12 +22,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".view.ui.MainActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".ui.LoginActivity"
+            android:name=".view.ui.LoginActivity"
             android:theme="@style/AppTheme.Overlay"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
@@ -41,112 +41,122 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.visit.VisitsActivity"
+            android:name=".view.ui.visit.VisitsActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".ui.visit.AddVisitActivity"
+            android:name=".view.ui.visit.AddVisitActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
             android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".ui.visit.AddVehicleActivity"
+            android:name=".view.ui.visit.AddVehicleActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
             android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".ui.visit.AddClerkActivity"
+            android:name=".view.ui.visit.AddClerkActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
             android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".ui.visit.AddVisitorActivity"
+            android:name=".view.ui.visit.AddVisitorActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
             android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".ui.visit.FinishVisitActivity"
+            android:name=".view.ui.visit.FinishVisitActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
             android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".ui.visit.AddInfoVisitActivity"
+            android:name=".view.ui.visit.AddInfoVisitActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
             android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".ui.visit.VisitActivity"
+            android:name=".view.ui.visit.VisitActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".ui.binnacle.BinnacleActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:configChanges="orientation|screenSize"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".ui.chat.MessageActivity"
+            android:name=".view.ui.binnacle.BinnacleActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".ui.AlertsActivity"
+            android:name=".view.ui.chat.MessageActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:configChanges="orientation|screenSize"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".view.ui.AlertsActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="adjustResize">
         </activity>
         <activity
-            android:name=".ui.binnacle.AddReportActivity"
+            android:name=".view.ui.binnacle.AddReportActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
             android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="adjustResize">
         </activity>
         <activity
-            android:name=".ui.binnacle.ReportActivity"
+            android:name=".view.ui.binnacle.ReportActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="adjustResize">
         </activity>
         <activity
-            android:name=".ui.DropActivity"
+            android:name=".view.ui.DropActivity"
             android:excludeFromRecents="true"
             android:theme="@style/AppTheme.NoActionBar"
             android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="adjustResize">
         </activity>
         <activity
-            android:name=".ui.chat.ChatActivity"
+            android:name=".view.ui.chat.ChatActivity"
             android:launchMode="singleInstance"
             android:theme="@style/AppTheme.NoActionBar"
             android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="adjustResize">
         </activity>
         <activity
-            android:name=".ui.chat.AddUsersActivity"
+            android:name=".view.ui.chat.AddUsersActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="adjustResize">
         </activity>
-        <receiver android:name=".service.OnBootReceiver">
+        <receiver android:name=".service.background.OnBootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <service android:name=".service.LocationService" android:process=":gps_service" />
         <service
-            android:name=".service.AppFirebaseMessagingService"
+            android:name=".service.background.LocationService"
+            android:process=":gps_service" />
+        <service
+            android:name=".service.background.AppFirebaseMessagingService"
             android:stopWithTask="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
+
+        <service
+            android:name=".service.synchronizer.MainSyncJob"
+            android:permission="android.permission.BIND_JOB_SERVICE"/>
+        <service
+            android:name=".service.synchronizer.AlertSyncJob"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_message_black" />

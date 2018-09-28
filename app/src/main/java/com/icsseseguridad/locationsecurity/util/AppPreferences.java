@@ -4,12 +4,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.location.Location;
-import android.util.Log;
 
 import com.google.gson.Gson;
-import com.icsseseguridad.locationsecurity.model.ConfigUtility;
-import com.icsseseguridad.locationsecurity.model.Guard;
-import com.icsseseguridad.locationsecurity.model.Watch;
+import com.icsseseguridad.locationsecurity.service.entity.Alert;
+import com.icsseseguridad.locationsecurity.service.entity.ConfigUtility;
+import com.icsseseguridad.locationsecurity.service.entity.Guard;
+import com.icsseseguridad.locationsecurity.service.entity.Watch;
 
 public class AppPreferences {
 
@@ -21,6 +21,7 @@ public class AppPreferences {
     private static final String WATCH = "watch";
     private static final String IMEI = "imei";
     private static final String DROP = "drop";
+    private static final String ALERT = "alert";
     private static final String GPS_UPDATE = "gps_update";
     private static final String REGISTERED = "registered";
 
@@ -41,6 +42,24 @@ public class AppPreferences {
             editor.putString(GUARD, new Gson().toJson(guard));
         }
         editor.apply();
+    }
+
+    public void setAlert(Alert alert) {
+        editor = preferences.edit();
+        if (alert == null) {
+            editor.putString(ALERT, null);
+        } else {
+            editor.putString(ALERT, new Gson().toJson(alert));
+        }
+        editor.apply();
+    }
+
+    public Alert getAlert() {
+        String json = preferences.getString(ALERT, null);
+        if (json == null) {
+            return null;
+        }
+        return new Gson().fromJson(json, Alert.class);
     }
 
     public String getToken() {

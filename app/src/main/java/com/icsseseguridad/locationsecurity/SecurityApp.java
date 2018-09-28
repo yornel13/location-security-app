@@ -3,54 +3,60 @@ package com.icsseseguridad.locationsecurity;
 import android.app.Application;
 import android.content.Context;
 import android.util.Log;
-
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.icsseseguridad.locationsecurity.controller.BinnacleController;
-import com.icsseseguridad.locationsecurity.controller.TabletPositionController;
-import com.icsseseguridad.locationsecurity.controller.VisitController;
-import com.icsseseguridad.locationsecurity.events.OnGetUpdateGpsFailure;
-import com.icsseseguridad.locationsecurity.events.OnGetUpdateGpsSuccess;
-import com.icsseseguridad.locationsecurity.events.OnListClerkFailure;
-import com.icsseseguridad.locationsecurity.events.OnListClerkSuccess;
-import com.icsseseguridad.locationsecurity.events.OnListCompanyFailure;
-import com.icsseseguridad.locationsecurity.events.OnListCompanySuccess;
-import com.icsseseguridad.locationsecurity.events.OnListIncidenceFailure;
-import com.icsseseguridad.locationsecurity.events.OnListIncidenceSuccess;
-import com.icsseseguridad.locationsecurity.events.OnListUnreadMessagesFailure;
-import com.icsseseguridad.locationsecurity.events.OnListUnreadMessagesSuccess;
-import com.icsseseguridad.locationsecurity.events.OnListUnreadRepliesFailure;
-import com.icsseseguridad.locationsecurity.events.OnListUnreadRepliesSuccess;
-import com.icsseseguridad.locationsecurity.events.OnListVisitorFailure;
-import com.icsseseguridad.locationsecurity.events.OnListVisitorSuccess;
-import com.icsseseguridad.locationsecurity.events.OnListVisitorVehicleFailure;
-import com.icsseseguridad.locationsecurity.events.OnListVisitorVehicleSuccess;
-import com.icsseseguridad.locationsecurity.events.OnSyncClerks;
-import com.icsseseguridad.locationsecurity.events.OnSyncIncidences;
-import com.icsseseguridad.locationsecurity.events.OnSyncUnreadMessages;
-import com.icsseseguridad.locationsecurity.events.OnSyncUnreadReplies;
-import com.icsseseguridad.locationsecurity.events.OnSyncVehicles;
-import com.icsseseguridad.locationsecurity.events.OnSyncVisitors;
-import com.icsseseguridad.locationsecurity.model.Chat;
-import com.icsseseguridad.locationsecurity.model.Clerk;
-import com.icsseseguridad.locationsecurity.model.Company;
-import com.icsseseguridad.locationsecurity.model.ControlVisit;
-import com.icsseseguridad.locationsecurity.model.ListChatWithUnread;
-import com.icsseseguridad.locationsecurity.model.ListClerk;
-import com.icsseseguridad.locationsecurity.model.ListCompany;
-import com.icsseseguridad.locationsecurity.model.ListIncidence;
-import com.icsseseguridad.locationsecurity.model.ListRepliesWithUnread;
-import com.icsseseguridad.locationsecurity.model.ListVisitor;
-import com.icsseseguridad.locationsecurity.model.ListVisitorVehicle;
-import com.icsseseguridad.locationsecurity.model.SpecialReport;
-import com.icsseseguridad.locationsecurity.model.Visitor;
-import com.icsseseguridad.locationsecurity.model.VisitorVehicle;
+import com.icsseseguridad.locationsecurity.service.entity.Chat;
+import com.icsseseguridad.locationsecurity.service.entity.Clerk;
+import com.icsseseguridad.locationsecurity.service.entity.Company;
+import com.icsseseguridad.locationsecurity.service.entity.ControlVisit;
+import com.icsseseguridad.locationsecurity.service.entity.ListChatWithUnread;
+import com.icsseseguridad.locationsecurity.service.entity.ListClerk;
+import com.icsseseguridad.locationsecurity.service.entity.ListCompany;
+import com.icsseseguridad.locationsecurity.service.entity.ListIncidence;
+import com.icsseseguridad.locationsecurity.service.entity.ListRepliesWithUnread;
+import com.icsseseguridad.locationsecurity.service.entity.ListVisitor;
+import com.icsseseguridad.locationsecurity.service.entity.ListVisitorVehicle;
+import com.icsseseguridad.locationsecurity.service.entity.SpecialReport;
+import com.icsseseguridad.locationsecurity.service.entity.Visitor;
+import com.icsseseguridad.locationsecurity.service.entity.VisitorVehicle;
+import com.icsseseguridad.locationsecurity.service.event.OnGetUpdateGpsFailure;
+import com.icsseseguridad.locationsecurity.service.event.OnGetUpdateGpsSuccess;
+import com.icsseseguridad.locationsecurity.service.event.OnListClerkFailure;
+import com.icsseseguridad.locationsecurity.service.event.OnListClerkSuccess;
+import com.icsseseguridad.locationsecurity.service.event.OnListCompanyFailure;
+import com.icsseseguridad.locationsecurity.service.event.OnListCompanySuccess;
+import com.icsseseguridad.locationsecurity.service.event.OnListIncidenceFailure;
+import com.icsseseguridad.locationsecurity.service.event.OnListIncidenceSuccess;
+import com.icsseseguridad.locationsecurity.service.event.OnListUnreadMessagesFailure;
+import com.icsseseguridad.locationsecurity.service.event.OnListUnreadMessagesSuccess;
+import com.icsseseguridad.locationsecurity.service.event.OnListUnreadRepliesFailure;
+import com.icsseseguridad.locationsecurity.service.event.OnListUnreadRepliesSuccess;
+import com.icsseseguridad.locationsecurity.service.event.OnListVisitorFailure;
+import com.icsseseguridad.locationsecurity.service.event.OnListVisitorSuccess;
+import com.icsseseguridad.locationsecurity.service.event.OnListVisitorVehicleFailure;
+import com.icsseseguridad.locationsecurity.service.event.OnListVisitorVehicleSuccess;
+import com.icsseseguridad.locationsecurity.service.event.OnSyncClerks;
+import com.icsseseguridad.locationsecurity.service.event.OnSyncIncidences;
+import com.icsseseguridad.locationsecurity.service.event.OnSyncUnreadMessages;
+import com.icsseseguridad.locationsecurity.service.event.OnSyncUnreadReplies;
+import com.icsseseguridad.locationsecurity.service.event.OnSyncVehicles;
+import com.icsseseguridad.locationsecurity.service.event.OnSyncVisitors;
+import com.icsseseguridad.locationsecurity.service.repository.BinnacleController;
+import com.icsseseguridad.locationsecurity.service.repository.TabletPositionController;
+import com.icsseseguridad.locationsecurity.service.repository.VisitController;
+import com.icsseseguridad.locationsecurity.service.synchronizer.AlertSyncJob;
 import com.icsseseguridad.locationsecurity.util.AppPreferences;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import io.reactivex.Scheduler;
+import io.reactivex.schedulers.Schedulers;
+
+
 public class SecurityApp extends Application {
+
+    public static final String TAG = "SecurityApp";
 
     private static Context context;
     private AppPreferences preferences;
@@ -76,6 +82,8 @@ public class SecurityApp extends Application {
     public ListChatWithUnread unreadMessages;
     public ListRepliesWithUnread unreadReplies;
 
+    private Scheduler backgroundThread;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -83,8 +91,15 @@ public class SecurityApp extends Application {
         Fresco.initialize(this);
         SecurityApp.context = getApplicationContext();
         preferences = new AppPreferences(this);
-        getDefaultData();
-        getDefaultIncidences(false);
+        // getDefaultData();
+        // getDefaultIncidences(false);
+        backgroundThread = Schedulers.newThread();
+        //MainSyncJob.jobScheduler(this);
+        //JobManager.create(this).addJobCreator(new SecurityJobCreator());
+        if (getPreferences().getAlert() != null) {
+            //  getPreferences().setAlert(null);
+            AlertSyncJob.jobScheduler(this);
+        }
     }
 
     public void getDefaultData(boolean bVehicles, boolean bVisitors, boolean bClerks, boolean bCompanies) {
@@ -101,6 +116,10 @@ public class SecurityApp extends Application {
         if (companies == null && bCompanies) {
             visitController.getCompanies();
         }
+    }
+
+    public Scheduler getBackgroundThread() {
+        return backgroundThread;
     }
 
     public void getDefaultIncidences(boolean update) {
@@ -160,6 +179,9 @@ public class SecurityApp extends Application {
         EventBus.getDefault().removeStickyEvent(OnListVisitorSuccess.class);
         this.visitors = event.list;
         EventBus.getDefault().post(new OnSyncVisitors(true));
+
+        // db.getVisitorDao().insertAll(event.list.visitors);
+        // Log.e("Sync", "size; " + db.getVisitorDao().getAll().size());
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)

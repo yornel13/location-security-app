@@ -10,7 +10,7 @@
     app:cardElevation="4dp"
     app:cardCornerRadius="0dp"
     app:cardBackgroundColor="@color/white"
-    android:layout_height="wrap_content">
+    android:layout_height="106dp">
 
     <RelativeLayout
         android:id="@+id/place_container"
@@ -70,17 +70,32 @@
                     android:textAlignment="viewStart"
                     android:text="Hora" />
 
-
             </LinearLayout>
 
         </LinearLayout>
+
+        <com.icsseseguridad.locationsecurity.util.AppTextView
+            android:id="@+id/status"
+            android:layout_marginEnd="16dp"
+            android:paddingBottom="6dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/greenBadge"
+            app:fontFamily="Roboto-Bold.ttf"
+            android:maxLines="1"
+            android:textSize="16sp"
+            android:layout_alignParentBottom="true"
+            android:gravity="end"
+            android:textAlignment="viewEnd"
+            android:layout_marginBottom="16dp"
+            android:text="Finalizada" />
 
         <FrameLayout
             android:layout_marginStart="128dp"
             android:layout_marginEnd="16dp"
             android:layout_below="@+id/data_container"
             android:layout_width="match_parent"
-            android:layout_height="2px"
+            android:layout_height="2dp"
             android:background="#E6E6E6" >
         </FrameLayout>
 
