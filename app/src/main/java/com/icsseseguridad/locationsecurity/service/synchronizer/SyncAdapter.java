@@ -8,7 +8,9 @@ import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.icsseseguridad.locationsecurity.SecurityApp;
 import com.icsseseguridad.locationsecurity.service.dao.AppDatabase;
+import com.icsseseguridad.locationsecurity.service.entity.ConfigUtility;
 import com.icsseseguridad.locationsecurity.service.entity.ControlVisit;
 import com.icsseseguridad.locationsecurity.service.entity.ListBanner;
 import com.icsseseguridad.locationsecurity.service.entity.ListClerk;
@@ -93,12 +95,13 @@ public class SyncAdapter {
     }
 
     private void updateDatabase() {
+        getPGSUpdateTime();
+        getBanners();
         getVisitors();
         getVehicles();
         getClerks();
         getCompanies();
         getControlVisits();
-        getBanners();
         getIncidences();
         getSpecialReports();
     }
@@ -281,6 +284,24 @@ public class SyncAdapter {
             }
         } catch (Exception e) {
             Log.e(TAG, "Error updating reports");
+            e.printStackTrace();
+        }
+    }
+
+    private void getPGSUpdateTime() {
+        APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
+        Call<ConfigUtility> call = apiInterface.getUpdateGPS(preferences.getToken());
+        try {
+            Response<ConfigUtility> tasks = call.execute();
+            ConfigUtility data =  tasks.body();
+            if (tasks.isSuccessful() && data != null) {
+                preferences.setGpsUpdate(data);
+                Log.d(TAG, "Update gps time was successful");
+            } else {
+                Log.e(TAG, "Error in data gps time, code: " + tasks.code());
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error updating gps time");
             e.printStackTrace();
         }
     }

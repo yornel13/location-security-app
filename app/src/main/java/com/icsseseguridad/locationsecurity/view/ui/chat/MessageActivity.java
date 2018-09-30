@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -84,6 +83,7 @@ public class MessageActivity extends BaseActivity implements BottomNavigationVie
 
     @BindView(R.id.loading) View loadingView;
     @BindView(R.id.empty) View emptyView;
+    @BindView(R.id.placeSnackBar) View placeSnackbar;
 
     private MessengerAdapter adapter;
     private QBadgeView badgeChat;
@@ -292,7 +292,7 @@ public class MessageActivity extends BaseActivity implements BottomNavigationVie
     public void onListAdminFailure(OnListAdminFailure event) {
         EventBus.getDefault().removeStickyEvent(OnListAdminFailure.class);
         dialog.dismiss();
-        Snackbar.make(toolbar, event.message, Snackbar.LENGTH_LONG).show();
+        showSnackbarLong(placeSnackbar, event.message);
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
@@ -315,7 +315,7 @@ public class MessageActivity extends BaseActivity implements BottomNavigationVie
     public void onListGuardFailure(OnListGuardFailure event) {
         EventBus.getDefault().removeStickyEvent(OnListGuardFailure.class);
         dialog.dismiss();
-        Snackbar.make(toolbar, event.message, Snackbar.LENGTH_LONG).show();
+        showSnackbarLong(placeSnackbar, event.message);
     }
 
     public void createChat(Guard guard) {
@@ -381,14 +381,14 @@ public class MessageActivity extends BaseActivity implements BottomNavigationVie
     public void onCreateChatFailure(OnCreateChatFailure event) {
         EventBus.getDefault().removeStickyEvent(OnCreateChatFailure.class);
         dialog.dismiss();
-        Snackbar.make(toolbar, event.message, Snackbar.LENGTH_LONG).show();
+        showSnackbarLong(placeSnackbar, event.message);
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onListChatFailure(OnListChatFailure event) {
         EventBus.getDefault().removeStickyEvent(OnListChatFailure.class);
         loadingView.setVisibility(View.GONE);
-        Snackbar.make(toolbar, event.message, Snackbar.LENGTH_LONG).show();
+        showSnackbarLong(placeSnackbar, event.message);
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
@@ -408,7 +408,7 @@ public class MessageActivity extends BaseActivity implements BottomNavigationVie
     public void onListChannelFailure(OnListChannelFailure event) {
         EventBus.getDefault().removeStickyEvent(OnListChannelFailure.class);
         loadingView.setVisibility(View.GONE);
-        Snackbar.make(toolbar, event.message, Snackbar.LENGTH_LONG).show();
+        showSnackbarLong(placeSnackbar, event.message);
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
@@ -482,7 +482,7 @@ public class MessageActivity extends BaseActivity implements BottomNavigationVie
     public void onCreateChannelSuccess(OnCreateChannelSuccess event) {
         EventBus.getDefault().removeStickyEvent(OnCreateChannelSuccess.class);
         dialog.dismiss();
-        Snackbar.make(toolbar, "Grupo Creado!", Snackbar.LENGTH_LONG).show();
+        showSnackbarLong(placeSnackbar, "Grupo creado con exito!");
         Intent intent = new Intent(this, AddUsersActivity.class);
         intent.putExtra(ChatActivity.CHANNEL_ID, event.channel.id);
         startActivityForResult(intent, INTENT_ADD_USERS);
@@ -492,7 +492,7 @@ public class MessageActivity extends BaseActivity implements BottomNavigationVie
     public void onCreateChannelFailure(OnCreateChannelFailure event) {
         EventBus.getDefault().removeStickyEvent(OnCreateChannelFailure.class);
         dialog.dismiss();
-        Snackbar.make(toolbar, event.message, Snackbar.LENGTH_LONG).show();
+        showSnackbarLong(placeSnackbar, event.message);
     }
 
     @OnClick(R.id.sos_alarm)

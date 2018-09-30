@@ -1,10 +1,14 @@
 package com.icsseseguridad.locationsecurity.view.ui.binnacle;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.widget.NestedScrollView;
@@ -19,6 +23,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.gson.Gson;
 import com.icsseseguridad.locationsecurity.R;
 import com.icsseseguridad.locationsecurity.view.adapter.ReplyAdapter;
@@ -29,7 +38,7 @@ import com.icsseseguridad.locationsecurity.service.event.OnPostReplyFailure;
 import com.icsseseguridad.locationsecurity.service.event.OnPostReplySuccess;
 import com.icsseseguridad.locationsecurity.service.entity.Reply;
 import com.icsseseguridad.locationsecurity.service.entity.SpecialReport;
-import com.icsseseguridad.locationsecurity.service.background.AppFirebaseMessagingService;
+import com.icsseseguridad.locationsecurity.service.background.MessagingService;
 import com.icsseseguridad.locationsecurity.view.ui.BaseActivity;
 import com.icsseseguridad.locationsecurity.util.AppDatetime;
 import com.icsseseguridad.locationsecurity.util.Const;
@@ -48,7 +57,7 @@ import butterknife.OnClick;
 
 import static com.bumptech.glide.request.RequestOptions.centerCropTransform;
 
-public class ReportActivity extends BaseActivity {
+public class ReportActivity extends BaseActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     public static final String REPORT_ID = "report_id";
 
@@ -101,7 +110,7 @@ public class ReportActivity extends BaseActivity {
                         putAllRead(false);
                         NotificationManagerCompat notificationManager = NotificationManagerCompat
                                 .from(ReportActivity.this);
-                        notificationManager.cancel(AppFirebaseMessagingService.ID_REPLY);
+                        notificationManager.cancel(MessagingService.ID_REPLY);
                     }
                 });
             }
@@ -115,6 +124,12 @@ public class ReportActivity extends BaseActivity {
         ButterKnife.bind(this);
         setSupportActionBarBack(toolbar);
         setupData(app.report);
+
+        new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
     }
 
     public void setupData(SpecialReport report) {
@@ -221,7 +236,7 @@ public class ReportActivity extends BaseActivity {
         super.onResume();
         registerReceiver(replyReceiver, new IntentFilter(Const.NEW_REPLY));
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        notificationManager.cancel(AppFirebaseMessagingService.ID_REPLY);
+        notificationManager.cancel(MessagingService.ID_REPLY);
         if (messingArea.getVisibility() == View.VISIBLE) {
             new BinnacleController().getReplies(report.id);
         }
@@ -354,5 +369,32 @@ public class ReportActivity extends BaseActivity {
                 new BinnacleController().putReportRead(report.id);
             }
         }
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        System.out.println("starting connection");
+        startLocationUpdates();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @SuppressLint("MissingPermission")
+    protected void startLocationUpdates() {
+        FusedLocationProviderClient mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        mFusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                System.out.println(gson().toJson(location));
+            }
+        });
     }
 }

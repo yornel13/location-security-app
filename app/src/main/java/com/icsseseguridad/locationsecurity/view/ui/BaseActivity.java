@@ -9,11 +9,15 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,12 +27,20 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.android.gms.tasks.Tasks;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.icsseseguridad.locationsecurity.R;
 import com.icsseseguridad.locationsecurity.SecurityApp;
+import com.icsseseguridad.locationsecurity.service.background.TrackingService;
 import com.icsseseguridad.locationsecurity.service.dao.AppDatabase;
 import com.icsseseguridad.locationsecurity.service.entity.MultipleResource;
 import com.icsseseguridad.locationsecurity.service.entity.TabletPosition;
@@ -41,6 +53,7 @@ import com.icsseseguridad.locationsecurity.service.synchronizer.AlertSyncJob;
 import com.icsseseguridad.locationsecurity.service.synchronizer.MainSyncJob;
 import com.icsseseguridad.locationsecurity.service.synchronizer.SendAlert;
 import com.icsseseguridad.locationsecurity.util.AppPreferences;
+import com.icsseseguridad.locationsecurity.util.CurrentLocation;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -238,20 +251,23 @@ public class BaseActivity extends AppCompatActivity {
         final AppPreferences preferences = getPreferences();
         alert.message = "Alerta activada por el guardia "+preferences.getGuard().getFullname();
         alert.guardId = preferences.getGuard().id;
-        alert.latitude = String.valueOf(preferences.getLastKnownLoc().getLatitude());
-        alert.longitude = String.valueOf(preferences.getLastKnownLoc().getLongitude());
+        //alert.latitude = String.valueOf(preferences.getLastKnownLoc().getLatitude());
+        ///alert.longitude = String.valueOf(preferences.getLastKnownLoc().getLongitude());
         alert.createDate = new Timestamp(new Date().getTime());
         alert.updateDate = new Timestamp(new Date().getTime());
         alert.status = 1;
         Single.create(new SingleOnSubscribe<Boolean>() {
             @Override
             public void subscribe(SingleEmitter<Boolean> e) throws Exception {
+                Location location = CurrentLocation.get(getBaseContext());
+                alert.latitude = String.valueOf(location.getLatitude());
+                alert.longitude = String.valueOf(location.getLongitude());
                 if (new SendAlert().send(alert)) {
                     e.onSuccess(true);
                 } else {
                     e.onError(new Exception("Error"));
                 }
-                savePosition(alert, preferences);
+                savePosition(alert, preferences, location);
             }
         })
                 .subscribeOn(Schedulers.io())
@@ -278,8 +294,8 @@ public class BaseActivity extends AppCompatActivity {
                 });
     }
 
-    private void savePosition(Alert alert, AppPreferences preferences) {
-        final TabletPosition position = new TabletPosition(preferences.getLastKnownLoc(), getImei());
+    private void savePosition(Alert alert, AppPreferences preferences, Location location) {
+        final TabletPosition position = new TabletPosition(location, getImei());
         position.generatedTime = new Timestamp(new Date().getTime());
         position.watchId = preferences.getWatch().id;
         position.message = TabletPosition.MESSAGE.SOS1.name();
@@ -288,21 +304,6 @@ public class BaseActivity extends AppCompatActivity {
         AppDatabase.getInstance(getApplicationContext())
                 .getPositionDao().insert(position);
     }
-
-//    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-//    public void sendAlertFailure(OnSendAlertFailure event) {
-//        EventBus.getDefault().removeStickyEvent(OnSendAlertFailure.class);
-//        countSend.setText("FALLIDO");
-//        cancelButton.setEnabled(true);
-//    }
-//
-//    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-//    public void sendAlertSuccess(OnSendAlertSuccess event) {
-//        EventBus.getDefault().removeStickyEvent(OnSendAlertSuccess.class);
-//        cancelButton.setEnabled(true);
-//        cancelButton.setText("SALIR");
-//        countSend.setText("ENVIADA");
-//    }
 
     public Gson gson() {
         return new GsonBuilder()
@@ -324,7 +325,7 @@ public class BaseActivity extends AppCompatActivity {
     public void clearSession() {
         getPreferences().clearWatch();
         startActivity(new Intent(this, LoginActivity.class));
-        stopService(new Intent(this, LocationService.class));
+        stopService(new Intent(this, TrackingService.class));
         finish();
     }
 
@@ -336,5 +337,19 @@ public class BaseActivity extends AppCompatActivity {
 
         Toast.makeText(this, "Sesión Expirada", Toast.LENGTH_LONG).show();
         clearSession();
+    }
+
+    protected void showSnackbar(@NonNull View view, @NonNull String content) {
+        Snackbar snack = Snackbar.make(view, content, Snackbar.LENGTH_SHORT);
+        View sbView = snack.getView();
+        sbView.setBackground(getResources().getDrawable(R.drawable.snack_background));
+        snack.show();
+    }
+
+    protected void showSnackbarLong(@NonNull View view, @NonNull String content) {
+        Snackbar snack = Snackbar.make(view, content, Snackbar.LENGTH_LONG);
+        View sbView = snack.getView();
+        sbView.setBackground(getResources().getDrawable(R.drawable.snack_background));
+        snack.show();
     }
 }

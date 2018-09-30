@@ -108,7 +108,7 @@ public class SpecialReport {
     public boolean sync = true;
 
     @Ignore
-    public Integer unread;
+    public Integer unread = 0;
 
     @Ignore
     public Incidence incidence;

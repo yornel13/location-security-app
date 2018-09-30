@@ -286,7 +286,6 @@ public class LocationService extends Service implements SensorEventListener {
         }
     }
 
-
     private void initializeLocationManager() {
         Log.e(TAG, "initializeLocationManager");
         if (mLocationManager == null) {

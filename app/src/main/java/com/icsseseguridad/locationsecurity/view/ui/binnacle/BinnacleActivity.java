@@ -3,12 +3,11 @@ package com.icsseseguridad.locationsecurity.view.ui.binnacle;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.Snackbar;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -18,23 +17,20 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.icsseseguridad.locationsecurity.R;
-import com.icsseseguridad.locationsecurity.service.synchronizer.MainSyncJob;
-import com.icsseseguridad.locationsecurity.view.adapter.ReportAdapter;
-import com.icsseseguridad.locationsecurity.service.event.OnClickReport;
-import com.icsseseguridad.locationsecurity.service.event.OnListGuardReportFailure;
-import com.icsseseguridad.locationsecurity.service.event.OnListGuardReportSuccess;
-import com.icsseseguridad.locationsecurity.service.event.OnSyncUnreadMessages;
-import com.icsseseguridad.locationsecurity.service.event.OnSyncUnreadReplies;
 import com.icsseseguridad.locationsecurity.service.entity.ReportWithUnread;
 import com.icsseseguridad.locationsecurity.service.entity.SpecialReport;
+import com.icsseseguridad.locationsecurity.service.event.OnClickReport;
+import com.icsseseguridad.locationsecurity.service.event.OnSyncUnreadMessages;
+import com.icsseseguridad.locationsecurity.service.event.OnSyncUnreadReplies;
+import com.icsseseguridad.locationsecurity.service.synchronizer.MainSyncJob;
+import com.icsseseguridad.locationsecurity.util.UTILITY;
+import com.icsseseguridad.locationsecurity.view.adapter.ReportAdapter;
 import com.icsseseguridad.locationsecurity.view.ui.AlertsActivity;
 import com.icsseseguridad.locationsecurity.view.ui.BaseActivity;
 import com.icsseseguridad.locationsecurity.view.ui.chat.MessageActivity;
 import com.icsseseguridad.locationsecurity.view.ui.visit.VisitsActivity;
-import com.icsseseguridad.locationsecurity.util.UTILITY;
 import com.icsseseguridad.locationsecurity.viewmodel.BinnacleListViewModel;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -64,6 +60,7 @@ public class BinnacleActivity extends BaseActivity implements BottomNavigationVi
     @BindView(R.id.loading) View loadingView;
     @BindView(R.id.empty) View emptyView;
     @BindView(R.id.search_field) EditText searchField;
+    @BindView(R.id.placeSnackBar) View placeSnackbar;
 
     private ReportAdapter adapter;
     private QBadgeView badgeChat;
@@ -166,7 +163,8 @@ public class BinnacleActivity extends BaseActivity implements BottomNavigationVi
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
-                case INTENT_REGISTER_REPORT:Snackbar.make(toolbar, "Reporte Enviado con Exito.", Snackbar.LENGTH_LONG).show();
+                case INTENT_REGISTER_REPORT:
+                    showSnackbarLong(placeSnackbar, "Reporte creado con exito.");
                     if (reports != null) {
                         reports.add(0, app.report);
                         checkView();
@@ -223,19 +221,19 @@ public class BinnacleActivity extends BaseActivity implements BottomNavigationVi
         startActivityForResult(new Intent(this, AddReportActivity.class), INTENT_REGISTER_REPORT);
     }
 
-    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    public void onListGuardReportFailure(OnListGuardReportFailure event) {
-        EventBus.getDefault().removeStickyEvent(OnListGuardReportFailure.class);
-        loadingView.setVisibility(View.GONE);
-        Snackbar.make(toolbar, event.message, Snackbar.LENGTH_LONG).show();
-    }
-
-    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    public void onListGuardReportSuccess(OnListGuardReportSuccess event) {
-        EventBus.getDefault().removeStickyEvent(OnListGuardReportSuccess.class);
-        reports = event.list.reports;
-        checkView();
-    }
+//    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+//    public void onListGuardReportFailure(OnListGuardReportFailure event) {
+//        EventBus.getDefault().removeStickyEvent(OnListGuardReportFailure.class);
+//        loadingView.setVisibility(View.GONE);
+//        Snackbar.make(toolbar, event.message, Snackbar.LENGTH_LONG).show();
+//    }
+//
+//    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+//    public void onListGuardReportSuccess(OnListGuardReportSuccess event) {
+//        EventBus.getDefault().removeStickyEvent(OnListGuardReportSuccess.class);
+//        reports = event.list.reports;
+//        checkView();
+//    }
 
     public void checkView() {
         loadingView.setVisibility(View.GONE);
@@ -265,14 +263,15 @@ public class BinnacleActivity extends BaseActivity implements BottomNavigationVi
     }
 
     void checkUnread() {
-        for (SpecialReport report: reports) {
-            report.unread = 0;
-            for (ReportWithUnread reportWithUnread : app.unreadReplies.reportsUnread) {
-                if (report.id.longValue() == reportWithUnread.report.id.longValue()) {
-                    report.unread = reportWithUnread.unread;
+        if (app.unreadReplies != null && app.unreadReplies.reportsUnread != null)
+            for (SpecialReport report: reports) {
+                report.unread = 0;
+                for (ReportWithUnread reportWithUnread : app.unreadReplies.reportsUnread) {
+                    if (report.id.longValue() == reportWithUnread.report.id.longValue()) {
+                        report.unread = reportWithUnread.unread;
+                    }
                 }
             }
-        }
     }
 
     public void orderList() {

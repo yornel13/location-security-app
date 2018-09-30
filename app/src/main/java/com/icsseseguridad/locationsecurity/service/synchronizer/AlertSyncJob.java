@@ -35,10 +35,10 @@ public class AlertSyncJob extends JobService {
         Alert alert = new AppPreferences(getApplicationContext()).getAlert();
         Log.d(TAG, "Finished Job");
         boolean isSuccess = new SendAlert().send(alert);
-        jobFinished(parameters, false);
+        jobFinished(parameters, true);
         if (isSuccess || alert == null) {
             new AppPreferences(getApplicationContext()).setAlert(null);
-            Log.d(TAG, "Canceling Job");
+            Log.d(TAG, "Cancelling Job");
             cancelJob(getApplicationContext());
         }
     }
@@ -50,19 +50,16 @@ public class AlertSyncJob extends JobService {
     }
 
     public static void jobScheduler(Context context) {
+        Alert alert = new AppPreferences(context).getAlert();
+        if (alert == null) {
+            return;
+        }
         jobScheduler(context, REFRESH_INTERVAL);
     }
 
     public static void jobScheduler(Context context, long interval) {
         JobScheduler jobScheduler = (JobScheduler) context.getSystemService(JOB_SCHEDULER_SERVICE);
         ComponentName componentName = new ComponentName(context, AlertSyncJob.class);
-//        JobInfo jobInfo = new JobInfo.Builder(JOB_ID, componentName)
-//                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-//                .setRequiresCharging(true)
-//                .setPersisted(true)
-//                .setPeriodic(interval)
-//                .setMinimumLatency(0)
-//                .build();
         JobInfo jobInfo;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             jobInfo = new JobInfo.Builder(JOB_ID, componentName)

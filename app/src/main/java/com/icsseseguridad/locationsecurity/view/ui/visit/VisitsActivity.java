@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -18,22 +17,19 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.icsseseguridad.locationsecurity.R;
-import com.icsseseguridad.locationsecurity.service.synchronizer.MainSyncJob;
-import com.icsseseguridad.locationsecurity.view.adapter.VisitAdapter;
+import com.icsseseguridad.locationsecurity.service.entity.ControlVisit;
 import com.icsseseguridad.locationsecurity.service.event.OnClickVisit;
-import com.icsseseguridad.locationsecurity.service.event.OnListActiveVisitFailure;
-import com.icsseseguridad.locationsecurity.service.event.OnListActiveVisitSuccess;
 import com.icsseseguridad.locationsecurity.service.event.OnSyncUnreadMessages;
 import com.icsseseguridad.locationsecurity.service.event.OnSyncUnreadReplies;
-import com.icsseseguridad.locationsecurity.service.entity.ControlVisit;
+import com.icsseseguridad.locationsecurity.service.synchronizer.MainSyncJob;
+import com.icsseseguridad.locationsecurity.util.UTILITY;
+import com.icsseseguridad.locationsecurity.view.adapter.VisitAdapter;
 import com.icsseseguridad.locationsecurity.view.ui.AlertsActivity;
 import com.icsseseguridad.locationsecurity.view.ui.BaseActivity;
 import com.icsseseguridad.locationsecurity.view.ui.binnacle.BinnacleActivity;
 import com.icsseseguridad.locationsecurity.view.ui.chat.MessageActivity;
-import com.icsseseguridad.locationsecurity.util.UTILITY;
 import com.icsseseguridad.locationsecurity.viewmodel.VisitListViewModel;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -61,6 +57,7 @@ public class VisitsActivity extends BaseActivity implements  BottomNavigationVie
 
     @BindView(R.id.loading) View loadingView;
     @BindView(R.id.empty) View emptyView;
+    @BindView(R.id.placeSnackBar) View placeSnackbar;
 
     private VisitAdapter adapter;
     private QBadgeView badgeChat;
@@ -114,7 +111,7 @@ public class VisitsActivity extends BaseActivity implements  BottomNavigationVie
         recyclerView.setLayoutManager(mLayoutManager);
         adapter = new VisitAdapter(this, visits);
         recyclerView.setAdapter(adapter);
-        recyclerView.setNestedScrollingEnabled(false);
+        //recyclerView.setNestedScrollingEnabled(false);
     }
 
     @Override
@@ -207,7 +204,7 @@ public class VisitsActivity extends BaseActivity implements  BottomNavigationVie
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case INTENT_REGISTER_VISIT:
-                    Snackbar.make(toolbar, "Visita Registrada con Exito.", Snackbar.LENGTH_LONG).show();
+                    showSnackbarLong(placeSnackbar, "Visita registrada con exito.");
                     if (visits != null) {
                         if (app != null && app.visit != null) {
                             visits.add(app.visit);
@@ -216,26 +213,27 @@ public class VisitsActivity extends BaseActivity implements  BottomNavigationVie
                     }
                     break;
                 case INTENT_SHOW_VISIT:
-                    Snackbar.make(toolbar, "Visita Finaliza con Exito.", Snackbar.LENGTH_LONG).show();
+                    showSnackbarLong(placeSnackbar, "Visita finalizada con exito.");
                     break;
             }
             MainSyncJob.jobScheduler(this);
         }
     }
 
-    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    public void onListActiveVisitFailure(OnListActiveVisitFailure event) {
-        EventBus.getDefault().removeStickyEvent(OnListActiveVisitFailure.class);
-        loadingView.setVisibility(View.GONE);
-        Snackbar.make(toolbar, event.message, Snackbar.LENGTH_LONG).show();
-    }
-
-    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    public void onListActiveVisitSuccess(OnListActiveVisitSuccess event) {
-        EventBus.getDefault().removeStickyEvent(OnListActiveVisitSuccess.class);
-        visits = event.list.visits;
-        checkView();
-    }
+//    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+//    public void onListActiveVisitFailure(OnListActiveVisitFailure event) {
+//        EventBus.getDefault().removeStickyEvent(OnListActiveVisitFailure.class);
+//        loadingView.setVisibility(View.GONE);
+//
+//        showSnackbarLong(placeSnackbar, "Visita registrada con exito.");
+//    }
+//
+//    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+//    public void onListActiveVisitSuccess(OnListActiveVisitSuccess event) {
+//        EventBus.getDefault().removeStickyEvent(OnListActiveVisitSuccess.class);
+//        visits = event.list.visits;
+//        checkView();
+//    }
 
     public void checkView() {
         loadingView.setVisibility(View.GONE);

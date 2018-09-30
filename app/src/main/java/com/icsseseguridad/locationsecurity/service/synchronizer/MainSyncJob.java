@@ -14,6 +14,7 @@ import com.icsseseguridad.locationsecurity.SecurityApp;
 import java.util.concurrent.Callable;
 
 import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainSyncJob extends JobService {
 
@@ -43,8 +44,7 @@ public class MainSyncJob extends JobService {
                 public Object call() throws Exception {
                     return callSync();
                 }
-            }).subscribeOn(((SecurityApp) getApplication())
-                    .getBackgroundThread())
+            }).subscribeOn(Schedulers.io())
                     .subscribe();
         }
         return false;

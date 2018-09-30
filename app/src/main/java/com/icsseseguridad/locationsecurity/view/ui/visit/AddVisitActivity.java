@@ -3,6 +3,7 @@ package com.icsseseguridad.locationsecurity.view.ui.visit;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -24,6 +25,7 @@ import com.icsseseguridad.locationsecurity.service.dao.AppDatabase;
 import com.icsseseguridad.locationsecurity.service.entity.Photo;
 import com.icsseseguridad.locationsecurity.service.repository.PhotoController;
 import com.icsseseguridad.locationsecurity.service.repository.VisitController;
+import com.icsseseguridad.locationsecurity.util.CurrentLocation;
 import com.icsseseguridad.locationsecurity.view.dialog.ClerkSearchDialog;
 import com.icsseseguridad.locationsecurity.view.dialog.VehicleSearchDialog;
 import com.icsseseguridad.locationsecurity.view.dialog.VisitorSearchDialog;
@@ -40,6 +42,7 @@ import com.icsseseguridad.locationsecurity.service.entity.Visitor;
 import com.icsseseguridad.locationsecurity.service.entity.VisitorVehicle;
 import com.icsseseguridad.locationsecurity.view.ui.BaseActivity;
 import com.icsseseguridad.locationsecurity.util.AppDatetime;
+import com.icsseseguridad.locationsecurity.view.ui.binnacle.AddReportActivity;
 import com.icsseseguridad.locationsecurity.viewmodel.ClerkListViewModel;
 import com.icsseseguridad.locationsecurity.viewmodel.VehicleListViewModel;
 import com.icsseseguridad.locationsecurity.viewmodel.VisitListViewModel;
@@ -541,8 +544,6 @@ public class AddVisitActivity extends BaseActivity {
         if (vehicle != null)
             visit.vehicleId = vehicle.id;
         visit.visitorId = visitor.id;
-        visit.latitude = String.valueOf(getPreferences().getLastKnownLoc().getLatitude());
-        visit.longitude = String.valueOf(getPreferences().getLastKnownLoc().getLongitude());
         visit.clerkId = clerk.id;
         visit.guardId = getPreferences().getGuard().id;
         visit.createDate = new Timestamp(new Date().getTime());
@@ -559,7 +560,8 @@ public class AddVisitActivity extends BaseActivity {
         Completable.create(new CompletableOnSubscribe() {
             @Override
             public void subscribe(CompletableEmitter e) throws Exception {
-                saveVisit(visit);
+                Location location = CurrentLocation.get(AddVisitActivity.this);
+                saveVisit(visit, location);
                 e.onComplete();
             }})
                 .subscribeOn(Schedulers.io())
@@ -570,17 +572,11 @@ public class AddVisitActivity extends BaseActivity {
                         onSuccess(visit);
                     }
                 }).isDisposed();
-//        if (visit.getUris() != null && visit.getUris().size() > 0) {
-//            saving = 0;
-//            photosSaved = new ArrayList<>();
-//            savePhotos();
-//        } else {
-//            VisitController visitController = new VisitController();
-//            visitController.register(visit);
-//        }
     }
 
-    private void saveVisit(ControlVisit visit) {
+    private void saveVisit(ControlVisit visit, Location location) {
+        visit.latitude = String.valueOf(location.getLatitude());
+        visit.longitude = String.valueOf(location.getLongitude());
         visit.id = AppDatabase.getInstance(getApplicationContext())
                 .getControlVisitDao().insert(visit);
         if (visit.getUris() != null && visit.getUris().size() > 0) {

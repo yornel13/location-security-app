@@ -29,6 +29,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.icsseseguridad.locationsecurity.R;
+import com.icsseseguridad.locationsecurity.service.background.AppLocationService;
+import com.icsseseguridad.locationsecurity.service.background.TrackingService;
 import com.icsseseguridad.locationsecurity.service.repository.BannerController;
 import com.icsseseguridad.locationsecurity.service.repository.BinnacleController;
 import com.icsseseguridad.locationsecurity.service.repository.MessengerController;
@@ -43,6 +45,7 @@ import com.icsseseguridad.locationsecurity.service.entity.TabletPosition;
 import com.icsseseguridad.locationsecurity.service.background.LocationService;
 import com.icsseseguridad.locationsecurity.service.synchronizer.AlertSyncJob;
 import com.icsseseguridad.locationsecurity.service.synchronizer.MainSyncJob;
+import com.icsseseguridad.locationsecurity.service.synchronizer.SavePositionJob;
 import com.icsseseguridad.locationsecurity.view.ui.binnacle.BinnacleActivity;
 import com.icsseseguridad.locationsecurity.view.ui.chat.MessageActivity;
 import com.icsseseguridad.locationsecurity.view.ui.visit.VisitsActivity;
@@ -126,8 +129,6 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
         //new BannerController().getBanners();
         new MessengerController().getUnreadMessages();
         new BinnacleController().getUnreadReports();
-
-        MainSyncJob.jobScheduler(this);
     }
 
     @Override
@@ -141,8 +142,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
             navigationView.getMenu().getItem(i).setChecked(false);
         }
 
-        if (!isServiceRunning(LocationService.class))
-            startService(new Intent(this, LocationService.class));
+        TrackingService.start(this);
 
         if (app.unreadMessages != null) {
             if (app.unreadMessages.unread > 0) {
@@ -285,7 +285,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
         //updatePosition(getPreferences().getWatch().id, getPreferences().getImei());
         getPreferences().clearWatch();
         startActivity(new Intent(this, LoginActivity.class));
-        stopService(new Intent(this, LocationService.class));
+        stopService(new Intent(this, TrackingService.class));
         finish();
     }
 

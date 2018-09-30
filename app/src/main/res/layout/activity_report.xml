@@ -10,7 +10,7 @@
     android:descendantFocusability="beforeDescendants"
     android:focusableInTouchMode="true"
     android:fitsSystemWindows="true"
-    tools:context=".ui.visit.AddVisitActivity">
+    tools:context=".view.ui.binnacle.ReportActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBarLayout"

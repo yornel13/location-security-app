@@ -1,5 +1,6 @@
 package com.icsseseguridad.locationsecurity.view.ui.binnacle;
 
+import android.annotation.SuppressLint;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -7,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
@@ -21,12 +23,20 @@ import android.widget.Toast;
 
 import com.fxn.pix.Pix;
 import com.fxn.utility.PermUtil;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.android.gms.tasks.Tasks;
 import com.google.gson.Gson;
 import com.icsseseguridad.locationsecurity.R;
 import com.icsseseguridad.locationsecurity.service.dao.AppDatabase;
 import com.icsseseguridad.locationsecurity.service.entity.Photo;
 import com.icsseseguridad.locationsecurity.service.entity.TabletPosition;
 import com.icsseseguridad.locationsecurity.service.entity.VisitorVehicle;
+import com.icsseseguridad.locationsecurity.util.CurrentLocation;
 import com.icsseseguridad.locationsecurity.view.adapter.IncidenceSpinnerAdapter;
 import com.icsseseguridad.locationsecurity.service.repository.BinnacleController;
 import com.icsseseguridad.locationsecurity.service.repository.PhotoController;
@@ -54,6 +64,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -382,9 +393,9 @@ public class AddReportActivity extends PhotoActivity {
         report.watchId = getPreferences().getWatch().id;
         report.watch = getPreferences().getWatch();
         report.observation = observationText.getText().toString();
-        final Location location = getPreferences().getLastKnownLoc();
-        report.latitude = String.valueOf(location.getLatitude());
-        report.longitude = String.valueOf(location.getLongitude());
+        //final Location location = getPreferences().getLastKnownLoc();
+        //report.latitude = String.valueOf(location.getLatitude());
+        //report.longitude = String.valueOf(location.getLongitude());
         report.createDate = new Timestamp(new Date().getTime());
         report.updateDate = new Timestamp(new Date().getTime());
         report.guardId = getPreferences().getGuard().id;
@@ -402,7 +413,8 @@ public class AddReportActivity extends PhotoActivity {
         Completable.create(new CompletableOnSubscribe() {
             @Override
             public void subscribe(CompletableEmitter e) throws Exception {
-                saveReport(report);
+                Location location = CurrentLocation.get(AddReportActivity.this);
+                saveReport(report, location);
                 if (report.id != null)
                     savePosition(report, location);
                 e.onComplete();
@@ -417,7 +429,9 @@ public class AddReportActivity extends PhotoActivity {
                 }).isDisposed();
     }
 
-    private void saveReport(SpecialReport report) {
+    private void saveReport(SpecialReport report, Location location) {
+        report.latitude = String.valueOf(location.getLatitude());
+        report.longitude = String.valueOf(location.getLongitude());
         report.id = AppDatabase.getInstance(getApplicationContext())
                 .getSpecialReportDao().insert(report);
         if (photos != null && photos.size() > 0) {

@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    tools:context=".ui.MainActivity">
+    tools:context=".view.ui.chat.MessageActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBarLayout"
@@ -199,51 +199,65 @@
 
         </RelativeLayout>
 
-        <com.getbase.floatingactionbutton.FloatingActionsMenu
-            android:id="@+id/fab_menu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_margin="24dp"
-            app:fab_addButtonColorNormal="@color/colorAccent"
-            app:fab_addButtonColorPressed="@color/colorPrimaryLight"
-            app:fab_addButtonPlusIconColor="@color/white"
-            app:fab_labelStyle="@style/menu_labels_style"
-            app:fab_addButtonSize="normal"
-            app:fab_labelsPosition="left">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-            <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/chat_guard"
+            <com.getbase.floatingactionbutton.FloatingActionsMenu
+                android:id="@+id/fab_menu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:fab_colorNormal="@color/colorAccent"
-                app:fab_icon="@drawable/ic_chat_normal_white"
-                app:fab_size="mini"
-                app:fab_title="Chat con un Guardia"
-                app:fab_colorPressed="@color/colorPrimaryLight"/>
+                android:layout_gravity="right"
+                android:layout_margin="24dp"
+                app:fab_addButtonColorNormal="@color/colorAccent"
+                app:fab_addButtonColorPressed="@color/colorPrimaryLight"
+                app:fab_addButtonPlusIconColor="@color/white"
+                app:fab_labelStyle="@style/menu_labels_style"
+                app:fab_addButtonSize="normal"
+                app:fab_labelsPosition="left">
 
-            <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/chat_admin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:fab_colorNormal="@color/colorAccent"
-                app:fab_icon="@drawable/ic_chat_normal_white"
-                app:fab_size="mini"
-                app:fab_title="Chat con un Administrador"
-                app:fab_colorPressed="@color/colorPrimaryLight"/>
+                <com.getbase.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/chat_guard"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:fab_colorNormal="@color/colorAccent"
+                    app:fab_icon="@drawable/ic_chat_normal_white"
+                    app:fab_size="mini"
+                    app:fab_title="Chat con un Guardia"
+                    app:fab_colorPressed="@color/colorPrimaryLight"/>
 
-            <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/chat_group"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:fab_colorNormal="@color/colorAccent"
-                app:fab_size="mini"
-                app:fab_icon="@drawable/ic_group_white"
-                app:fab_title="Chat Grupal"
-                app:fab_colorPressed="@color/colorPrimaryLight"/>
+                <com.getbase.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/chat_admin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:fab_colorNormal="@color/colorAccent"
+                    app:fab_icon="@drawable/ic_chat_normal_white"
+                    app:fab_size="mini"
+                    app:fab_title="Chat con un Administrador"
+                    app:fab_colorPressed="@color/colorPrimaryLight"/>
 
-        </com.getbase.floatingactionbutton.FloatingActionsMenu>
+                <com.getbase.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/chat_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:fab_colorNormal="@color/colorAccent"
+                    app:fab_size="mini"
+                    app:fab_icon="@drawable/ic_group_white"
+                    app:fab_title="Chat Grupal"
+                    app:fab_colorPressed="@color/colorPrimaryLight"/>
+
+            </com.getbase.floatingactionbutton.FloatingActionsMenu>
+
+            <android.support.design.widget.CoordinatorLayout
+                android:id="@+id/placeSnackBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </android.support.design.widget.CoordinatorLayout>
+
+        </LinearLayout>
 
     </RelativeLayout>
 

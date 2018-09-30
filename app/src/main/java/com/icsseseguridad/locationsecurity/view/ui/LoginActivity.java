@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.icsseseguridad.locationsecurity.R;
+import com.icsseseguridad.locationsecurity.service.background.TrackingService;
 import com.icsseseguridad.locationsecurity.service.repository.AuthController;
 import com.icsseseguridad.locationsecurity.service.repository.TabletPositionController;
 import com.icsseseguridad.locationsecurity.service.repository.WatchController;
@@ -39,7 +40,7 @@ import com.icsseseguridad.locationsecurity.service.event.OnVerifySessionSuccess;
 import com.icsseseguridad.locationsecurity.service.entity.Guard;
 import com.icsseseguridad.locationsecurity.service.entity.TabletPosition;
 import com.icsseseguridad.locationsecurity.service.entity.Watch;
-import com.icsseseguridad.locationsecurity.service.background.LocationService;
+import com.icsseseguridad.locationsecurity.util.CurrentLocation;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -49,6 +50,12 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Completable;
+import io.reactivex.CompletableEmitter;
+import io.reactivex.CompletableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Action;
+import io.reactivex.schedulers.Schedulers;
 
 public class LoginActivity extends BaseActivity {
 
@@ -134,9 +141,6 @@ public class LoginActivity extends BaseActivity {
     public void loadView() {
         if (getPreferences().getGuard() != null) {
             Log.e("Token", getPreferences().getToken());
-            //new AuthController().verify();
-            //builderDialog.text("Autenticando");
-            //dialog.show();
             startActivity(new Intent(this, MainActivity.class));
             finish();
         } else {
@@ -175,7 +179,7 @@ public class LoginActivity extends BaseActivity {
             public void onAnimationEnd(Animation animation) {
                 container2.setVisibility(View.GONE);
                 if (getPreferences().isRegistered()) {
-                    imeiText.setText("IMEI " + getImei());
+                    imeiText.setText("IMEI " + getImeiAndSave());
                 }
             }
         });
@@ -188,7 +192,6 @@ public class LoginActivity extends BaseActivity {
         builderDialog.text("Iniciando");
         guard = event.guard;
         WatchController watchController = new WatchController();
-        location = getLastKnowLocation();
         watchController.register(
                 guard.token,
                 guard.id,
@@ -256,20 +259,23 @@ public class LoginActivity extends BaseActivity {
             return;
         }
 
-        if (!isServiceRunning(LocationService.class)) {
-            startService(new Intent(this, LocationService.class));
-            Toast.makeText(this, "Iniciando servicio de Localización.", Toast.LENGTH_SHORT).show();
-            builderDialog.text("Iniciando");
-            dialog.show();
-            passwordText.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    continueLogin(false);
-                }
-            }, 5000);
-            return;
-        }
-        continueLogin(true);
+        location = null;
+        builderDialog.text("Iniciando");
+        dialog.show();
+        Completable.create(new CompletableOnSubscribe() {
+            @Override
+            public void subscribe(CompletableEmitter e) throws Exception {
+                location = CurrentLocation.get(LoginActivity.this, false);
+                e.onComplete();
+            }})
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        continueLogin();
+                    }
+                }).isDisposed();
     }
 
     public void signInAdmin() {
@@ -279,20 +285,16 @@ public class LoginActivity extends BaseActivity {
         dialog.show();
     }
 
-    public void continueLogin(boolean showDialog) {
-        if (getLastKnowLocation() == null) {
-            Toast.makeText(this, "Espere unos segundos que el GPS lo ubique y vuelva a intentar.", Toast.LENGTH_SHORT).show();
-            if (!showDialog) dialog.dismiss();
+    public void continueLogin() {
+        if (location == null) {
+            Toast.makeText(this, "Problemas para obtener ubicación.", Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
             return;
         }
         dniText.setEnabled(false);
         passwordText.setEnabled(false);
         AuthController authController = new AuthController();
         authController.singIn(dniText.getText().toString(), passwordText.getText().toString());
-        if (showDialog) {
-            builderDialog.text("Iniciando");
-            dialog.show();
-        }
     }
 
     @Override
@@ -307,7 +309,7 @@ public class LoginActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         if (getPreferences().getWatch() == null) {
-            stopService(new Intent(this, LocationService.class));
+            stopService(new Intent(this, TrackingService.class));
         }
     }
 

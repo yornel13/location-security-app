@@ -37,7 +37,6 @@ public class SendAlert {
                         alert.createDate,
                         alert.updateDate,
                         alert.status);
-//                System.out.println(new Gson().toJson(call.request().body()));
                 Response<MultipleResource> tasks = call.execute();
                 MultipleResource data = tasks.body();
                 if (tasks.isSuccessful() && data != null) {

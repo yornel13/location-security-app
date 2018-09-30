@@ -30,7 +30,7 @@ import java.util.Map;
 
 import static com.icsseseguridad.locationsecurity.view.ui.binnacle.ReportActivity.REPORT_ID;
 
-public class AppFirebaseMessagingService extends FirebaseMessagingService {
+public class MessagingService extends FirebaseMessagingService {
 
     public static final String MESSAGE = "MESSAGE";
     public static final String REPORT = "REPORT";

@@ -24,7 +24,7 @@ import com.icsseseguridad.locationsecurity.service.event.OnSendMessageFailure;
 import com.icsseseguridad.locationsecurity.service.event.OnSendMessageSuccess;
 import com.icsseseguridad.locationsecurity.service.entity.Chat;
 import com.icsseseguridad.locationsecurity.service.entity.ChatLine;
-import com.icsseseguridad.locationsecurity.service.background.AppFirebaseMessagingService;
+import com.icsseseguridad.locationsecurity.service.background.MessagingService;
 import com.icsseseguridad.locationsecurity.view.ui.BaseActivity;
 import com.icsseseguridad.locationsecurity.util.Const;
 
@@ -75,7 +75,7 @@ public class ChatActivity extends BaseActivity {
                         putAllRead(false);
                         NotificationManagerCompat notificationManager = NotificationManagerCompat
                                 .from(ChatActivity.this);
-                        notificationManager.cancel(AppFirebaseMessagingService.ID_MESSAGE);
+                        notificationManager.cancel(MessagingService.ID_MESSAGE);
                     }
                 });
             }
@@ -86,7 +86,7 @@ public class ChatActivity extends BaseActivity {
                         addLine(chatLine);
                         NotificationManagerCompat notificationManager = NotificationManagerCompat
                                 .from(ChatActivity.this);
-                        notificationManager.cancel(AppFirebaseMessagingService.ID_MESSAGE);
+                        notificationManager.cancel(MessagingService.ID_MESSAGE);
                     }
                 });
             }
@@ -233,7 +233,7 @@ public class ChatActivity extends BaseActivity {
         super.onResume();
         registerReceiver(messageReceiver, new IntentFilter(Const.NEW_MESSAGE));
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        notificationManager.cancel(AppFirebaseMessagingService.ID_MESSAGE);
+        notificationManager.cancel(MessagingService.ID_MESSAGE);
         if (messingArea.getVisibility() == View.VISIBLE) {
             if (chatType.equals(CHAT))
                 new MessengerController().getMessages(chatId);

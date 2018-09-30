@@ -12,10 +12,10 @@ public class OnBootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         try {
-            if (!isServiceRunning(LocationService.class, context)) {
+            if (!isServiceRunning(TrackingService.class, context)) {
                 Watch watch = new AppPreferences(context).getWatch();
                 if (watch != null) {
-                    Intent myIntent = new Intent(context, LocationService.class);
+                    Intent myIntent = new Intent(context, TrackingService.class);
                     context.startService(myIntent);
                 }
             }
