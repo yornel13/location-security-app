@@ -8,7 +8,7 @@
     android:clipToPadding="false"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.visit.AddVisitActivity"
+    tools:context=".view.ui.visit.AddVisitActivity"
     tools:showIn="@layout/activity_add_visit">
 
     <LinearLayout
@@ -100,7 +100,7 @@
 
                     <com.icsseseguridad.locationsecurity.util.AppTextView
                         android:id="@+id/vehicle_model"
-                        android:text="Modelo"
+                        android:text="Marca"
                         app:fontFamily="GoogleSans-Medium.ttf"
                         android:textSize="18sp"
                         android:textColor="@color/black"

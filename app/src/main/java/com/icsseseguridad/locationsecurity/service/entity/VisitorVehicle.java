@@ -1,6 +1,7 @@
 package com.icsseseguridad.locationsecurity.service.entity;
 
 import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Embedded;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Index;
@@ -53,7 +54,7 @@ public class VisitorVehicle implements Searchable {
     @SerializedName("active")
     public Integer active;
 
-    @Ignore
+    @Embedded
     @SerializedName("last_visit")
     public LastVisit lastVisit;
 

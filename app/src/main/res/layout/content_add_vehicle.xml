@@ -100,7 +100,7 @@
                 android:nextFocusDown="@id/type"
                 android:maxLines="1"
                 android:textSize="20sp"
-                android:hint="Modelo "/>
+                android:hint="Marca "/>
 
         </android.support.design.widget.TextInputLayout>
 

@@ -37,6 +37,7 @@ public class CurrentLocation {
                                     + ", " + String.valueOf(location.getLongitude()));
                             tcs.setResult(location);
                         } else {
+                            Log.d("Completed", "Can't get location");
                             tcs.setException(new Exception());
                         }
                     }

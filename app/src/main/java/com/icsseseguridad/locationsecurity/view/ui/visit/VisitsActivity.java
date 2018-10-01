@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -15,8 +16,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.icsseseguridad.locationsecurity.R;
+import com.icsseseguridad.locationsecurity.service.background.RepoIntentService;
 import com.icsseseguridad.locationsecurity.service.entity.ControlVisit;
 import com.icsseseguridad.locationsecurity.service.event.OnClickVisit;
 import com.icsseseguridad.locationsecurity.service.event.OnSyncUnreadMessages;
@@ -35,12 +38,14 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
+import io.reactivex.functions.Consumer;
 import q.rorbin.badgeview.QBadgeView;
 
 public class VisitsActivity extends BaseActivity implements  BottomNavigationView.OnNavigationItemSelectedListener {
@@ -98,10 +103,12 @@ public class VisitsActivity extends BaseActivity implements  BottomNavigationVie
         visitListViewModel.getVisits().observe(this, new Observer<List<ControlVisit>>() {
             @Override
             public void onChanged(@Nullable final List<ControlVisit> visits) {
+                Collections.reverse(visits);
                 VisitsActivity.this.visits = visits;
                 checkView();
             }
         });
+        showSync();
     }
 
     private void setupAdapter(List<ControlVisit> visits) {
@@ -205,18 +212,20 @@ public class VisitsActivity extends BaseActivity implements  BottomNavigationVie
             switch (requestCode) {
                 case INTENT_REGISTER_VISIT:
                     showSnackbarLong(placeSnackbar, "Visita registrada con exito.");
+                    //Toast.makeText(this, "Visita registrada con exito.", Toast.LENGTH_SHORT).show();
                     if (visits != null) {
                         if (app != null && app.visit != null) {
-                            visits.add(app.visit);
+                            visits.add(0, app.visit);
                             app.visit = null;
                         }
                     }
                     break;
                 case INTENT_SHOW_VISIT:
                     showSnackbarLong(placeSnackbar, "Visita finalizada con exito.");
+                    //Toast.makeText(this, "Visita finalizada con exito.", Toast.LENGTH_SHORT).show();
                     break;
             }
-            MainSyncJob.jobScheduler(this);
+            RepoIntentService.run(this);
         }
     }
 
@@ -290,5 +299,25 @@ public class VisitsActivity extends BaseActivity implements  BottomNavigationVie
         if (input == null) { return ""; }
         return Normalizer.normalize(input, Normalizer.Form.NFD)
                 .replaceAll("[^a-zA-Z0-9]+","").toLowerCase();
+    }
+
+    public void showSync() {
+//        final Snackbar snack = Snackbar.make(placeSnackbar, "Sincronizando...", Snackbar.LENGTH_INDEFINITE);
+//        View sbView = snack.getView();
+//        sbView.setBackground(getResources().getDrawable(R.drawable.snack_background));
+//        if (MainSyncJob.isSync)
+//            snack.show();
+//        MainSyncJob.syncObservable.subscribe(new Consumer<Boolean>() {
+//            @Override
+//            public void accept(Boolean aBoolean) throws Exception {
+//                if (aBoolean) {
+//                    if (!snack.isShown())
+//                        snack.show();
+//                } else {
+//                    if (snack.isShown())
+//                        snack.dismiss();
+//                }
+//            }
+//        }).isDisposed();
     }
 }

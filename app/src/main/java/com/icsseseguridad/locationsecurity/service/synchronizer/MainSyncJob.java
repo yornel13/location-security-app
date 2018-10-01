@@ -6,15 +6,14 @@ import android.app.job.JobScheduler;
 import android.app.job.JobService;
 import android.content.ComponentName;
 import android.content.Context;
-import android.os.Build;
 import android.util.Log;
 
-import com.icsseseguridad.locationsecurity.SecurityApp;
+import com.icsseseguridad.locationsecurity.util.AppPreferences;
 
-import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Observable;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 
 public class MainSyncJob extends JobService {
 
@@ -25,8 +24,10 @@ public class MainSyncJob extends JobService {
 
     private static SyncAdapter syncAdapter = null;
 
-    private static boolean isSync = false;
+    public static boolean isSync = false;
     private static boolean reSync = false;
+
+    public static Subject<Boolean> syncObservable = PublishSubject.create();
 
     @Override
     public void onCreate() {
@@ -35,31 +36,43 @@ public class MainSyncJob extends JobService {
     }
 
     @Override
-    public boolean onStartJob(final JobParameters job) {
+    public boolean onStartJob(final JobParameters params) {
         Log.d(TAG, "Starting Synchronization Job");
-        if (!isSync) {
-            isSync = true;
-            Observable.fromCallable(new Callable<Object>() {
+            new Thread(new Runnable() {
                 @Override
-                public Object call() throws Exception {
-                    return callSync();
+                public void run() {
+                    isSync = true;
+                    syncObservable.onNext(true);
+                    completeJob(params);
+                    isSync = false;
+                    syncObservable.onNext(false);
                 }
-            }).subscribeOn(Schedulers.io())
-                    .subscribe();
-        }
-        return false;
+            }).start();
+        return true;
     }
 
-    public Boolean callSync() {
-        Log.i(TAG, "Initiating Synchronization");
+    public void completeJob(final JobParameters parameters) {
+        Log.d(TAG, "Initiating Synchronization");
+        if (new AppPreferences(getApplicationContext()).getWatch() == null) {
+            if (syncAdapter.needSync()) {
+                syncAdapter.sync();
+            }
+            if (!syncAdapter.needSync()) {
+                jobFinished(parameters, false);
+                if (isJobServiceOn(getApplicationContext())) cancelJob(getApplicationContext());
+            } else {
+                jobFinished(parameters, true);
+            }
+            reSync = false;
+            return;
+        }
         syncAdapter.sync();
         if (reSync) {
             reSync = false;
-            callSync();
+            completeJob(parameters);
         } else {
-            isSync = false;
+            jobFinished(parameters, false);
         }
-        return true;
     }
 
     @Override
@@ -74,38 +87,15 @@ public class MainSyncJob extends JobService {
             reSync = true;
             return;
         }
-        Log.d(TAG, "it pass");
+        Log.d(TAG, "Creating job");
         JobScheduler jobScheduler = (JobScheduler) context.getSystemService(JOB_SCHEDULER_SERVICE);
         ComponentName componentName = new ComponentName(context, MainSyncJob.class);
-//        JobInfo jobInfo = new JobInfo.Builder(JOB_ID, componentName)
-//                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-//                .setRequiresCharging(true)
-//                .setPersisted(true)
-//                .setPeriodic(REFRESH_INTERVAL)
-//                .setMinimumLatency(1)
-//                //.setOverrideDeadline(1)
-//                .build();
-        JobInfo jobInfo;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            jobInfo = new JobInfo.Builder(JOB_ID, componentName)
-                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                    .setRequiresCharging(true)
-                    .setPersisted(true)
-                    .setMinimumLatency(REFRESH_INTERVAL)
-                    .setOverrideDeadline(1)
-                    .build();
-        } else {
-            jobInfo = new JobInfo.Builder(JOB_ID, componentName)
-                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                    .setRequiresCharging(true)
-                    .setPersisted(true)
-                    .setPeriodic(REFRESH_INTERVAL)
-                    .setMinimumLatency(0)
-                    .build();
-        }
+        JobInfo jobInfo = new JobInfo.Builder(JOB_ID, componentName)
+                .setPeriodic(TimeUnit.MINUTES.toMillis(5))
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+            .build();
         if (jobScheduler == null) return;
-
-        if (isJobServiceOn(context)) jobScheduler.cancel(JOB_ID);
+        if (isJobServiceOn(context)) cancelJob(context);
         jobScheduler.schedule(jobInfo);
     }
 

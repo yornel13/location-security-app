@@ -64,7 +64,7 @@ public class AlertSyncJob extends JobService {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             jobInfo = new JobInfo.Builder(JOB_ID, componentName)
                     .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                    .setRequiresCharging(true)
+                    .setRequiresCharging(false)
                     .setPersisted(true)
                     .setMinimumLatency(REFRESH_INTERVAL)
                     .setOverrideDeadline(1)
@@ -72,7 +72,7 @@ public class AlertSyncJob extends JobService {
         } else {
             jobInfo = new JobInfo.Builder(JOB_ID, componentName)
                     .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                    .setRequiresCharging(true)
+                    .setRequiresCharging(false)
                     .setPersisted(true)
                     .setPeriodic(REFRESH_INTERVAL)
                     .setMinimumLatency(0)

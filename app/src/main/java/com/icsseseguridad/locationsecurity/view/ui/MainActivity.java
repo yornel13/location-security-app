@@ -1,12 +1,15 @@
 package com.icsseseguridad.locationsecurity.view.ui;
 
 import android.app.AlertDialog;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
@@ -29,32 +32,34 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.icsseseguridad.locationsecurity.R;
-import com.icsseseguridad.locationsecurity.service.background.AppLocationService;
+import com.icsseseguridad.locationsecurity.service.background.RepoIntentService;
 import com.icsseseguridad.locationsecurity.service.background.TrackingService;
-import com.icsseseguridad.locationsecurity.service.repository.BannerController;
+import com.icsseseguridad.locationsecurity.service.entity.Banner;
+import com.icsseseguridad.locationsecurity.service.entity.ControlVisit;
+import com.icsseseguridad.locationsecurity.service.entity.TabletPosition;
+import com.icsseseguridad.locationsecurity.service.event.OnFinishWatchFailure;
+import com.icsseseguridad.locationsecurity.service.event.OnFinishWatchSuccess;
+import com.icsseseguridad.locationsecurity.service.event.OnSyncUnreadMessages;
+import com.icsseseguridad.locationsecurity.service.event.OnSyncUnreadReplies;
 import com.icsseseguridad.locationsecurity.service.repository.BinnacleController;
 import com.icsseseguridad.locationsecurity.service.repository.MessengerController;
 import com.icsseseguridad.locationsecurity.service.repository.TabletPositionController;
 import com.icsseseguridad.locationsecurity.service.repository.WatchController;
-import com.icsseseguridad.locationsecurity.service.event.OnFinishWatchFailure;
-import com.icsseseguridad.locationsecurity.service.event.OnFinishWatchSuccess;
-import com.icsseseguridad.locationsecurity.service.event.OnGetBannersSuccess;
-import com.icsseseguridad.locationsecurity.service.event.OnSyncUnreadMessages;
-import com.icsseseguridad.locationsecurity.service.event.OnSyncUnreadReplies;
-import com.icsseseguridad.locationsecurity.service.entity.TabletPosition;
-import com.icsseseguridad.locationsecurity.service.background.LocationService;
-import com.icsseseguridad.locationsecurity.service.synchronizer.AlertSyncJob;
 import com.icsseseguridad.locationsecurity.service.synchronizer.MainSyncJob;
-import com.icsseseguridad.locationsecurity.service.synchronizer.SavePositionJob;
+import com.icsseseguridad.locationsecurity.util.MyDescriptionAnimation;
+import com.icsseseguridad.locationsecurity.util.UTILITY;
 import com.icsseseguridad.locationsecurity.view.ui.binnacle.BinnacleActivity;
 import com.icsseseguridad.locationsecurity.view.ui.chat.MessageActivity;
 import com.icsseseguridad.locationsecurity.view.ui.visit.VisitsActivity;
-import com.icsseseguridad.locationsecurity.util.MyDescriptionAnimation;
-import com.icsseseguridad.locationsecurity.util.UTILITY;
+import com.icsseseguridad.locationsecurity.viewmodel.BannerListViewModel;
+import com.icsseseguridad.locationsecurity.viewmodel.VisitListViewModel;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.Collections;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -74,6 +79,8 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
     private Location location;
     private QBadgeView badgeChat;
     private QBadgeView badgeBinnacle;
+
+    private BannerListViewModel bannerListViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,9 +133,19 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
         badgeBinnacle = new QBadgeView(this);
         badgeBinnacle.bindTarget(bottomNavigationMenuView.getChildAt(1));
 
-        //new BannerController().getBanners();
         new MessengerController().getUnreadMessages();
         new BinnacleController().getUnreadReports();
+
+        bannerListViewModel = ViewModelProviders
+                .of(this)
+                .get(BannerListViewModel.class);
+
+        bannerListViewModel.getBanners().observe(this, new Observer<List<Banner>>() {
+            @Override
+            public void onChanged(@Nullable final List<Banner> banners) {
+                setupBanners(banners);
+            }
+        });
     }
 
     @Override
@@ -267,7 +284,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
     }
 
     public void requestFinishWatch() {
-        MainSyncJob.jobScheduler(this);
+        RepoIntentService.run(this);
         builderDialog.text("Finalizando");
         dialog.show();
         location = getLastKnowLocation();
@@ -318,7 +335,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
         builder.setMessage(R.string.close_user)
                 .setPositiveButton(R.string.exit, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        MainSyncJob.jobScheduler(MainActivity.this);
+                        RepoIntentService.run(MainActivity.this);
                         clearSession();
                     }
                 })
@@ -329,28 +346,26 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
                 }).show();
     }
 
-//    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-//    public void OnGetBannersSuccess(OnGetBannersSuccess event) {
-//        EventBus.getDefault().removeStickyEvent(OnGetBannersSuccess.class);
-//        if (event.list.total > 0) {
-//            sliderView.setVisibility(View.VISIBLE);
-//            RequestOptions requestOptions = new RequestOptions().centerCrop();
-//            for (int i = 0; i < event.list.total; i++) {
-//                TextSliderView textSliderView = new TextSliderView(this);
-//                textSliderView
-//                        .image(event.list.banners.get(i).photo)
-//                        .setRequestOption(requestOptions)
-//                        .setBackgroundColor(Color.WHITE)
-//                        .setProgressBarVisible(true);
-//                textSliderView.bundle(new Bundle());
-//                sliderView.addSlider(textSliderView);
-//            }
-//            sliderView.setPresetTransformer(SliderLayout.Transformer.Accordion);
-//            sliderView.setCustomAnimation(new MyDescriptionAnimation());
-//            sliderView.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
-//            sliderView.setDuration(5000);
-//        }
-//    }
+    public void setupBanners(List<Banner> banners) {
+        if (banners.size() > 0) {
+            sliderView.setVisibility(View.VISIBLE);
+            RequestOptions requestOptions = new RequestOptions().centerCrop();
+            for (int i = 0; i < banners.size(); i++) {
+                TextSliderView textSliderView = new TextSliderView(this);
+                textSliderView
+                        .image(banners.get(i).photo)
+                        .setRequestOption(requestOptions)
+                        .setBackgroundColor(Color.WHITE)
+                        .setProgressBarVisible(true);
+                textSliderView.bundle(new Bundle());
+                sliderView.addSlider(textSliderView);
+            }
+            sliderView.setPresetTransformer(SliderLayout.Transformer.Accordion);
+            sliderView.setCustomAnimation(new MyDescriptionAnimation());
+            sliderView.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
+            sliderView.setDuration(5000);
+        }
+    }
 
     @Override
     protected void onDestroy() {

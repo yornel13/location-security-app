@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
     android:fitsSystemWindows="true"
-    tools:context=".ui.visit.AddVisitActivity">
+    tools:context=".view.ui.visit.AddVisitActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBarLayout"

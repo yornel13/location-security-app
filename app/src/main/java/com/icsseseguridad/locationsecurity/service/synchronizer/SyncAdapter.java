@@ -30,6 +30,7 @@ import com.icsseseguridad.locationsecurity.service.repository.APIClient;
 import com.icsseseguridad.locationsecurity.service.repository.APIInterface;
 import com.icsseseguridad.locationsecurity.service.repository.PhotoController;
 import com.icsseseguridad.locationsecurity.util.AppPreferences;
+import com.icsseseguridad.locationsecurity.viewmodel.BannerListViewModel;
 import com.icsseseguridad.locationsecurity.viewmodel.BinnacleListViewModel;
 import com.icsseseguridad.locationsecurity.viewmodel.ClerkListViewModel;
 import com.icsseseguridad.locationsecurity.viewmodel.CompanyListViewModel;
@@ -46,12 +47,12 @@ import retrofit2.Response;
 
 public class SyncAdapter {
 
-    private static final String TAG = "MainSyncJobAdapter";
+    private static final String TAG = "RepoIntentServiceAdapt";
 
     private AppPreferences preferences;
     private AppDatabase db;
 
-    SyncAdapter(Context context) {
+    public SyncAdapter(Context context) {
         this.preferences = new AppPreferences(context);
         this.db = AppDatabase.getInstance(context);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -75,7 +76,7 @@ public class SyncAdapter {
         }
     }
 
-    private boolean needSync() {
+    public boolean needSync() {
         List<Photo> photos = db.getPhotoDao().getAllUnsaved();
         List<VisitorVehicle> vehicles = db.getVisitorVehicleDao().getAllUnsaved();
         List<Visitor> visitors = db.getVisitorDao().getAllUnsaved();
@@ -230,6 +231,7 @@ public class SyncAdapter {
             if (tasks.isSuccessful() && data != null) {
                 db.getBannerDao().deleteAll();
                 db.getBannerDao().insertAll(data.banners);
+                BannerListViewModel.refreshIfIsActive();
                 Log.d(TAG, "Update banners was successful");
             } else {
                 Log.e(TAG, "Error in data banners, code: " + tasks.code());

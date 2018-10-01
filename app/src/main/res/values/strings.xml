@@ -39,4 +39,5 @@
     <string name="finish">Finalizar</string>
     <string name="default_notification_channel_id">"Mensajes"</string>
     <string name="tracking_enabled_notif">Servicio de Localización</string>
+    <string name="sync_data">Sincronizando...</string>
 </resources>

@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -21,6 +23,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.icsseseguridad.locationsecurity.R;
@@ -72,6 +77,7 @@ public class LoginActivity extends BaseActivity {
     private Guard guard;
 
     private Location location;
+    private GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,6 +123,31 @@ public class LoginActivity extends BaseActivity {
         if (!getPreferences().isRegistered()) {
             loginButton.setText("Registrar Dispositivo");
         }
+        connectGoogleApi();
+    }
+
+    private void connectGoogleApi() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                    @Override
+                    public void onConnected(@Nullable Bundle bundle) {
+                        Log.d("LoginActivity", "onConnected");
+                    }
+
+                    @Override
+                    public void onConnectionSuspended(int i) {
+                        Log.d("LoginActivity", "onConnectionSuspended");
+                    }
+                })
+                .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
+                    @Override
+                    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+                        Log.d("LoginActivity", "onConnectionFailed");
+                    }
+                })
+                .addApi(LocationServices.API)
+                .build();
+        mGoogleApiClient.connect();
     }
 
     private void turnGPSOn() {

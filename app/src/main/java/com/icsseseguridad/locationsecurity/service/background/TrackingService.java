@@ -7,7 +7,6 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.icsseseguridad.locationsecurity.R;
 import com.icsseseguridad.locationsecurity.service.synchronizer.AlertSyncJob;
-import com.icsseseguridad.locationsecurity.service.synchronizer.MainSyncJob;
 import com.icsseseguridad.locationsecurity.service.synchronizer.SavePositionJob;
 import com.icsseseguridad.locationsecurity.util.AppPreferences;
 import com.icsseseguridad.locationsecurity.util.CurrentLocation;
@@ -38,14 +37,6 @@ public class TrackingService extends Service {
 
     private FusedLocationProviderClient client;
 
-//    protected BroadcastReceiver stopReceiver = new BroadcastReceiver() {
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            unregisterReceiver(stopReceiver);
-//            stopSelf();
-//        }
-//    };
-
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -59,9 +50,11 @@ public class TrackingService extends Service {
             buildNotification();
             requestLocationUpdates();
             // Main sync job
-            MainSyncJob.jobScheduler(this);
+            RepoIntentService.run(this);
+            PositionIntentService.run(this);
+            //MainSyncJob.jobScheduler(this);
             // Running save position job
-            SavePositionJob.jobScheduler(this);
+            // SavePositionJob.jobScheduler(this);
             // Running alert sync job if need
             AlertSyncJob.jobScheduler(this);
             return START_STICKY;

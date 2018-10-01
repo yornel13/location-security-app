@@ -1,5 +1,6 @@
 package com.icsseseguridad.locationsecurity.service.dao;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -14,7 +15,7 @@ import java.util.List;
 public interface BannerDao {
 
     @Query("SELECT * FROM banner")
-    List<Banner> getAll();
+    LiveData<List<Banner>> getAll();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<Banner> banner);

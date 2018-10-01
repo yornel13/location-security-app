@@ -139,12 +139,9 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <service
-            android:name=".service.background.LocationService"
-            android:process=":gps_service" />
-        <service
-            android:name=".service.background.AppLocationService"
-            android:process=":app_gps" />
+        <receiver android:name=".service.background.RepoAlarmReceiver"/>
+        <receiver android:name=".service.background.PositionAlarmReceiver"/>
+
         <service
             android:name=".service.background.TrackingService"
             android:enabled="true"
@@ -157,15 +154,15 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
+        <service
+            android:name=".service.background.RepoIntentService"
+            android:stopWithTask="false"/>
+        <service
+            android:name=".service.background.PositionIntentService"
+            android:stopWithTask="false"/>
 
         <service
-            android:name=".service.synchronizer.MainSyncJob"
-            android:permission="android.permission.BIND_JOB_SERVICE"/>
-        <service
             android:name=".service.synchronizer.AlertSyncJob"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-        <service
-            android:name=".service.synchronizer.SavePositionJob"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <meta-data

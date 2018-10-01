@@ -337,12 +337,13 @@ public class AddVisitActivity extends BaseActivity {
 
         if (vehicle.lastVisit != null) {
             System.out.println(gson().toJson(vehicle.lastVisit));
-            for (Visitor visitor : app.getVisitors().visitors) {
-                if (visitor.id.longValue() == vehicle.lastVisit.visitorId.longValue()) {
+            for (Visitor visitor : visitors) {
+                if (visitor.id != null &&
+                        visitor.id.longValue() == vehicle.lastVisit.visitorId.longValue()) {
                     setupVisitor(visitor);
                 }
             }
-            for (Clerk clerk : app.getClerks().clerks) {
+            for (Clerk clerk : clerks) {
                 if (clerk.id.longValue() == vehicle.lastVisit.clerkId.longValue()) {
                     setupClerk(clerk);
                 }
