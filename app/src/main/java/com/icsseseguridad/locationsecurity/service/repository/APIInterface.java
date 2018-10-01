@@ -17,6 +17,7 @@ import com.icsseseguridad.locationsecurity.service.entity.ListIncidence;
 import com.icsseseguridad.locationsecurity.service.entity.ListRepliesWithUnread;
 import com.icsseseguridad.locationsecurity.service.entity.ListReply;
 import com.icsseseguridad.locationsecurity.service.entity.ListReport;
+import com.icsseseguridad.locationsecurity.service.entity.ListVehicleType;
 import com.icsseseguridad.locationsecurity.service.entity.ListVisit;
 import com.icsseseguridad.locationsecurity.service.entity.ListVisitor;
 import com.icsseseguridad.locationsecurity.service.entity.ListVisitorVehicle;
@@ -178,6 +179,9 @@ public interface APIInterface {
             @Field("create_date") Timestamp createDate,
             @Field("finish_date") Timestamp finishDate,
             @Field("comment") String comment,
+            @Field("guard_out_id") Long guardOutId,
+            @Field("f_latitude") String fLatitude,
+            @Field("f_longitude") String fLongitude,
             @Field("sync_id") String syncId,
             @Field("status") int status);
 
@@ -367,4 +371,7 @@ public interface APIInterface {
     @FormUrlEncoded
     @POST("public/tablet")
     Call<MultipleResource> registered(@Field("imei") String imei);
+
+    @GET("public/vehicle_type")
+    Call<ListVehicleType> getVehiclesTypes(@Header("APP-TOKEN") String appToken);
 }

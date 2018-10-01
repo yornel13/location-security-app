@@ -9,6 +9,5 @@
     android:textSize="20sp"
     app:fontFamily="GoogleSans-Medium.ttf"
     android:gravity="left"
-    android:textColor="@color/black"
     android:padding="16dp" />
 

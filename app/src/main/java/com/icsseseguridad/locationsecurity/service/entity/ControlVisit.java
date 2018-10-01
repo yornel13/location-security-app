@@ -25,6 +25,7 @@ import java.util.UUID;
                 @Index("visitor_id"),
                 @Index("clerk_id"),
                 @Index("guard_id"),
+                @Index("guard_out_id"),
         }
 //        foreignKeys = {
 //                @ForeignKey(
@@ -118,6 +119,18 @@ public class ControlVisit {
     @ColumnInfo(name = "comment")
     @SerializedName("comment")
     public String comment;
+
+    @ColumnInfo(name = "guard_out_id")
+    @SerializedName("guard_out_id")
+    public Long guardOutId;
+
+    @ColumnInfo(name = "f_latitude")
+    @SerializedName("f_latitude")
+    public String fLatitude;
+
+    @ColumnInfo(name = "f_longitude")
+    @SerializedName("f_longitude")
+    public String fLongitude;
 
     @ColumnInfo(name = "status")
     @SerializedName("status")

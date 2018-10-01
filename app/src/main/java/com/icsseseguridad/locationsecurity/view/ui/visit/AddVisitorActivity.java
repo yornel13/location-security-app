@@ -235,12 +235,12 @@ public class AddVisitorActivity extends PhotoActivity {
     }
 
     private void onSuccess(Visitor visitor) {
+        dialog.dismiss();
         if (visitor.id == null) {
             Snackbar.make(toolbar, "Esta cedula se encuentra en uso",
                     Snackbar.LENGTH_LONG).show();
             return;
         }
-        dialog.dismiss();
         app.visitor = visitor;
         setResult(RESULT_OK, getIntent());
         finish();

@@ -1,5 +1,6 @@
 package com.icsseseguridad.locationsecurity.view.ui.visit;
 
+import android.location.Location;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.design.widget.Snackbar;
@@ -15,6 +16,7 @@ import com.icsseseguridad.locationsecurity.service.dao.AppDatabase;
 import com.icsseseguridad.locationsecurity.service.event.OnFinishVisitFailure;
 import com.icsseseguridad.locationsecurity.service.event.OnFinishVisitSuccess;
 import com.icsseseguridad.locationsecurity.service.entity.ControlVisit;
+import com.icsseseguridad.locationsecurity.util.CurrentLocation;
 import com.icsseseguridad.locationsecurity.view.ui.BaseActivity;
 
 import org.greenrobot.eventbus.EventBus;
@@ -91,12 +93,14 @@ public class FinishVisitActivity extends BaseActivity {
         visit.status = 0;
         visit.sync = false;
         visit.comment = comment;
+        visit.guardOutId = getPreferences().getWatch().guardId;
         visit.finishDate = new Timestamp(new Date().getTime());
 
         Completable.create(new CompletableOnSubscribe() {
             @Override
             public void subscribe(CompletableEmitter e) throws Exception {
-                saveFinishedVisit();
+                Location location = CurrentLocation.get(FinishVisitActivity.this);
+                saveFinishedVisit(visit, location);
                 e.onComplete();
             }
         })
@@ -112,7 +116,10 @@ public class FinishVisitActivity extends BaseActivity {
                 }).isDisposed();
     }
 
-    public void saveFinishedVisit() {
+    public void saveFinishedVisit(ControlVisit visit, Location location) {
+        visit.fLatitude = String.valueOf(location.getLatitude());
+        visit.fLongitude = String.valueOf(location.getLongitude());
+
         try {
             AppDatabase.getInstance(getApplicationContext())
                     .getControlVisitDao().update(visit);

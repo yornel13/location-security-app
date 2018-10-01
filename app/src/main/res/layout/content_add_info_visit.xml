@@ -32,7 +32,6 @@
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:maxLength="2"
-                android:nextFocusDown="@id/vehicle"
                 android:maxLines="1"
                 android:textSize="20sp"
                 android:hint="Personas"/>

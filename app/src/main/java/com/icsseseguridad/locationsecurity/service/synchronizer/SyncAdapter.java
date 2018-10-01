@@ -17,6 +17,7 @@ import com.icsseseguridad.locationsecurity.service.entity.ListClerk;
 import com.icsseseguridad.locationsecurity.service.entity.ListCompany;
 import com.icsseseguridad.locationsecurity.service.entity.ListIncidence;
 import com.icsseseguridad.locationsecurity.service.entity.ListReport;
+import com.icsseseguridad.locationsecurity.service.entity.ListVehicleType;
 import com.icsseseguridad.locationsecurity.service.entity.ListVisit;
 import com.icsseseguridad.locationsecurity.service.entity.ListVisitor;
 import com.icsseseguridad.locationsecurity.service.entity.ListVisitorVehicle;
@@ -100,6 +101,7 @@ public class SyncAdapter {
         getBanners();
         getVisitors();
         getVehicles();
+        getVehiclesType();
         getClerks();
         getCompanies();
         getControlVisits();
@@ -153,6 +155,26 @@ public class SyncAdapter {
             }
         } catch (Exception e) {
             Log.e(TAG, "Error updating vehicles");
+            e.printStackTrace();
+        }
+    }
+
+    private void getVehiclesType() {
+        APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
+        Call<ListVehicleType> call = apiInterface.getVehiclesTypes(preferences.getToken());
+        try {
+            Response<ListVehicleType> tasks = call.execute();
+            ListVehicleType data =  tasks.body();
+            if (tasks.isSuccessful() && data != null) {
+                db.getVehicleTypeDao().deleteAll();
+                db.getVehicleTypeDao().insertAll(data.types);
+                Log.d(TAG, "Update vehicles types was successful");
+                ClerkListViewModel.refreshIfIsActive();
+            } else {
+                Log.e(TAG, "Error in data vehicles types, code: " + tasks.code());
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error updating vehicles types");
             e.printStackTrace();
         }
     }
@@ -498,6 +520,9 @@ public class SyncAdapter {
                     visit.createDate,
                     visit.finishDate,
                     visit.comment,
+                    visit.guardOutId,
+                    visit.fLatitude,
+                    visit.fLongitude,
                     visit.syncId,
                     visit.status);
             try {

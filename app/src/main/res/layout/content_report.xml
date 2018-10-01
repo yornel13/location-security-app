@@ -9,7 +9,7 @@
     android:paddingBottom="96dp"
     android:clipToPadding="false"
     android:scrollbars="none"
-    tools:context=".ui.binnacle.BinnacleActivity"
+    tools:context=".view.ui.binnacle.BinnacleActivity"
     tools:showIn="@layout/activity_report">
 
     <LinearLayout
@@ -36,7 +36,6 @@
                 android:inputType="none"
                 android:gravity="top|start"
                 android:textAlignment="gravity"
-                android:nextFocusDown="@id/vehicle"
                 android:textSize="20sp"
                 android:hint="Incidencia"/>
 
@@ -61,7 +60,6 @@
                 android:inputType="none"
                 android:gravity="top|start"
                 android:textAlignment="gravity"
-                android:nextFocusDown="@id/vehicle"
                 android:textSize="20sp"
                 android:hint="Observación"/>
 

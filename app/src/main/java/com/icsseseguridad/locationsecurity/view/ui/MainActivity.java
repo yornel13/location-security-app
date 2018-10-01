@@ -32,6 +32,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.icsseseguridad.locationsecurity.R;
+import com.icsseseguridad.locationsecurity.service.background.PositionIntentService;
 import com.icsseseguridad.locationsecurity.service.background.RepoIntentService;
 import com.icsseseguridad.locationsecurity.service.background.TrackingService;
 import com.icsseseguridad.locationsecurity.service.entity.Banner;
@@ -45,6 +46,7 @@ import com.icsseseguridad.locationsecurity.service.repository.BinnacleController
 import com.icsseseguridad.locationsecurity.service.repository.MessengerController;
 import com.icsseseguridad.locationsecurity.service.repository.TabletPositionController;
 import com.icsseseguridad.locationsecurity.service.repository.WatchController;
+import com.icsseseguridad.locationsecurity.service.synchronizer.AlertSyncJob;
 import com.icsseseguridad.locationsecurity.service.synchronizer.MainSyncJob;
 import com.icsseseguridad.locationsecurity.util.MyDescriptionAnimation;
 import com.icsseseguridad.locationsecurity.util.UTILITY;
@@ -146,6 +148,12 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
                 setupBanners(banners);
             }
         });
+
+//        {
+//            RepoIntentService.run(this);
+//            PositionIntentService.run(this);
+//            AlertSyncJob.jobScheduler(this);
+//        }
     }
 
     @Override

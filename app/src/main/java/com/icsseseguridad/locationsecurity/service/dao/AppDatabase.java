@@ -16,10 +16,11 @@ import com.icsseseguridad.locationsecurity.service.entity.Photo;
 import com.icsseseguridad.locationsecurity.service.converter.TimestampTypeConverter;
 import com.icsseseguridad.locationsecurity.service.entity.SpecialReport;
 import com.icsseseguridad.locationsecurity.service.entity.TabletPosition;
+import com.icsseseguridad.locationsecurity.service.entity.VehicleType;
 import com.icsseseguridad.locationsecurity.service.entity.Visitor;
 import com.icsseseguridad.locationsecurity.service.entity.VisitorVehicle;
 
-@Database(version = 35, entities = {
+@Database(version = 37, entities = {
         Visitor.class,
         Clerk.class,
         VisitorVehicle.class,
@@ -30,11 +31,12 @@ import com.icsseseguridad.locationsecurity.service.entity.VisitorVehicle;
         Incidence.class,
         SpecialReport.class,
         TabletPosition.class,
+        VehicleType.class,
 })
 @TypeConverters({TimestampTypeConverter.class, LinkedTypeConverter.class})
 public abstract  class AppDatabase extends RoomDatabase {
 
-    private static final String DB_NAME = "location_security_db_v133";
+    private static final String DB_NAME = "location_security_db_v135";
 
     private static AppDatabase mInstance;
 
@@ -59,4 +61,5 @@ public abstract  class AppDatabase extends RoomDatabase {
     public abstract IncidenceDao getIncidenceDao();
     public abstract SpecialReportDao getSpecialReportDao();
     public abstract PositionDao getPositionDao();
+    public abstract VehicleTypeDao getVehicleTypeDao();
 }

@@ -9,7 +9,7 @@
     android:paddingBottom="96dp"
     android:clipToPadding="false"
     android:scrollbars="none"
-    tools:context=".ui.visit.AddVisitActivity"
+    tools:context=".view.ui.visit.AddVisitActivity"
     tools:showIn="@layout/activity_add_report">
 
     <LinearLayout
@@ -45,7 +45,6 @@
                 android:gravity="top|start"
                 android:maxLength="1000"
                 android:textAlignment="gravity"
-                android:nextFocusDown="@id/vehicle"
                 android:textSize="20sp"
                 android:hint="Observación"/>
 

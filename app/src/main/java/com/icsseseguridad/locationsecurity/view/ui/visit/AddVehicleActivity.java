@@ -1,9 +1,12 @@
 package com.icsseseguridad.locationsecurity.view.ui.visit;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -12,6 +15,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,7 +24,9 @@ import com.fxn.utility.PermUtil;
 import com.google.gson.Gson;
 import com.icsseseguridad.locationsecurity.R;
 import com.icsseseguridad.locationsecurity.service.dao.AppDatabase;
+import com.icsseseguridad.locationsecurity.service.entity.Incidence;
 import com.icsseseguridad.locationsecurity.service.entity.Photo;
+import com.icsseseguridad.locationsecurity.service.entity.VehicleType;
 import com.icsseseguridad.locationsecurity.service.repository.PhotoController;
 import com.icsseseguridad.locationsecurity.service.repository.VisitController;
 import com.icsseseguridad.locationsecurity.service.event.OnAddVehicleFailure;
@@ -28,7 +34,12 @@ import com.icsseseguridad.locationsecurity.service.event.OnAddVehicleSuccess;
 import com.icsseseguridad.locationsecurity.service.event.OnUploadPhotoFailure;
 import com.icsseseguridad.locationsecurity.service.event.OnUploadPhotoSuccess;
 import com.icsseseguridad.locationsecurity.service.entity.VisitorVehicle;
+import com.icsseseguridad.locationsecurity.view.adapter.IncidenceSpinnerAdapter;
+import com.icsseseguridad.locationsecurity.view.adapter.VehicleTypeSpinnerAdapter;
 import com.icsseseguridad.locationsecurity.view.ui.PhotoActivity;
+import com.icsseseguridad.locationsecurity.view.ui.binnacle.AddReportActivity;
+import com.icsseseguridad.locationsecurity.viewmodel.IncidenceListViewModel;
+import com.icsseseguridad.locationsecurity.viewmodel.VehicleTypeListViewModel;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -40,6 +51,7 @@ import java.io.File;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -63,12 +75,18 @@ public class AddVehicleActivity extends PhotoActivity {
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.photo) ImageView photoImage;
     @BindView(R.id.plate) TextView plateText;
-    @BindView(R.id.vehicle) TextView vehicleText;
+    @BindView(R.id.spinner_vehicle) Spinner spinner;
     @BindView(R.id.model) TextView modelText;
     @BindView(R.id.type) TextView typeText;
 
     private Uri photoUri;
     private VisitorVehicle vehicle;
+
+    private VehicleTypeListViewModel typeListViewModel;
+
+    private List<VehicleType> vehicleTypes = new ArrayList<>();
+
+    private VehicleTypeSpinnerAdapter adapterSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +106,26 @@ public class AddVehicleActivity extends PhotoActivity {
                 return false;
             }
         });
+        getVehiclesTypes();
+    }
+
+    private void getVehiclesTypes() {
+        typeListViewModel = ViewModelProviders
+                .of(this).get(VehicleTypeListViewModel.class);
+        typeListViewModel.getVehicles().observe(this, new Observer<List<VehicleType>>() {
+            @Override
+            public void onChanged(@Nullable final List<VehicleType> vehicleTypes) {
+                vehicleTypes.add(0, new VehicleType("Selecciona un vehiculo..."));
+                AddVehicleActivity.this.vehicleTypes = new ArrayList<>(vehicleTypes);
+                loadSpinner();
+            }
+        });
+    }
+
+    private void loadSpinner() {
+        adapterSpinner = new VehicleTypeSpinnerAdapter(this,
+                R.layout.spinner_item, vehicleTypes);
+        spinner.setAdapter(adapterSpinner);
     }
 
     @OnClick(R.id.icon_photo)
@@ -137,6 +175,11 @@ public class AddVehicleActivity extends PhotoActivity {
             plateText.requestFocus();
             return;
         }
+        if (spinner.getSelectedItemPosition() < 1) {
+            Toast.makeText(this, "Selecciona un tipo de vehiculo", Toast.LENGTH_SHORT).show();
+            spinner.requestFocus();
+            return;
+        }
         if (modelText.getText().toString().isEmpty()) {
             modelText.setError(getString(R.string.error_empty_label));
             modelText.requestFocus();
@@ -165,7 +208,8 @@ public class AddVehicleActivity extends PhotoActivity {
         hideKeyboard();
         final VisitorVehicle vehicle = new VisitorVehicle();
         vehicle.plate = plateText.getText().toString();
-        vehicle.vehicle = vehicleText.getText().toString();
+        VehicleType vehicleType = (VehicleType) spinner.getSelectedItem();
+        vehicle.vehicle = vehicleType.name;
         vehicle.model = modelText.getText().toString();
         vehicle.type = typeText.getText().toString();
         vehicle.createDate = new Timestamp(new Date().getTime());
@@ -173,13 +217,6 @@ public class AddVehicleActivity extends PhotoActivity {
         vehicle.sync = false;
         vehicle.active = 1;
 
-//        if (photoUri != null) {
-//            this.vehicle = vehicle;
-//            new PhotoController().save(photoUri.toString());
-//        } else {
-//            VisitController visitController = new VisitController();
-//            visitController.saveVehicle(vehicle);
-//        }
         builderDialog.text("Guardando...");
         dialog.show();
 
@@ -215,12 +252,12 @@ public class AddVehicleActivity extends PhotoActivity {
     }
 
     private void onSuccess(VisitorVehicle vehicle) {
+        dialog.dismiss();
         if (vehicle.id == null) {
             Snackbar.make(toolbar, "Esta placa se encuentra en uso",
                     Snackbar.LENGTH_LONG).show();
             return;
         }
-        dialog.dismiss();
         app.vehicle = vehicle;
         setResult(RESULT_OK, getIntent());
         finish();

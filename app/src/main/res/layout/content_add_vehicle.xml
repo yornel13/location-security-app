@@ -9,7 +9,7 @@
     android:paddingTop="36dp"
     android:clipToPadding="false"
     android:scrollbars="none"
-    tools:context=".ui.visit.AddVisitActivity"
+    tools:context=".view.ui.visit.AddVehicleActivity"
     tools:showIn="@layout/activity_add_vehicle">
 
     <LinearLayout
@@ -61,30 +61,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textCapCharacters"
-                android:nextFocusDown="@id/vehicle"
+                android:nextFocusDown="@id/spinner_vehicle"
                 android:maxLines="1"
                 android:textSize="20sp"
                 android:hint="Placa"/>
 
         </android.support.design.widget.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <Spinner
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:id="@+id/spinner_vehicle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/vehicle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textCapSentences"
-                android:nextFocusDown="@id/model"
-                android:maxLines="1"
-                android:textSize="20sp"
-                android:hint="Vehiculo "/>
-
-        </android.support.design.widget.TextInputLayout>
+            android:background="@drawable/spinner_gray">
+        </Spinner>
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
