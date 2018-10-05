@@ -3,6 +3,8 @@ package com.icsseseguridad.locationsecurity.view.ui;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.nfc.Tag;
@@ -10,6 +12,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -25,11 +28,17 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.icsseseguridad.locationsecurity.R;
 import com.icsseseguridad.locationsecurity.service.background.TrackingService;
+import com.icsseseguridad.locationsecurity.service.event.OnVerifyTabletFailure;
+import com.icsseseguridad.locationsecurity.service.event.OnVerifyTabletSuccess;
 import com.icsseseguridad.locationsecurity.service.repository.AuthController;
 import com.icsseseguridad.locationsecurity.service.repository.TabletPositionController;
 import com.icsseseguridad.locationsecurity.service.repository.WatchController;
@@ -45,6 +54,7 @@ import com.icsseseguridad.locationsecurity.service.event.OnVerifySessionSuccess;
 import com.icsseseguridad.locationsecurity.service.entity.Guard;
 import com.icsseseguridad.locationsecurity.service.entity.TabletPosition;
 import com.icsseseguridad.locationsecurity.service.entity.Watch;
+import com.icsseseguridad.locationsecurity.util.AppPreferences;
 import com.icsseseguridad.locationsecurity.util.CurrentLocation;
 
 import org.greenrobot.eventbus.EventBus;
@@ -64,6 +74,8 @@ import io.reactivex.schedulers.Schedulers;
 
 public class LoginActivity extends BaseActivity {
 
+    public static final String TAG = "LoginActivity";
+
     private static final int INTENT_TURN_ON_GPS = 65;
     @BindView(R.id.background_login) ImageView background;
     @BindView(R.id.container) RelativeLayout container;
@@ -73,11 +85,13 @@ public class LoginActivity extends BaseActivity {
     @BindView(R.id.password) EditText passwordText;
     @BindView(R.id.login) Button loginButton;
     @BindView(R.id.imei) TextView imeiText;
+    @BindView(R.id.version) TextView versionText;
 
     private Guard guard;
 
     private Location location;
     private GoogleApiClient mGoogleApiClient;
+    private FusedLocationProviderClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,11 +133,15 @@ public class LoginActivity extends BaseActivity {
                 return false;
             }
         });
-
-        if (!getPreferences().isRegistered()) {
-            loginButton.setText("Registrar Dispositivo");
-        }
         connectGoogleApi();
+
+        try {
+            PackageInfo pinfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            String versionName = pinfo.versionName;
+            versionText.setText("Versión " + versionName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void connectGoogleApi() {
@@ -131,18 +149,19 @@ public class LoginActivity extends BaseActivity {
                 .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
                     @Override
                     public void onConnected(@Nullable Bundle bundle) {
-                        Log.d("LoginActivity", "onConnected");
+                        Log.d(TAG, "onConnected");
+                        requestLocationUpdates();
                     }
 
                     @Override
                     public void onConnectionSuspended(int i) {
-                        Log.d("LoginActivity", "onConnectionSuspended");
+                        Log.d(TAG, "onConnectionSuspended");
                     }
                 })
                 .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
                     @Override
                     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-                        Log.d("LoginActivity", "onConnectionFailed");
+                        Log.d(TAG, "onConnectionFailed");
                     }
                 })
                 .addApi(LocationServices.API)
@@ -208,13 +227,38 @@ public class LoginActivity extends BaseActivity {
             }
             @Override
             public void onAnimationEnd(Animation animation) {
-                container2.setVisibility(View.GONE);
-                if (getPreferences().isRegistered()) {
-                    imeiText.setText("IMEI " + getImeiAndSave());
-                }
+                showView();
             }
         });
         container2.startAnimation(animation);
+    }
+
+    public void showView() {
+        container2.setVisibility(View.GONE);
+        if (getPreferences().isRegistered()) {
+            imeiText.setText("IMEI " + getPreferences().getImei());
+        } else {
+            loginButton.setText("Registrar Dispositivo");
+            builderDialog.text("Verificando");
+            dialog.show();
+            new AuthController().verifyTablet(getImei());
+        }
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void verifyTabletSuccess(OnVerifyTabletSuccess event) {
+        EventBus.getDefault().removeStickyEvent(OnVerifyTabletSuccess.class);
+        dialog.dismiss();
+        getPreferences().setImei(event.tablet.imei);
+        getPreferences().setRegistered();
+        loginButton.setText("Iniciar Guardia");
+        imeiText.setText("IMEI " + getPreferences().getImei());
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void verifyTabletFailure(OnVerifyTabletFailure event) {
+        EventBus.getDefault().removeStickyEvent(OnVerifyTabletFailure.class);
+        dialog.dismiss();
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
@@ -246,7 +290,7 @@ public class LoginActivity extends BaseActivity {
         dialog.dismiss();
         getPreferences().setGuard(guard);
         getPreferences().setWatch(event.watch);
-        //updatePosition(event.watch);
+        getPreferences().setLastKnownLoc(location);
         startActivity(new Intent(this, MainActivity.class));
         finish();
     }
@@ -289,7 +333,6 @@ public class LoginActivity extends BaseActivity {
             signInAdmin();
             return;
         }
-
         location = null;
         builderDialog.text("Iniciando");
         dialog.show();
@@ -342,6 +385,8 @@ public class LoginActivity extends BaseActivity {
         if (getPreferences().getWatch() == null) {
             stopService(new Intent(this, TrackingService.class));
         }
+        if (client != null)
+            client.removeLocationUpdates(callback);
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
@@ -368,4 +413,28 @@ public class LoginActivity extends BaseActivity {
         passwordText.setEnabled(true);
         dialog.dismiss();
     }
+
+    private void requestLocationUpdates() {
+        LocationRequest request = new LocationRequest();
+        request.setInterval(10000);
+
+        request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        client = LocationServices.getFusedLocationProviderClient(this);
+        int permission = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION);
+        if (permission == PackageManager.PERMISSION_GRANTED) {
+            client.requestLocationUpdates(request, callback, null);
+        }
+    }
+
+    LocationCallback callback = new LocationCallback() {
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            Location location = locationResult.getLastLocation();
+            if (location != null) {
+                Log.d(TAG, String.valueOf(location.getLatitude())
+                        + ", " + String.valueOf(location.getLongitude()));
+            }
+        }
+    };
 }

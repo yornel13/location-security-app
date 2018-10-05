@@ -8,7 +8,7 @@
     android:descendantFocusability="beforeDescendants"
     android:focusableInTouchMode="true"
     android:fitsSystemWindows="false"
-    tools:context=".ui.LoginActivity">
+    tools:context=".view.ui.LoginActivity">
 
     <RelativeLayout
         android:id="@+id/container"
@@ -31,6 +31,19 @@
             app:fontFamily="GoogleSans-Regular.ttf"
             android:layout_centerHorizontal="true"
             android:layout_alignParentBottom="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <com.icsseseguridad.locationsecurity.util.AppTextView
+            android:id="@+id/version"
+            android:padding="12dp"
+            android:textSize="14sp"
+            android:text="version"
+            android:layout_marginTop="24dp"
+            android:textColor="@color/white"
+            app:fontFamily="GoogleSans-Regular.ttf"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentTop="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 

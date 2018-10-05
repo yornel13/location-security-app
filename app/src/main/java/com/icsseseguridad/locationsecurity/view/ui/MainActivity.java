@@ -5,6 +5,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
@@ -76,6 +77,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
     @BindView(R.id.guard_name) TextView nameText;
     @BindView(R.id.guard_date) TextView dateText;
     @BindView(R.id.slider) SliderLayout sliderView;
+    @BindView(R.id.version) TextView versionText;
     @BindView(R.id.header_container) BottomNavigationView bottomNavigationView;
 
     private Location location;
@@ -149,11 +151,13 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
             }
         });
 
-//        {
-//            RepoIntentService.run(this);
-//            PositionIntentService.run(this);
-//            AlertSyncJob.jobScheduler(this);
-//        }
+        try {
+            PackageInfo pinfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            String versionName = pinfo.versionName;
+            versionText.setText("Versión " + versionName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

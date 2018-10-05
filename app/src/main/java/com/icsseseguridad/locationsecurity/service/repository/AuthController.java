@@ -3,6 +3,7 @@ package com.icsseseguridad.locationsecurity.service.repository;
 import com.google.gson.Gson;
 import com.icsseseguridad.locationsecurity.R;
 import com.icsseseguridad.locationsecurity.SecurityApp;
+import com.icsseseguridad.locationsecurity.service.entity.Tablet;
 import com.icsseseguridad.locationsecurity.service.event.OnRegisteredTabletFailure;
 import com.icsseseguridad.locationsecurity.service.event.OnRegisteredTabletSuccess;
 import com.icsseseguridad.locationsecurity.service.event.OnSignAdminSuccess;
@@ -12,6 +13,8 @@ import com.icsseseguridad.locationsecurity.service.event.OnVerifySessionFailure;
 import com.icsseseguridad.locationsecurity.service.event.OnVerifySessionSuccess;
 import com.icsseseguridad.locationsecurity.service.entity.Guard;
 import com.icsseseguridad.locationsecurity.service.entity.MultipleResource;
+import com.icsseseguridad.locationsecurity.service.event.OnVerifyTabletFailure;
+import com.icsseseguridad.locationsecurity.service.event.OnVerifyTabletSuccess;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -112,7 +115,6 @@ public class AuthController extends BaseController {
                 if (!response.isSuccessful()) {
                     try {
                         MultipleResource resource = gson.fromJson(response.errorBody().string(), MultipleResource.class);
-                        System.out.println(new Gson().toJson(resource));
                         EventBus.getDefault().postSticky(new OnRegisteredTabletFailure(resource.message));
                     } catch (IOException e) {
                         EventBus.getDefault().postSticky(new OnRegisteredTabletFailure(
@@ -126,6 +128,44 @@ public class AuthController extends BaseController {
                     EventBus.getDefault().postSticky(new OnRegisteredTabletFailure(resource.message));
                 } else {
                     EventBus.getDefault().postSticky(new OnRegisteredTabletSuccess(resource));
+                }
+            }
+        });
+    }
+
+    public void verifyTablet(String imei) {
+        APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
+        System.out.println(preferences.getToken());
+        Call<MultipleResource> call = apiInterface.verifyTablet(imei);
+        call.enqueue(new Callback<MultipleResource>() {
+            @Override
+            public void onFailure(Call<MultipleResource> call, Throwable t) {
+                t.printStackTrace();
+                call.cancel();
+                EventBus.getDefault().postSticky(new OnVerifyTabletFailure(
+                        SecurityApp.getAppContext().getString(R.string.error_connection)
+                ));
+            }
+            @Override
+            public void onResponse(Call<MultipleResource> call, Response<MultipleResource> response) {
+                if (!response.isSuccessful()) {
+                    try {
+                        MultipleResource resource = gson.fromJson(response.errorBody().string(), MultipleResource.class);
+                        System.out.println(new Gson().toJson(resource));
+                        EventBus.getDefault().postSticky(new OnVerifyTabletFailure(resource.message));
+                    } catch (IOException e) {
+                        EventBus.getDefault().postSticky(new OnVerifyTabletFailure(
+                                SecurityApp.getAppContext().getString(R.string.error_connection)
+                        ));
+                    }
+                    return;
+                }
+                MultipleResource resource = response.body();
+                if (!resource.response) {
+                    EventBus.getDefault().postSticky(new OnVerifyTabletFailure(resource.message));
+                } else {
+                    Tablet tablet = gson.fromJson(gson.toJson(resource.result), Tablet.class);
+                    EventBus.getDefault().postSticky(new OnVerifyTabletSuccess(tablet));
                 }
             }
         });

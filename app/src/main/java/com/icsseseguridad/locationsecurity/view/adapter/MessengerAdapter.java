@@ -61,7 +61,8 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.View
                 final Chat chat = (Chat) list.get(position);
                 String userName = null;
                 Chat.TYPE userType = null;
-                if (chat.user1Id.equals(preferences.getGuard().id)) {
+                if (chat.user1Id.equals(preferences.getGuard().id)
+                        && chat.user1Type == Chat.TYPE.GUARD) {
                     userName = chat.user2Name;
                     userType = chat.user2Type;
                 } else {

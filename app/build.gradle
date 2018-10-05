@@ -1,13 +1,21 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'SeguridadKey'
+            keyPassword '123456'
+            storeFile file('C:/Users/Yornel/Documents/icsse_seguridad_key.jks')
+            storePassword '123456'
+        }
+    }
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.icsseseguridad.locationsecurity"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 13
-        versionName "1.13"
+        versionCode 20
+        versionName "1.02"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
             annotationProcessorOptions {
@@ -15,17 +23,23 @@ android {
                                      "$projectDir/schemas".toString()]
             }
         }
+        signingConfig signingConfigs.config
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+            signingConfig signingConfigs.config
+        }
+    }
+    productFlavors {
     }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:28.0.0-rc02'
     implementation 'com.android.support:design:28.0.0-rc02'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
@@ -50,7 +64,7 @@ dependencies {
     // Glide (load images)
     implementation 'com.github.bumptech.glide:glide:4.7.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
-    implementation "com.github.firdausmaulan:GlideSlider:1.3.2"
+    implementation 'com.github.firdausmaulan:GlideSlider:1.3.2'
     // Search dialog
     implementation 'com.github.mirrajabi:search-dialog:1.2'
     // Circle Image view
@@ -72,11 +86,11 @@ dependencies {
     // ViewModel
     implementation 'android.arch.lifecycle:extensions:1.1.1'
     // rxJava
-    implementation "io.reactivex.rxjava2:rxjava:2.0.6"
-    implementation "io.reactivex.rxjava2:rxandroid:2.0.1"
+    implementation 'io.reactivex.rxjava2:rxjava:2.0.6'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
     // Google Play Services
-    implementation "com.google.android.gms:play-services-location:15.0.1"
-////////////////////////////////////////////////////////////////////////////////////////////////
+    implementation 'com.google.android.gms:play-services-location:15.0.1'
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'

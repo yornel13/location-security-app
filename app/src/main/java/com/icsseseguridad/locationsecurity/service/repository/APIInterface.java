@@ -56,6 +56,9 @@ public interface APIInterface {
     @GET("public/auth/verify")
     Call<Guard> verifySession(@Header("APP-TOKEN") String appToken);
 
+    @GET("public/tablet/verify/{imei}")
+    Call<MultipleResource> verifyTablet(@Path("imei") String imei);
+
     @FormUrlEncoded
     @POST("public/watch/start")
     Call<MultipleResource> initWatch(
