@@ -380,6 +380,7 @@ public class MessengerController extends BaseController {
     }
 
     public void getUnreadMessages() {
+        if (preferences.getGuard() == null) return;
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
         Call<ListChatWithUnread> call = apiInterface.getUnreadMessages(preferences.getToken(), preferences.getGuard().id);
         call.enqueue(new Callback<ListChatWithUnread>() {

@@ -4,8 +4,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.location.Location;
+import android.os.SystemClock;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.icsseseguridad.locationsecurity.service.entity.Alert;
 import com.icsseseguridad.locationsecurity.service.entity.ConfigUtility;
 import com.icsseseguridad.locationsecurity.service.entity.Guard;
@@ -24,6 +28,7 @@ public class AppPreferences {
     private static final String ALERT = "alert";
     private static final String GPS_UPDATE = "gps_update";
     private static final String REGISTERED = "registered";
+    private static final String LAST_SYNC = "last_sync";
 
     private Context context;
     private SharedPreferences preferences;
@@ -39,7 +44,7 @@ public class AppPreferences {
         if (guard == null) {
             editor.putString(GUARD, null);
         } else {
-            editor.putString(GUARD, new Gson().toJson(guard));
+            editor.putString(GUARD, gson().toJson(guard));
         }
         editor.apply();
     }
@@ -49,7 +54,7 @@ public class AppPreferences {
         if (alert == null) {
             editor.putString(ALERT, null);
         } else {
-            editor.putString(ALERT, new Gson().toJson(alert));
+            editor.putString(ALERT, gson().toJson(alert));
         }
         editor.apply();
     }
@@ -59,7 +64,7 @@ public class AppPreferences {
         if (json == null) {
             return null;
         }
-        return new Gson().fromJson(json, Alert.class);
+        return gson().fromJson(json, Alert.class);
     }
 
     public String getToken() {
@@ -75,7 +80,7 @@ public class AppPreferences {
         if (json == null) {
             return null;
         }
-        return new Gson().fromJson(json, Guard.class);
+        return gson().fromJson(json, Guard.class);
     }
 
     public void setWatch(Watch watch) {
@@ -83,7 +88,7 @@ public class AppPreferences {
         if (watch == null) {
             editor.putString(WATCH, null);
         } else {
-            editor.putString(WATCH, new Gson().toJson(watch));
+            editor.putString(WATCH, gson().toJson(watch));
         }
         editor.apply();
     }
@@ -93,7 +98,7 @@ public class AppPreferences {
         if (json == null) {
             return null;
         }
-        return new Gson().fromJson(json, Watch.class);
+        return gson().fromJson(json, Watch.class);
     }
 
     public void setImei(String imei) {
@@ -174,4 +179,33 @@ public class AppPreferences {
         preferences.edit().remove(WATCH).apply();
     }
 
+    public void saveLastSync(long millis) {
+        preferences.edit().putLong(LAST_SYNC, millis).apply();
+    }
+
+    public boolean canSync() {
+        long lastSync = preferences.getLong(LAST_SYNC, 0);
+        if (System.currentTimeMillis() > (lastSync + 59999)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private Gson gson() {
+        return new GsonBuilder()
+                .setDateFormat("yyyy-MM-dd HH:mm:ss")
+                .setExclusionStrategies(new ExclusionStrategy() {
+                    @Override
+                    public boolean shouldSkipField(FieldAttributes f) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean shouldSkipClass(Class<?> clazz) {
+                        return false;
+                    }
+                })
+                .create();
+    }
 }

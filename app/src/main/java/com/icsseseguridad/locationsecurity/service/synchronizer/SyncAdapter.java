@@ -50,19 +50,22 @@ public class SyncAdapter {
 
     private static final String TAG = "RepoIntentServiceAdapt";
 
-    private AppPreferences preferences;
     private AppDatabase db;
+    private Context context;
 
     public SyncAdapter(Context context) {
-        this.preferences = new AppPreferences(context);
+        this.context = context;
         this.db = AppDatabase.getInstance(context);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
     }
 
+    public AppPreferences getPreferences() {
+        return new AppPreferences(context.getApplicationContext());
+    }
+
     public void sync() {
         if (needSync()) {
-            syncPositions();
             if (syncPhotos()) {
                 syncReports();
                 if (syncVehicles() && syncVisitors()) {
@@ -75,6 +78,7 @@ public class SyncAdapter {
         } else {
             updateDatabase();
         }
+        syncPositions();
     }
 
     public boolean needSync() {
@@ -83,35 +87,48 @@ public class SyncAdapter {
         List<Visitor> visitors = db.getVisitorDao().getAllUnsaved();
         List<ControlVisit> visits = db.getControlVisitDao().getAllUnsaved();
         List<SpecialReport> reports = db.getSpecialReportDao().getAllUnsaved();
-        List<TabletPosition> positions = db.getPositionDao().getAll();
         if (photos.size() > 0
                 || vehicles.size() > 0
                 || visitors.size() > 0
                 || visits.size() > 0
-                || reports.size() > 0
-                || positions.size() > 0) {
+                || reports.size() > 0) {
             Log.d(TAG, "Database is needing sync");
             return true;
         }
         return false;
     }
 
+    public boolean isNeedSyncPositions() {
+        List<TabletPosition> positions = db.getPositionDao().getAll();
+        return positions.size() > 0;
+    }
+
     private void updateDatabase() {
+        if (getPreferences().getGuard() == null) return;
         getPGSUpdateTime();
+        if (getPreferences().getGuard() == null) return;
         getBanners();
+        if (getPreferences().getGuard() == null) return;
         getVisitors();
+        if (getPreferences().getGuard() == null) return;
         getVehicles();
+        if (getPreferences().getGuard() == null) return;
         getVehiclesType();
+        if (getPreferences().getGuard() == null) return;
         getClerks();
+        if (getPreferences().getGuard() == null) return;
         getCompanies();
+        if (getPreferences().getGuard() == null) return;
         getControlVisits();
+        if (getPreferences().getGuard() == null) return;
         getIncidences();
+        if (getPreferences().getGuard() == null) return;
         getSpecialReports();
     }
 
     private void getVisitors() {
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-        Call<ListVisitor> call = apiInterface.getVisitors(preferences.getToken());
+        Call<ListVisitor> call = apiInterface.getVisitors(getPreferences().getToken());
         try {
             Response<ListVisitor> tasks = call.execute();
             ListVisitor data =  tasks.body();
@@ -136,7 +153,7 @@ public class SyncAdapter {
 
     private void getVehicles() {
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-        Call<ListVisitorVehicle> call = apiInterface.getVisitorVehicles(preferences.getToken());
+        Call<ListVisitorVehicle> call = apiInterface.getVisitorVehicles(getPreferences().getToken());
         try {
             Response<ListVisitorVehicle> tasks = call.execute();
             ListVisitorVehicle data =  tasks.body();
@@ -161,7 +178,7 @@ public class SyncAdapter {
 
     private void getVehiclesType() {
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-        Call<ListVehicleType> call = apiInterface.getVehiclesTypes(preferences.getToken());
+        Call<ListVehicleType> call = apiInterface.getVehiclesTypes(getPreferences().getToken());
         try {
             Response<ListVehicleType> tasks = call.execute();
             ListVehicleType data =  tasks.body();
@@ -181,7 +198,7 @@ public class SyncAdapter {
 
     private void getClerks() {
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-        Call<ListClerk> call = apiInterface.getClerks(preferences.getToken());
+        Call<ListClerk> call = apiInterface.getClerks(getPreferences().getToken());
         try {
             Response<ListClerk> tasks = call.execute();
             ListClerk data =  tasks.body();
@@ -201,7 +218,7 @@ public class SyncAdapter {
 
     private void getCompanies() {
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-        Call<ListCompany> call = apiInterface.getCompanies(preferences.getToken());
+        Call<ListCompany> call = apiInterface.getCompanies(getPreferences().getToken());
         try {
             Response<ListCompany> tasks = call.execute();
             final ListCompany data =  tasks.body();
@@ -221,7 +238,7 @@ public class SyncAdapter {
 
     private void getControlVisits() {
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-        Call<ListVisit> call = apiInterface.getActiveVisits(preferences.getToken());
+        Call<ListVisit> call = apiInterface.getActiveVisits(getPreferences().getToken());
         try {
             Response<ListVisit> tasks = call.execute();
             final ListVisit data =  tasks.body();
@@ -246,7 +263,7 @@ public class SyncAdapter {
 
     private void getBanners() {
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-        Call<ListBanner> call = apiInterface.getBanners(preferences.getToken());
+        Call<ListBanner> call = apiInterface.getBanners(getPreferences().getToken());
         try {
             Response<ListBanner> tasks = call.execute();
             final ListBanner data =  tasks.body();
@@ -266,7 +283,7 @@ public class SyncAdapter {
 
     private void getIncidences() {
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-        Call<ListIncidence> call = apiInterface.getIncidences(preferences.getToken());
+        Call<ListIncidence> call = apiInterface.getIncidences(getPreferences().getToken());
         try {
             Response<ListIncidence> tasks = call.execute();
             final ListIncidence data =  tasks.body();
@@ -284,12 +301,12 @@ public class SyncAdapter {
     }
 
     private void getSpecialReports() {
-        if (preferences.getGuard() == null) {
+        if (getPreferences().getGuard() == null) {
             Log.e(TAG, "No guard logger");
             return;
         }
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-        Call<ListReport> call = apiInterface.getGuardReports(preferences.getToken(), preferences.getGuard().id);
+        Call<ListReport> call = apiInterface.getGuardReports(getPreferences().getToken(), getPreferences().getGuard().id);
         try {
             Response<ListReport> tasks = call.execute();
             final ListReport data =  tasks.body();
@@ -314,12 +331,12 @@ public class SyncAdapter {
 
     private void getPGSUpdateTime() {
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-        Call<ConfigUtility> call = apiInterface.getUpdateGPS(preferences.getToken());
+        Call<ConfigUtility> call = apiInterface.getUpdateGPS(getPreferences().getToken());
         try {
             Response<ConfigUtility> tasks = call.execute();
             ConfigUtility data =  tasks.body();
             if (tasks.isSuccessful() && data != null) {
-                preferences.setGpsUpdate(data);
+                getPreferences().setGpsUpdate(data);
                 Log.d(TAG, "Update gps time was successful");
             } else {
                 Log.e(TAG, "Error in data gps time, code: " + tasks.code());
@@ -413,7 +430,7 @@ public class SyncAdapter {
         boolean isSuccess = true;
         for (VisitorVehicle vehicle: vehicles) {
             APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-            Call<MultipleResource> call = apiInterface.syncVehicle(preferences.getToken(),
+            Call<MultipleResource> call = apiInterface.syncVehicle(getPreferences().getToken(),
                     vehicle.plate,
                     vehicle.vehicle,
                     vehicle.model,
@@ -458,7 +475,7 @@ public class SyncAdapter {
         boolean isSuccess = true;
         for (Visitor visitor: visitors) {
             APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-            Call<MultipleResource> call = apiInterface.syncVisitor(preferences.getToken(),
+            Call<MultipleResource> call = apiInterface.syncVisitor(getPreferences().getToken(),
                     visitor.dni,
                     visitor.name,
                     visitor.lastname,
@@ -503,7 +520,7 @@ public class SyncAdapter {
         boolean isSuccess = true;
         for (ControlVisit visit: visits) {
             APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-            Call<MultipleResource> call = apiInterface.syncVisit(preferences.getToken(),
+            Call<MultipleResource> call = apiInterface.syncVisit(getPreferences().getToken(),
                     visit.vehicleId,
                     visit.visitorId,
                     visit.clerkId,
@@ -559,7 +576,7 @@ public class SyncAdapter {
         for (SpecialReport report: reports) {
             System.out.println(new Gson().toJson(report));
             APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-            Call<MultipleResource> call = apiInterface.syncReport(preferences.getToken(),
+            Call<MultipleResource> call = apiInterface.syncReport(getPreferences().getToken(),
                     report.watchId,
                     report.incidenceId,
                     report.title,
@@ -606,7 +623,7 @@ public class SyncAdapter {
         for (TabletPosition position: positions) {
             System.out.println(new Gson().toJson(position));
             APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-            Call<MultipleResource> call = apiInterface.syncPosition(preferences.getToken(),
+            Call<MultipleResource> call = apiInterface.syncPosition(getPreferences().getToken(),
                     position.latitude,
                     position.longitude,
                     position.generatedTime,
@@ -636,12 +653,6 @@ public class SyncAdapter {
         }
         return isSuccess;
     }
-
-
-
-
-
-
 
     private Gson gson() {
         return new GsonBuilder()

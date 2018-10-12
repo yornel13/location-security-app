@@ -48,7 +48,7 @@ public class PositionIntentService extends IntentService {
     private void setupAlarm() {
         if (CurrentLocation.getPreferences(this).getWatch() != null) {
             long interval = new AppPreferences(this).getGPSUpdate();
-            setAlarm(this, 60000);
+            setAlarm(this, interval);
         }
     }
 

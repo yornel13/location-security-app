@@ -195,19 +195,36 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical">
 
-                    <EditText
-                        android:id="@+id/search_field"
-                        android:layout_marginTop="16dp"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginEnd="16dp"
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textCapWords"
-                        android:nextFocusDown="@id/model"
-                        android:drawableEnd="@drawable/search_dialog_ic_search"
-                        android:maxLines="1"
-                        android:textSize="20sp"
-                        android:hint="Buscar..."/>
+                        android:layout_height="wrap_content">
+
+                        <EditText
+                            android:id="@+id/search_field"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginEnd="66dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textCapWords"
+                            android:nextFocusDown="@id/model"
+                            android:drawableEnd="@drawable/search_dialog_ic_search"
+                            android:maxLines="1"
+                            android:textSize="20sp"
+                            android:hint="Buscar..."/>
+
+                        <android.support.design.widget.FloatingActionButton
+                            android:id="@+id/refresh_button"
+                            android:layout_marginTop="18dp"
+                            android:layout_marginEnd="16dp"
+                            android:layout_alignParentEnd="true"
+                            app:fabSize="mini"
+                            app:backgroundTint="@color/greenBadge"
+                            android:src="@drawable/refresh_white"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                    </RelativeLayout>
 
                     <android.support.v7.widget.RecyclerView
                         android:visibility="visible"

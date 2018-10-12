@@ -27,7 +27,7 @@ public class APIClient {
                 .create();
 
         retrofit = new Retrofit.Builder()
-                .baseUrl("http://icsseseguridad.com/api/")
+                .baseUrl("http://bitacoraseguridad.com/api/")
                 .client(provideOkHttpClient())
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();

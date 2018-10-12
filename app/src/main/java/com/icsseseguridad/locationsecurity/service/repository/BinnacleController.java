@@ -195,6 +195,7 @@ public class BinnacleController extends BaseController {
     }
 
     public void getUnreadReports() {
+        if (preferences.getGuard() == null) return;
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
         Call<ListRepliesWithUnread> call = apiInterface.getUnreadReplies(preferences.getToken(), preferences.getGuard().id);
         call.enqueue(new Callback<ListRepliesWithUnread>() {

@@ -3,11 +3,13 @@ package com.icsseseguridad.locationsecurity.view.ui.visit;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -67,6 +69,8 @@ public class VisitsActivity extends BaseActivity implements  BottomNavigationVie
     private VisitAdapter adapter;
     private QBadgeView badgeChat;
     private QBadgeView badgeBinnacle;
+
+    @BindView(R.id.refresh_button) FloatingActionButton refreshButton;
 
     List<ControlVisit> visits;
 
@@ -225,7 +229,7 @@ public class VisitsActivity extends BaseActivity implements  BottomNavigationVie
                     //Toast.makeText(this, "Visita finalizada con exito.", Toast.LENGTH_SHORT).show();
                     break;
             }
-            RepoIntentService.run(this);
+            callRefresh();
         }
     }
 
@@ -260,7 +264,6 @@ public class VisitsActivity extends BaseActivity implements  BottomNavigationVie
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onClickVisit(OnClickVisit event) {
-        // app.visit = event.controlVisit;
         Intent intent = new Intent(this, VisitActivity.class);
         intent.putExtra(ControlVisit.class.getName(), gson().toJson(event.controlVisit));
         startActivityForResult(intent, INTENT_SHOW_VISIT);
@@ -319,5 +322,30 @@ public class VisitsActivity extends BaseActivity implements  BottomNavigationVie
 //                }
 //            }
 //        }).isDisposed();
+    }
+
+    @OnClick(R.id.refresh_button)
+    public void refreshData() {
+        if (!getPreferences().canSync()) {
+            Toast.makeText(this, "Espere, la ultima sincronización " +
+                    "fue hace menos de 1 minutos.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        Toast.makeText(this, "Sincronizando", Toast.LENGTH_SHORT).show();
+        callRefresh();
+    }
+
+    private void callRefresh() {
+        getPreferences().saveLastSync(System.currentTimeMillis());
+        RepoIntentService.run(this);
+        refreshButton.setEnabled(false);
+        refreshButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorGrayAgate)));
+        refreshButton.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                refreshButton.setEnabled(true);
+                refreshButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.greenBadge)));
+            }
+        }, (60 * 1000));
     }
 }

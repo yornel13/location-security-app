@@ -65,7 +65,11 @@ public class RepoIntentService extends IntentService {
             if (new AppPreferences(getApplicationContext()).getWatch() != null) {
                 setAlarm(this, INTERVAL_ALARM);
             } else {
-                Log.d(TAG, "No set alarm, is no active watch");
+                if (syncAdapter.isNeedSyncPositions()) {
+                    setAlarm(this, TimeUnit.SECONDS.toMillis(60));
+                } else {
+                    Log.d(TAG, "No set alarm, is no active watch");
+                }
             }
         }
     }

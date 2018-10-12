@@ -80,7 +80,6 @@ public class LocationService extends Service implements SensorEventListener {
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
-
     }
 
     private class LocationListener implements android.location.LocationListener {

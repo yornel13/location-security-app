@@ -137,6 +137,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
         badgeBinnacle = new QBadgeView(this);
         badgeBinnacle.bindTarget(bottomNavigationMenuView.getChildAt(1));
 
+
         new MessengerController().getUnreadMessages();
         new BinnacleController().getUnreadReports();
 
