@@ -14,6 +14,7 @@ import com.icsseseguridad.locationsecurity.service.dao.AppDatabase;
 import com.icsseseguridad.locationsecurity.service.entity.TabletPosition;
 import com.icsseseguridad.locationsecurity.util.AppPreferences;
 import com.icsseseguridad.locationsecurity.util.CurrentLocation;
+import com.icsseseguridad.locationsecurity.util.UTILITY;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -53,11 +54,26 @@ public class PositionIntentService extends IntentService {
     }
 
     private void savePosition() {
+        /*** Check last insert ***/
+        TabletPosition lastInsert = AppDatabase.getInstance(getApplicationContext())
+                .getPositionDao().getLastInsert();
+        if (lastInsert != null) {
+            Date lastInsertDate = UTILITY.stringToDate(lastInsert.generatedTime);
+            if (lastInsertDate != null) {
+                long lastInsertLong = lastInsertDate.getTime();
+                if ((lastInsertLong + 29999) > new Date().getTime()) {
+                    /*** Check if last insert was more than 30 seconds ***/
+                    Log.d(TAG, "can't save position now, programing for later");
+                    return;
+                }
+            }
+        }
+        /*** Check last insert ***/
         Location location = CurrentLocation.get(this);
         String imei = CurrentLocation.getPreferences(this).getImei();
         Long watchId = CurrentLocation.getPreferences(this).getWatch().id;
         final TabletPosition position = new TabletPosition(location, imei);
-        position.generatedTime = new Timestamp(new Date().getTime());
+        position.generatedTime = UTILITY.longToString(new Date().getTime());
         position.watchId = watchId;
         position.isException = false;
         position.id = AppDatabase.getInstance(getApplicationContext())

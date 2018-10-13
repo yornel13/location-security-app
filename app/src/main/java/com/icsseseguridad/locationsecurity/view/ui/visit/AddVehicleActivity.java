@@ -34,6 +34,7 @@ import com.icsseseguridad.locationsecurity.service.event.OnAddVehicleSuccess;
 import com.icsseseguridad.locationsecurity.service.event.OnUploadPhotoFailure;
 import com.icsseseguridad.locationsecurity.service.event.OnUploadPhotoSuccess;
 import com.icsseseguridad.locationsecurity.service.entity.VisitorVehicle;
+import com.icsseseguridad.locationsecurity.util.UTILITY;
 import com.icsseseguridad.locationsecurity.view.adapter.IncidenceSpinnerAdapter;
 import com.icsseseguridad.locationsecurity.view.adapter.VehicleTypeSpinnerAdapter;
 import com.icsseseguridad.locationsecurity.view.ui.PhotoActivity;
@@ -212,8 +213,8 @@ public class AddVehicleActivity extends PhotoActivity {
         vehicle.vehicle = vehicleType.name;
         vehicle.model = modelText.getText().toString();
         vehicle.type = typeText.getText().toString();
-        vehicle.createDate = new Timestamp(new Date().getTime());
-        vehicle.updateDate = new Timestamp(new Date().getTime());
+        vehicle.createDate = UTILITY.longToString(new Date().getTime());
+        vehicle.updateDate = UTILITY.longToString(new Date().getTime());
         vehicle.sync = false;
         vehicle.active = 1;
 

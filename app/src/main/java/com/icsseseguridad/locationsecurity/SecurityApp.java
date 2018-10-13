@@ -1,24 +1,10 @@
 package com.icsseseguridad.locationsecurity;
 
-import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
-import android.location.Location;
-import android.support.annotation.NonNull;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.icsseseguridad.locationsecurity.service.background.AppLocationService;
-import com.icsseseguridad.locationsecurity.service.background.LocationService;
-import com.icsseseguridad.locationsecurity.service.background.TrackingService;
 import com.icsseseguridad.locationsecurity.service.entity.Chat;
 import com.icsseseguridad.locationsecurity.service.entity.Clerk;
 import com.icsseseguridad.locationsecurity.service.entity.Company;
@@ -59,18 +45,11 @@ import com.icsseseguridad.locationsecurity.service.repository.BinnacleController
 import com.icsseseguridad.locationsecurity.service.repository.TabletPositionController;
 import com.icsseseguridad.locationsecurity.service.repository.VisitController;
 import com.icsseseguridad.locationsecurity.service.synchronizer.AlertSyncJob;
-import com.icsseseguridad.locationsecurity.service.synchronizer.SavePositionJob;
 import com.icsseseguridad.locationsecurity.util.AppPreferences;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.concurrent.Executor;
-
-import io.reactivex.Scheduler;
-import io.reactivex.schedulers.Schedulers;
-
 
 public class SecurityApp extends Application {
 
@@ -107,7 +86,6 @@ public class SecurityApp extends Application {
         Fresco.initialize(this);
         SecurityApp.context = getApplicationContext();
         preferences = new AppPreferences(this);
-
         // Running alert job service exists any alert
         AlertSyncJob.jobScheduler(this);
     }

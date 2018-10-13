@@ -10,7 +10,6 @@ import android.support.annotation.Nullable;
 import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -26,7 +25,6 @@ import com.icsseseguridad.locationsecurity.service.entity.ControlVisit;
 import com.icsseseguridad.locationsecurity.service.event.OnClickVisit;
 import com.icsseseguridad.locationsecurity.service.event.OnSyncUnreadMessages;
 import com.icsseseguridad.locationsecurity.service.event.OnSyncUnreadReplies;
-import com.icsseseguridad.locationsecurity.service.synchronizer.MainSyncJob;
 import com.icsseseguridad.locationsecurity.util.UTILITY;
 import com.icsseseguridad.locationsecurity.view.adapter.VisitAdapter;
 import com.icsseseguridad.locationsecurity.view.ui.AlertsActivity;
@@ -47,7 +45,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
-import io.reactivex.functions.Consumer;
 import q.rorbin.badgeview.QBadgeView;
 
 public class VisitsActivity extends BaseActivity implements  BottomNavigationView.OnNavigationItemSelectedListener {

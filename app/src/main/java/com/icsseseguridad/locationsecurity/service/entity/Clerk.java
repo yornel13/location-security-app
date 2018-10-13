@@ -38,11 +38,11 @@ public class Clerk implements Searchable {
 
     @ColumnInfo(name = "create_date")
     @SerializedName("create_date")
-    public Timestamp createDate;
+    public String createDate;
 
     @ColumnInfo(name = "update_date")
     @SerializedName("update_date")
-    public Timestamp updateDate;
+    public String updateDate;
 
     @ColumnInfo(name = "active")
     @SerializedName("active")

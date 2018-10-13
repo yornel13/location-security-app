@@ -16,7 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.icsseseguridad.locationsecurity.R;
 import com.icsseseguridad.locationsecurity.service.background.RepoIntentService;
@@ -25,7 +24,6 @@ import com.icsseseguridad.locationsecurity.service.entity.SpecialReport;
 import com.icsseseguridad.locationsecurity.service.event.OnClickReport;
 import com.icsseseguridad.locationsecurity.service.event.OnSyncUnreadMessages;
 import com.icsseseguridad.locationsecurity.service.event.OnSyncUnreadReplies;
-import com.icsseseguridad.locationsecurity.service.synchronizer.MainSyncJob;
 import com.icsseseguridad.locationsecurity.util.UTILITY;
 import com.icsseseguridad.locationsecurity.view.adapter.ReportAdapter;
 import com.icsseseguridad.locationsecurity.view.ui.AlertsActivity;

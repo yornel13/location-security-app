@@ -25,7 +25,7 @@ public class Reply {
     public String userName;
 
     @SerializedName("create_date")
-    public Timestamp createDate;
+    public String createDate;
 
     @SerializedName("guard")
     public Guard guard;

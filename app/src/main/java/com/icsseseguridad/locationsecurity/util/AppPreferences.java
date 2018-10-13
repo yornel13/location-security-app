@@ -17,7 +17,7 @@ import com.icsseseguridad.locationsecurity.service.entity.Watch;
 
 public class AppPreferences {
 
-    public static final String PREF_FILE_NAME = "app-security-v3";
+    public static final String PREF_FILE_NAME = "app-security-v4";
 
     private static final int VALUE_GPS_UPDATE_DEFAULT = 300; // SECONDS (= 10 minutes)
 

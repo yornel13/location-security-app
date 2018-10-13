@@ -20,7 +20,7 @@ import com.icsseseguridad.locationsecurity.service.entity.VehicleType;
 import com.icsseseguridad.locationsecurity.service.entity.Visitor;
 import com.icsseseguridad.locationsecurity.service.entity.VisitorVehicle;
 
-@Database(version = 39, entities = {
+@Database(version = 40, entities = {
         Visitor.class,
         Clerk.class,
         VisitorVehicle.class,
@@ -33,10 +33,10 @@ import com.icsseseguridad.locationsecurity.service.entity.VisitorVehicle;
         TabletPosition.class,
         VehicleType.class,
 })
-@TypeConverters({TimestampTypeConverter.class, LinkedTypeConverter.class})
+@TypeConverters({LinkedTypeConverter.class})
 public abstract  class AppDatabase extends RoomDatabase {
 
-    private static final String DB_NAME = "location_security_db_v139";
+    private static final String DB_NAME = "location_security_db_v140";
 
     private static AppDatabase mInstance;
 

@@ -36,10 +36,10 @@ public class Alert {
     public String longitude;
 
     @SerializedName("create_date")
-    public Timestamp createDate;
+    public String createDate;
 
     @SerializedName("update_date")
-    public Timestamp updateDate;
+    public String updateDate;
 
     @SerializedName("status")
     public Integer status;

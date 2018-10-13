@@ -60,6 +60,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -445,13 +446,13 @@ public class MessageActivity extends BaseActivity implements BottomNavigationVie
         });
     }
 
-    public Timestamp getUpdateTime(Object obj) {
+    public Date getUpdateTime(Object obj) {
         if (obj instanceof Chat) {
             Chat chat = (Chat) obj;
-            return chat.updateAt;
+            return UTILITY.stringToDate(chat.updateAt);
         } else {
             ChannelRegistered channel = (ChannelRegistered) obj;
-            return channel.channelUpdateAt;
+            return UTILITY.stringToDate(channel.channelUpdateAt);
         }
     }
 

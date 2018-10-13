@@ -33,12 +33,13 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.icsseseguridad.locationsecurity.R;
-import com.icsseseguridad.locationsecurity.service.background.PositionIntentService;
 import com.icsseseguridad.locationsecurity.service.background.RepoIntentService;
 import com.icsseseguridad.locationsecurity.service.background.TrackingService;
+import com.icsseseguridad.locationsecurity.service.dao.AppDatabase;
 import com.icsseseguridad.locationsecurity.service.entity.Banner;
-import com.icsseseguridad.locationsecurity.service.entity.ControlVisit;
+import com.icsseseguridad.locationsecurity.service.entity.Guard;
 import com.icsseseguridad.locationsecurity.service.entity.TabletPosition;
+import com.icsseseguridad.locationsecurity.service.entity.Watch;
 import com.icsseseguridad.locationsecurity.service.event.OnFinishWatchFailure;
 import com.icsseseguridad.locationsecurity.service.event.OnFinishWatchSuccess;
 import com.icsseseguridad.locationsecurity.service.event.OnSyncUnreadMessages;
@@ -47,26 +48,29 @@ import com.icsseseguridad.locationsecurity.service.repository.BinnacleController
 import com.icsseseguridad.locationsecurity.service.repository.MessengerController;
 import com.icsseseguridad.locationsecurity.service.repository.TabletPositionController;
 import com.icsseseguridad.locationsecurity.service.repository.WatchController;
-import com.icsseseguridad.locationsecurity.service.synchronizer.AlertSyncJob;
-import com.icsseseguridad.locationsecurity.service.synchronizer.MainSyncJob;
 import com.icsseseguridad.locationsecurity.util.MyDescriptionAnimation;
 import com.icsseseguridad.locationsecurity.util.UTILITY;
 import com.icsseseguridad.locationsecurity.view.ui.binnacle.BinnacleActivity;
 import com.icsseseguridad.locationsecurity.view.ui.chat.MessageActivity;
 import com.icsseseguridad.locationsecurity.view.ui.visit.VisitsActivity;
 import com.icsseseguridad.locationsecurity.viewmodel.BannerListViewModel;
-import com.icsseseguridad.locationsecurity.viewmodel.VisitListViewModel;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.Completable;
+import io.reactivex.CompletableEmitter;
+import io.reactivex.CompletableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Action;
+import io.reactivex.schedulers.Schedulers;
 import q.rorbin.badgeview.QBadgeView;
 
 public class MainActivity extends BaseActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
@@ -310,13 +314,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onFinishWatchSuccess(OnFinishWatchSuccess event) {
         EventBus.getDefault().removeStickyEvent(OnFinishWatchSuccess.class);
-        dialog.dismiss();
-        Toast.makeText(this, "Guardia Finalizada", Toast.LENGTH_LONG).show();
-        //updatePosition(getPreferences().getWatch().id, getPreferences().getImei());
-        getPreferences().clearWatch();
-        startActivity(new Intent(this, LoginActivity.class));
-        stopService(new Intent(this, TrackingService.class));
-        finish();
+        updatePosition(getPreferences().getWatch(), getPreferences().getGuard());
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
@@ -334,12 +332,34 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
         snackbar.show();
     }
 
-    private void updatePosition(Long watchId, String imei) {
-        TabletPositionController positionController = new TabletPositionController();
-        TabletPosition tabletPosition = new TabletPosition(location, imei);
-        tabletPosition.message = TabletPosition.MESSAGE.FINISHED_WATCH.name();
-        tabletPosition.watchId = watchId;
-        positionController.register(tabletPosition, false);
+    private void updatePosition(Watch watch, Guard guard) {
+        final TabletPosition position = new TabletPosition(location, getImei());
+        position.generatedTime = UTILITY.longToString(new Date().getTime());
+        position.message = TabletPosition.MESSAGE.FINISHED_WATCH.name();
+        position.alertMessage = guard.getFullname() + " ha finalizado su guardia";
+        position.watchId = watch.id;
+        position.isException = true;
+        Completable.create(new CompletableOnSubscribe() {
+            @Override
+            public void subscribe(CompletableEmitter e) throws Exception {
+                AppDatabase.getInstance(getApplicationContext())
+                        .getPositionDao().insert(position);
+                e.onComplete();
+            }})
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        dialog.dismiss();
+                        Toast.makeText(MainActivity.this, "Guardia Finalizada", Toast.LENGTH_LONG).show();
+                        stopService(new Intent(MainActivity.this, TrackingService.class));
+                        RepoIntentService.run(MainActivity.this);
+                        getPreferences().clearWatch();
+                        startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                        MainActivity.this.finish();
+                    }
+                }).isDisposed();
     }
 
     public void dialogCloseSession() {

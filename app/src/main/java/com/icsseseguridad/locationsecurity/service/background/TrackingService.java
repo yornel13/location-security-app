@@ -7,7 +7,6 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.icsseseguridad.locationsecurity.R;
 import com.icsseseguridad.locationsecurity.service.synchronizer.AlertSyncJob;
-import com.icsseseguridad.locationsecurity.service.synchronizer.SavePositionJob;
 import com.icsseseguridad.locationsecurity.util.AppPreferences;
 import com.icsseseguridad.locationsecurity.util.CurrentLocation;
 import com.icsseseguridad.locationsecurity.view.ui.LoginActivity;

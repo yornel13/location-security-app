@@ -66,6 +66,14 @@
             android:layout_height="96dp" />
 
         <com.icsseseguridad.locationsecurity.util.AppTextView
+            android:id="@+id/repository"
+            android:textSize="16sp"
+            android:textColor="@color/colorGrayAgate"
+            app:fontFamily="Roboto-Regular.ttf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <com.icsseseguridad.locationsecurity.util.AppTextView
             android:textSize="32sp"
             android:textColor="@color/white"
             app:fontFamily="Raleway-SemiBold.ttf"

@@ -53,7 +53,7 @@ public class TabletPositionController extends BaseController {
                 position.watchId,
                 position.imei,
                 position.message,
-                position.getMessageTimeString());
+                position.messageTime);
         if (requestResponse)
             call.enqueue(new Callback<MultipleResource>() {
                 @Override

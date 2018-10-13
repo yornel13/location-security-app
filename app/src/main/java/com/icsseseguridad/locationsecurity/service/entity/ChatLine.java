@@ -2,8 +2,6 @@ package com.icsseseguridad.locationsecurity.service.entity;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.sql.Timestamp;
-
 public class ChatLine {
 
     @SerializedName("id")
@@ -22,7 +20,7 @@ public class ChatLine {
     public String image;
 
     @SerializedName("create_at")
-    public Timestamp createAt;
+    public String createAt;
 
     @SerializedName("sender_id")
     public Long senderId;

@@ -155,23 +155,6 @@ public class AddReportActivity extends PhotoActivity {
         spinner.setSelection(defaultIndex);
     }
 
-//    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-//    public void onSync(OnSyncIncidences event) {
-//        EventBus.getDefault().removeStickyEvent(OnSyncIncidences.class);
-//        if (dialog.isShowing()) {
-//            dialog.dismiss();
-//            if (!event.result) {
-//                Toast.makeText(this, R.string.no_connection,
-//                        Toast.LENGTH_LONG).show();
-//                finish();
-//            } else {
-//                Snackbar.make(toolbar, "Se han cargado las incidencias con exito.",
-//                        Snackbar.LENGTH_SHORT).show();
-//                loadSpinner();
-//            }
-//        }
-//    }
-
     @OnClick(R.id.add_photo)
     public void onSelectPhoto() {
         Pix.start(this, INTENT_PHOTO, 1);
@@ -393,11 +376,8 @@ public class AddReportActivity extends PhotoActivity {
         report.watchId = getPreferences().getWatch().id;
         report.watch = getPreferences().getWatch();
         report.observation = observationText.getText().toString();
-        //final Location location = getPreferences().getLastKnownLoc();
-        //report.latitude = String.valueOf(location.getLatitude());
-        //report.longitude = String.valueOf(location.getLongitude());
-        report.createDate = new Timestamp(new Date().getTime());
-        report.updateDate = new Timestamp(new Date().getTime());
+        report.createDate = UTILITY.longToString(new Date().getTime());
+        report.updateDate = UTILITY.longToString(new Date().getTime());
         report.guardId = getPreferences().getGuard().id;
         report.guardDni = getPreferences().getGuard().dni;
         report.guardName = getPreferences().getGuard().name;

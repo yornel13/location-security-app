@@ -27,10 +27,10 @@ public class Admin implements Searchable {
     public String password;
 
     @SerializedName("create_date")
-    public Timestamp createDate;
+    public String createDate;
 
     @SerializedName("update_date")
-    public Timestamp updateDate;
+    public String updateDate;
 
     @SerializedName("active")
     public Boolean active;

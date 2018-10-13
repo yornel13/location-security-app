@@ -13,6 +13,7 @@ import com.icsseseguridad.locationsecurity.R;
 import com.icsseseguridad.locationsecurity.service.entity.Chat;
 import com.icsseseguridad.locationsecurity.service.entity.ChatLine;
 import com.icsseseguridad.locationsecurity.util.AppPreferences;
+import com.icsseseguridad.locationsecurity.util.UTILITY;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,13 +65,13 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     } else {
                         holderA.image.setImageDrawable(context.getResources().getDrawable(R.drawable.admin_user));
                     }
-                    holderA.time.setText(DateUtils.getRelativeTimeSpanString(message.createAt.getTime()));
+                    holderA.time.setText(DateUtils.getRelativeTimeSpanString(UTILITY.stringToDate(message.createAt).getTime()));
                     break;
                 case ITEM_VIEW_LOCAL:
                     default:
                     ViewHolderGuard holderG = (ViewHolderGuard) holder;
                     holderG.message.setText(message.text);
-                    holderG.time.setText(DateUtils.getRelativeTimeSpanString(message.createAt.getTime()));
+                    holderG.time.setText(DateUtils.getRelativeTimeSpanString(UTILITY.stringToDate(message.createAt).getTime()));
                     break;
             }
         }

@@ -22,6 +22,9 @@ public interface PositionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(TabletPosition position);
 
+    @Query("SELECT * FROM position ORDER BY id DESC LIMIT 1;")
+    TabletPosition getLastInsert();
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<TabletPosition> positions);
 

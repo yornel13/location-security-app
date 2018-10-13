@@ -12,14 +12,4 @@ public class ListVisitor {
 
     @SerializedName("total")
     public Integer total;
-
-    public ArrayList<Visitor> getArray(Boolean dialog) {
-        ArrayList<Visitor> arrayVisitor = new ArrayList<>(visitors);
-        if (dialog) {
-            Visitor addVisitor = new Visitor();
-            addVisitor.dni = "Crear Visitante...";
-            arrayVisitor.add(0, addVisitor);
-        }
-        return arrayVisitor;
-    }
 }

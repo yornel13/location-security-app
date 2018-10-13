@@ -19,6 +19,7 @@ import com.icsseseguridad.locationsecurity.service.entity.Clerk;
 import com.icsseseguridad.locationsecurity.service.entity.ControlVisit;
 import com.icsseseguridad.locationsecurity.service.entity.Visitor;
 import com.icsseseguridad.locationsecurity.service.entity.VisitorVehicle;
+import com.icsseseguridad.locationsecurity.util.UTILITY;
 import com.icsseseguridad.locationsecurity.view.ui.BaseActivity;
 import com.icsseseguridad.locationsecurity.util.AppDatetime;
 import com.stfalcon.frescoimageviewer.ImageViewer;
@@ -148,13 +149,13 @@ public class VisitActivity extends BaseActivity {
 
     public void setupMaterials(ControlVisit visit) {
         if (this.visit.status == 0) {
-            timeText.setText("Salida el "+AppDatetime.longDatetime(visit.finishDate.getTime()));
+            timeText.setText("Salida el "+AppDatetime.longDatetime(UTILITY.stringToDate(visit.finishDate).getTime()));
         } else {
-            timeText.setText("Entrada el "+AppDatetime.longDatetime(visit.createDate.getTime()));
+            timeText.setText("Entrada el "+AppDatetime.longDatetime(UTILITY.stringToDate(visit.createDate).getTime()));
         }
         cardInfo.setCardBackgroundColor(getResources().getColor(R.color.white));
         personsText.setText(visit.persons.toString()+(visit.persons == 1?" persona":" personas"));
-        dateText.setText(DateUtils.getRelativeTimeSpanString(visit.createDate.getTime()));
+        dateText.setText(DateUtils.getRelativeTimeSpanString(UTILITY.stringToDate(visit.createDate).getTime()));
         List<String> listMaterials = visit.getMaterialList();
         if (listMaterials == null || listMaterials.isEmpty()) {
             materialsText.setVisibility(View.GONE);

@@ -5,12 +5,9 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.location.Location;
-import android.text.format.DateFormat;
 
 import com.google.gson.annotations.SerializedName;
-
-import java.sql.Timestamp;
-import java.util.Calendar;
+import com.icsseseguridad.locationsecurity.util.UTILITY;
 
 @Entity(tableName = "position", indices = {@Index(value = "id", unique = true)})
 public class TabletPosition {
@@ -30,11 +27,11 @@ public class TabletPosition {
 
     @ColumnInfo(name = "generated_time")
     @SerializedName("generated_time")
-    public Timestamp generatedTime;
+    public String generatedTime;
 
     @ColumnInfo(name = "message_time")
     @SerializedName("message_time")
-    public Timestamp messageTime;
+    public String messageTime;
 
     @ColumnInfo(name = "watch_id")
     @SerializedName("watch_id")
@@ -64,16 +61,9 @@ public class TabletPosition {
     public TabletPosition(Location location, String imei) {
         this.latitude = String.valueOf(location.getLatitude());
         this.longitude = String.valueOf(location.getLongitude());
-        this.messageTime = new Timestamp(location.getTime());
+        this.messageTime = UTILITY.longToString(location.getTime());
         this.imei = imei;
         this.message = MESSAGE.UPDATE.name();
-    }
-
-    public String getMessageTimeString() {
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(messageTime.getTime());
-        String date = DateFormat.format("yyyy-MM-dd  HH:mm:ss", cal).toString();
-        return date;
     }
 
     public enum MESSAGE {

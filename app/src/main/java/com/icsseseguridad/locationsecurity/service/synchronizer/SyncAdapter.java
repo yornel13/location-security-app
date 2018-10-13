@@ -617,8 +617,6 @@ public class SyncAdapter {
 
     private boolean syncPositions() {
         List<TabletPosition> positions = db.getPositionDao().getAll();
-        System.out.println("positions size: " + positions.size());
-        System.out.println(new Gson().toJson(positions));
         boolean isSuccess = true;
         for (TabletPosition position: positions) {
             System.out.println(new Gson().toJson(position));

@@ -11,13 +11,11 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,13 +25,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.TaskCompletionSource;
-import com.google.android.gms.tasks.Tasks;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -42,41 +33,30 @@ import com.icsseseguridad.locationsecurity.R;
 import com.icsseseguridad.locationsecurity.SecurityApp;
 import com.icsseseguridad.locationsecurity.service.background.TrackingService;
 import com.icsseseguridad.locationsecurity.service.dao.AppDatabase;
-import com.icsseseguridad.locationsecurity.service.entity.MultipleResource;
-import com.icsseseguridad.locationsecurity.service.entity.TabletPosition;
-import com.icsseseguridad.locationsecurity.service.repository.APIClient;
-import com.icsseseguridad.locationsecurity.service.repository.APIInterface;
-import com.icsseseguridad.locationsecurity.service.event.OnUserUnauthorized;
 import com.icsseseguridad.locationsecurity.service.entity.Alert;
-import com.icsseseguridad.locationsecurity.service.background.LocationService;
+import com.icsseseguridad.locationsecurity.service.entity.TabletPosition;
+import com.icsseseguridad.locationsecurity.service.event.OnUserUnauthorized;
 import com.icsseseguridad.locationsecurity.service.synchronizer.AlertSyncJob;
-import com.icsseseguridad.locationsecurity.service.synchronizer.MainSyncJob;
 import com.icsseseguridad.locationsecurity.service.synchronizer.SendAlert;
 import com.icsseseguridad.locationsecurity.util.AppPreferences;
 import com.icsseseguridad.locationsecurity.util.CurrentLocation;
+import com.icsseseguridad.locationsecurity.util.UTILITY;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.sql.Timestamp;
 import java.util.Date;
 
 import cc.cloudist.acplibrary.ACProgressConstant;
 import cc.cloudist.acplibrary.ACProgressFlower;
-import io.reactivex.Completable;
-import io.reactivex.CompletableEmitter;
-import io.reactivex.CompletableOnSubscribe;
 import io.reactivex.Single;
 import io.reactivex.SingleEmitter;
 import io.reactivex.SingleObserver;
 import io.reactivex.SingleOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Call;
-import retrofit2.Response;
 
 public class BaseActivity extends AppCompatActivity {
 
@@ -253,8 +233,8 @@ public class BaseActivity extends AppCompatActivity {
         alert.guardId = preferences.getGuard().id;
         //alert.latitude = String.valueOf(preferences.getLastKnownLoc().getLatitude());
         ///alert.longitude = String.valueOf(preferences.getLastKnownLoc().getLongitude());
-        alert.createDate = new Timestamp(new Date().getTime());
-        alert.updateDate = new Timestamp(new Date().getTime());
+        alert.createDate = UTILITY.longToString(new Date().getTime());
+        alert.updateDate = UTILITY.longToString(new Date().getTime());
         alert.status = 1;
         Single.create(new SingleOnSubscribe<Boolean>() {
             @Override
@@ -296,7 +276,7 @@ public class BaseActivity extends AppCompatActivity {
 
     private void savePosition(Alert alert, AppPreferences preferences, Location location) {
         final TabletPosition position = new TabletPosition(location, getImei());
-        position.generatedTime = new Timestamp(new Date().getTime());
+        position.generatedTime = alert.createDate;
         position.watchId = preferences.getWatch().id;
         position.message = TabletPosition.MESSAGE.SOS1.name();
         position.isException = true;

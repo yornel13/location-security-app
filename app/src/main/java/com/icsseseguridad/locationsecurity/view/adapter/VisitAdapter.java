@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide;
 import com.icsseseguridad.locationsecurity.R;
 import com.icsseseguridad.locationsecurity.service.event.OnClickVisit;
 import com.icsseseguridad.locationsecurity.service.entity.ControlVisit;
+import com.icsseseguridad.locationsecurity.util.UTILITY;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -51,7 +52,7 @@ public class VisitAdapter extends RecyclerView.Adapter<VisitAdapter.ViewHolder> 
             TextView subTitle = holder.getViewById(R.id.sub_title);
             TextView status = holder.getViewById(R.id.status);
             title.setText(visit.visitor.getFullname());
-            subTitle.setText(DateUtils.getRelativeTimeSpanString(visit.createDate.getTime()));
+            subTitle.setText(DateUtils.getRelativeTimeSpanString(UTILITY.stringToDate(visit.createDate).getTime()));
             String photo = null;
             if (visit.vehicle != null && visit.vehicle.photo != null) {
                 photo = visit.vehicle.photo;

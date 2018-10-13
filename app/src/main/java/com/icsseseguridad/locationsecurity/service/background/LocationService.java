@@ -21,6 +21,7 @@ import com.icsseseguridad.locationsecurity.SecurityApp;
 import com.icsseseguridad.locationsecurity.service.dao.AppDatabase;
 import com.icsseseguridad.locationsecurity.service.entity.TabletPosition;
 import com.icsseseguridad.locationsecurity.service.entity.Watch;
+import com.icsseseguridad.locationsecurity.util.UTILITY;
 import com.icsseseguridad.locationsecurity.view.ui.DropActivity;
 import com.icsseseguridad.locationsecurity.view.ui.LoginActivity;
 import com.icsseseguridad.locationsecurity.util.AppPreferences;
@@ -244,7 +245,6 @@ public class LocationService extends Service implements SensorEventListener {
                     new Handler(LocationService.this.getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {
-                            //LocationService.this.stopSelf();
                             handler.postDelayed(this, 10*1000);
                         }
                     });
@@ -258,7 +258,7 @@ public class LocationService extends Service implements SensorEventListener {
 
     public void callSavePosition(final Location location, final String imei, final Long watchId) {
         final TabletPosition position = new TabletPosition(location, imei);
-        position.generatedTime = new Timestamp(new Date().getTime());
+        position.generatedTime = UTILITY.longToString(new Date().getTime());
         position.watchId = watchId;
         position.isException = false;
         Completable.create(new CompletableOnSubscribe() {

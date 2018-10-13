@@ -17,6 +17,7 @@ import com.icsseseguridad.locationsecurity.service.event.OnClickChat;
 import com.icsseseguridad.locationsecurity.service.entity.ChannelRegistered;
 import com.icsseseguridad.locationsecurity.service.entity.Chat;
 import com.icsseseguridad.locationsecurity.util.AppPreferences;
+import com.icsseseguridad.locationsecurity.util.UTILITY;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -77,7 +78,7 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.View
                 }
 
                 title.setText(userName);
-                time.setText(DateUtils.getRelativeTimeSpanString(chat.updateAt.getTime()));
+                time.setText(DateUtils.getRelativeTimeSpanString(UTILITY.stringToDate(chat.updateAt).getTime()));
                 if (userType == Chat.TYPE.GUARD)
                     image.setImageDrawable(mContext.getResources().getDrawable(R.drawable.policeman));
                 else
@@ -94,7 +95,7 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.View
                 unread.setVisibility(View.GONE);
                 final ChannelRegistered channel = (ChannelRegistered) list.get(position);
                 title.setText(channel.channelName);
-                time.setText(DateUtils.getRelativeTimeSpanString(channel.channelUpdateAt.getTime()));
+                time.setText(DateUtils.getRelativeTimeSpanString(UTILITY.stringToDate(channel.channelUpdateAt).getTime()));
                 image.setImageDrawable(mContext.getResources().getDrawable(R.drawable.group_icon));
                 holder.getBaseView().setOnClickListener(new View.OnClickListener() {
                     @Override

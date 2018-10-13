@@ -17,6 +17,7 @@ import com.icsseseguridad.locationsecurity.service.event.OnFinishVisitFailure;
 import com.icsseseguridad.locationsecurity.service.event.OnFinishVisitSuccess;
 import com.icsseseguridad.locationsecurity.service.entity.ControlVisit;
 import com.icsseseguridad.locationsecurity.util.CurrentLocation;
+import com.icsseseguridad.locationsecurity.util.UTILITY;
 import com.icsseseguridad.locationsecurity.view.ui.BaseActivity;
 
 import org.greenrobot.eventbus.EventBus;
@@ -94,7 +95,7 @@ public class FinishVisitActivity extends BaseActivity {
         visit.sync = false;
         visit.comment = comment;
         visit.guardOutId = getPreferences().getWatch().guardId;
-        visit.finishDate = new Timestamp(new Date().getTime());
+        visit.finishDate = UTILITY.longToString(new Date().getTime());
 
         Completable.create(new CompletableOnSubscribe() {
             @Override

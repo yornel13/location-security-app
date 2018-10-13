@@ -5,6 +5,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.icsseseguridad.locationsecurity.service.event.OnUserUnauthorized;
+import com.icsseseguridad.locationsecurity.util.Const;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -27,7 +28,7 @@ public class APIClient {
                 .create();
 
         retrofit = new Retrofit.Builder()
-                .baseUrl("http://bitacoraseguridad.com/api/")
+                .baseUrl(Const.REPO_URL)
                 .client(provideOkHttpClient())
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();

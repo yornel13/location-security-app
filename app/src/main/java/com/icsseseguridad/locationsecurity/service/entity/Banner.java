@@ -23,5 +23,5 @@ public class Banner {
 
     @ColumnInfo(name = "create_at")
     @SerializedName("create_at")
-    public Timestamp createAt;
+    public String createAt;
 }

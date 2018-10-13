@@ -21,6 +21,7 @@ import com.icsseseguridad.locationsecurity.service.entity.Alert;
 import com.icsseseguridad.locationsecurity.service.synchronizer.AlertSyncJob;
 import com.icsseseguridad.locationsecurity.service.synchronizer.SendAlert;
 import com.icsseseguridad.locationsecurity.util.AppPreferences;
+import com.icsseseguridad.locationsecurity.util.UTILITY;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -122,8 +123,8 @@ public class DropActivity extends AppCompatActivity {
         alert.guardId = preferences.getGuard().id;
         alert.latitude = String.valueOf(preferences.getLastKnownLoc().getLatitude());
         alert.longitude = String.valueOf(preferences.getLastKnownLoc().getLongitude());
-        alert.createDate = new Timestamp(new Date().getTime());
-        alert.updateDate = new Timestamp(new Date().getTime());
+        alert.createDate = UTILITY.longToString(new Date().getTime());
+        alert.updateDate = UTILITY.longToString(new Date().getTime());
         alert.status = 1;
         Single.create(new SingleOnSubscribe<Boolean>() {
             @Override
@@ -162,7 +163,7 @@ public class DropActivity extends AppCompatActivity {
 
     private void savePosition(Alert alert, AppPreferences preferences) {
         final TabletPosition position = new TabletPosition(preferences.getLastKnownLoc(), preferences.getImei());
-        position.generatedTime = new Timestamp(new Date().getTime());
+        position.generatedTime = alert.createDate;
         position.watchId = preferences.getWatch().id;
         position.message = TabletPosition.MESSAGE.DROP.name();
         position.isException = true;
@@ -170,45 +171,4 @@ public class DropActivity extends AppCompatActivity {
         AppDatabase.getInstance(getApplicationContext())
                 .getPositionDao().insert(position);
     }
-
-
-//    public void sendAlert() {
-//        Alert alert = new Alert();
-//        alert.cause = Alert.CAUSE.DROP;
-//        alert.type = Alert.CAUSE.DROP;
-//        AppPreferences preferences = new AppPreferences(getApplicationContext());
-//        alert.message = "Alerta de posible caida del guardia: "+preferences.getGuard().getFullname();
-//        alert.guardId = preferences.getGuard().id;
-//        alert.latitude = String.valueOf(preferences.getLastKnownLoc().getLatitude());
-//        alert.longitude = String.valueOf(preferences.getLastKnownLoc().getLongitude());
-//        new AlertController().send(alert);
-//    }
-//
-//    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-//    public void sendAlertFailure(OnSendAlertFailure event) {
-//        EventBus.getDefault().removeStickyEvent(OnSendAlertFailure.class);
-//        countSend.setText("FALLIDO");
-//        cancelButton.setEnabled(true);
-//    }
-//
-//    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-//    public void sendAlertSuccess(OnSendAlertSuccess event) {
-//        EventBus.getDefault().removeStickyEvent(OnSendAlertSuccess.class);
-//        cancelButton.setEnabled(true);
-//        cancelButton.setText("SALIR");
-//        countSend.setText("ENVIADA");
-//    }
-//
-//    @Override
-//    protected void onStart() {
-//        super.onStart();
-//        EventBus.getDefault().register(this);
-//
-//    }
-//
-//    @Override
-//    protected void onStop() {
-//        super.onStop();
-//        EventBus.getDefault().unregister(this);
-//    }
 }

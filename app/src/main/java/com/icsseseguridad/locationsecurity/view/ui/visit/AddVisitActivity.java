@@ -26,6 +26,7 @@ import com.icsseseguridad.locationsecurity.service.entity.Photo;
 import com.icsseseguridad.locationsecurity.service.repository.PhotoController;
 import com.icsseseguridad.locationsecurity.service.repository.VisitController;
 import com.icsseseguridad.locationsecurity.util.CurrentLocation;
+import com.icsseseguridad.locationsecurity.util.UTILITY;
 import com.icsseseguridad.locationsecurity.view.dialog.ClerkSearchDialog;
 import com.icsseseguridad.locationsecurity.view.dialog.VehicleSearchDialog;
 import com.icsseseguridad.locationsecurity.view.dialog.VisitorSearchDialog;
@@ -547,7 +548,7 @@ public class AddVisitActivity extends BaseActivity {
         visit.visitorId = visitor.id;
         visit.clerkId = clerk.id;
         visit.guardId = getPreferences().getGuard().id;
-        visit.createDate = new Timestamp(new Date().getTime());
+        visit.createDate = UTILITY.longToString(new Date().getTime());
         visit.finishDate = null;
         visit.sync = false;
         visit.status = 1;

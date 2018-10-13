@@ -24,7 +24,6 @@ import com.icsseseguridad.locationsecurity.service.entity.ListVisitorVehicle;
 import com.icsseseguridad.locationsecurity.service.entity.MultipleResource;
 import com.icsseseguridad.locationsecurity.service.entity.User;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 import retrofit2.Call;
@@ -88,8 +87,8 @@ public interface APIInterface {
             @Field("lastname") String lastname,
             @Field("company") String company,
             @Field("photo") String photo,
-            @Field("create_date") Timestamp createDate,
-            @Field("update_date") Timestamp updateDate,
+            @Field("create_date") String createDate,
+            @Field("update_date") String updateDate,
             @Field("active") int active);
 
     @FormUrlEncoded
@@ -124,8 +123,8 @@ public interface APIInterface {
             @Field("model") String model,
             @Field("type") String type,
             @Field("photo") String photo,
-            @Field("create_date") Timestamp createDate,
-            @Field("update_date") Timestamp updateDate,
+            @Field("create_date") String createDate,
+            @Field("update_date") String updateDate,
             @Field("active") int active);
 
     @GET("public/clerk")
@@ -179,8 +178,8 @@ public interface APIInterface {
             @Field("image_3") String image3,
             @Field("image_4") String image4,
             @Field("image_5") String image5,
-            @Field("create_date") Timestamp createDate,
-            @Field("finish_date") Timestamp finishDate,
+            @Field("create_date") String createDate,
+            @Field("finish_date") String finishDate,
             @Field("comment") String comment,
             @Field("guard_out_id") Long guardOutId,
             @Field("f_latitude") String fLatitude,
@@ -228,8 +227,8 @@ public interface APIInterface {
             @Field("image_3") String image3,
             @Field("image_4") String image4,
             @Field("image_5") String image5,
-            @Field("create_date") Timestamp createDate,
-            @Field("update_date") Timestamp finishDate,
+            @Field("create_date") String createDate,
+            @Field("update_date") String finishDate,
             @Field("sync_id") String syncId,
             @Field("status") int status,
             @Field("resolved") int resolved);
@@ -274,8 +273,8 @@ public interface APIInterface {
     Call<MultipleResource> syncPosition(@Header("APP-TOKEN") String appToken,
             @Field("latitude") String latitude,
             @Field("longitude") String longitude,
-            @Field("generated_time") Timestamp generatedTime,
-            @Field("message_time") Timestamp messageTime,
+            @Field("generated_time") String generatedTime,
+            @Field("message_time") String messageTime,
             @Field("watch_id") Long watch_id,
             @Field("imei") String imei,
             @Field("message") String message,
@@ -364,8 +363,8 @@ public interface APIInterface {
             @Field("latitude") String latitude,
             @Field("longitude") String longitude,
             @Field("message") String message,
-            @Field("create_date") Timestamp createDate,
-            @Field("update_date") Timestamp updateDate,
+            @Field("create_date") String createDate,
+            @Field("update_date") String updateDate,
             @Field("status") int status);
 
     @GET("public/banner")

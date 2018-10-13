@@ -74,11 +74,11 @@ public class ControlVisit {
 
     @ColumnInfo(name = "dni")
     @SerializedName("create_date")
-    public Timestamp createDate;
+    public String createDate;
 
     @ColumnInfo(name = "finish_date")
     @SerializedName("finish_date")
-    public Timestamp finishDate;
+    public String finishDate;
 
     @ColumnInfo(name = "persons")
     @SerializedName("persons")

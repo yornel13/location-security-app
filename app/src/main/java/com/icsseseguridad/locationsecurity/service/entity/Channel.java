@@ -22,10 +22,10 @@ public class Channel {
     public String creatorName;
 
     @SerializedName("create_at")
-    public Timestamp createAt;
+    public String createAt;
 
     @SerializedName("update_at")
-    public Timestamp updateAt;
+    public String updateAt;
 
     @SerializedName("state")
     public Integer state;

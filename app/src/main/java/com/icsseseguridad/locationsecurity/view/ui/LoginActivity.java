@@ -37,6 +37,7 @@ import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.icsseseguridad.locationsecurity.R;
 import com.icsseseguridad.locationsecurity.service.background.TrackingService;
+import com.icsseseguridad.locationsecurity.service.dao.AppDatabase;
 import com.icsseseguridad.locationsecurity.service.event.OnVerifyTabletFailure;
 import com.icsseseguridad.locationsecurity.service.event.OnVerifyTabletSuccess;
 import com.icsseseguridad.locationsecurity.service.repository.AuthController;
@@ -55,19 +56,25 @@ import com.icsseseguridad.locationsecurity.service.entity.Guard;
 import com.icsseseguridad.locationsecurity.service.entity.TabletPosition;
 import com.icsseseguridad.locationsecurity.service.entity.Watch;
 import com.icsseseguridad.locationsecurity.util.AppPreferences;
+import com.icsseseguridad.locationsecurity.util.Const;
 import com.icsseseguridad.locationsecurity.util.CurrentLocation;
+import com.icsseseguridad.locationsecurity.util.UTILITY;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Completable;
 import io.reactivex.CompletableEmitter;
 import io.reactivex.CompletableOnSubscribe;
+import io.reactivex.Single;
+import io.reactivex.SingleEmitter;
+import io.reactivex.SingleOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Action;
 import io.reactivex.schedulers.Schedulers;
@@ -86,6 +93,7 @@ public class LoginActivity extends BaseActivity {
     @BindView(R.id.login) Button loginButton;
     @BindView(R.id.imei) TextView imeiText;
     @BindView(R.id.version) TextView versionText;
+    @BindView(R.id.repository) TextView repositoryText;
 
     private Guard guard;
 
@@ -135,6 +143,7 @@ public class LoginActivity extends BaseActivity {
         });
         connectGoogleApi();
 
+        repositoryText.setText(Const.REPO);
         try {
             PackageInfo pinfo = getPackageManager().getPackageInfo(getPackageName(), 0);
             String versionName = pinfo.versionName;
@@ -287,12 +296,10 @@ public class LoginActivity extends BaseActivity {
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void initWatchSuccess(OnInitWatchSuccess event) {
         EventBus.getDefault().removeStickyEvent(OnInitWatchSuccess.class);
-        dialog.dismiss();
         getPreferences().setGuard(guard);
         getPreferences().setWatch(event.watch);
         getPreferences().setLastKnownLoc(location);
-        startActivity(new Intent(this, MainActivity.class));
-        finish();
+        updatePosition(event.watch, guard);
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
@@ -304,15 +311,35 @@ public class LoginActivity extends BaseActivity {
         dialog.dismiss();
     }
 
-    private void updatePosition(Watch watch) {
-        TabletPositionController positionController = new TabletPositionController();
-        TabletPosition tabletPosition = new TabletPosition(location, getImeiAndSave());
-        if (watch.resumed)
-            tabletPosition.message = TabletPosition.MESSAGE.RESUMED_WATCH.name();
-        else
-            tabletPosition.message = TabletPosition.MESSAGE.INIT_WATCH.name();
-        tabletPosition.watchId = watch.id;
-        positionController.register(tabletPosition, false);
+    private void updatePosition(Watch watch, Guard guard) {
+        final TabletPosition position = new TabletPosition(location, getImei());
+        position.generatedTime = UTILITY.longToString(new Date().getTime());
+        if (watch.resumed) {
+            position.message = TabletPosition.MESSAGE.RESUMED_WATCH.name();
+            position.alertMessage = guard.getFullname() + " ha retomado su guardia";
+        } else {
+            position.message = TabletPosition.MESSAGE.INIT_WATCH.name();
+            position.alertMessage = guard.getFullname() + " ha iniciado su guardia";
+        }
+        position.watchId = watch.id;
+        position.isException = true;
+        Completable.create(new CompletableOnSubscribe() {
+            @Override
+            public void subscribe(CompletableEmitter e) throws Exception {
+                AppDatabase.getInstance(getApplicationContext())
+                        .getPositionDao().insert(position);
+                e.onComplete();
+            }})
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        dialog.dismiss();
+                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                        finish();
+                    }
+                }).isDisposed();
     }
 
     public void login(View view) {

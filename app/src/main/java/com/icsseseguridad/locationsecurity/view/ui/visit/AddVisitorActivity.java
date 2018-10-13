@@ -25,6 +25,7 @@ import com.icsseseguridad.locationsecurity.service.entity.Photo;
 import com.icsseseguridad.locationsecurity.service.entity.Company;
 import com.icsseseguridad.locationsecurity.service.entity.ListCompany;
 import com.icsseseguridad.locationsecurity.service.entity.Visitor;
+import com.icsseseguridad.locationsecurity.util.UTILITY;
 import com.icsseseguridad.locationsecurity.view.ui.PhotoActivity;
 import com.icsseseguridad.locationsecurity.util.TextInputAutoCompleteTextView;
 import com.icsseseguridad.locationsecurity.viewmodel.CompanyListViewModel;
@@ -189,8 +190,8 @@ public class AddVisitorActivity extends PhotoActivity {
         visitor.name = nameText.getText().toString();
         visitor.lastname = lastnameText.getText().toString();
         visitor.company = companyText.getText().toString();
-        visitor.createDate = new Timestamp(new Date().getTime());
-        visitor.updateDate = new Timestamp(new Date().getTime());
+        visitor.createDate = UTILITY.longToString(new Date().getTime());
+        visitor.updateDate = UTILITY.longToString(new Date().getTime());
         visitor.sync = false;
         visitor.active = 1;
 

@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.icsseseguridad.locationsecurity.R;
 import com.icsseseguridad.locationsecurity.service.entity.Reply;
+import com.icsseseguridad.locationsecurity.util.UTILITY;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +44,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> 
             TextView comment = holder.getViewById(R.id.user_comment);
             TextView time = holder.getViewById(R.id.comment_time);
             comment.setText(reply.text);
-            time.setText(DateUtils.getRelativeTimeSpanString(reply.createDate.getTime()));
+            time.setText(DateUtils.getRelativeTimeSpanString(UTILITY.stringToDate(reply.createDate).getTime()));
             name.setText(reply.userName);
             if (reply.adminId != null) {
                 image.setImageDrawable(mContext.getResources().getDrawable(R.drawable.admin_user));

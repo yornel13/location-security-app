@@ -30,6 +30,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.gson.Gson;
 import com.icsseseguridad.locationsecurity.R;
+import com.icsseseguridad.locationsecurity.util.UTILITY;
 import com.icsseseguridad.locationsecurity.view.adapter.ReplyAdapter;
 import com.icsseseguridad.locationsecurity.service.repository.BinnacleController;
 import com.icsseseguridad.locationsecurity.service.event.OnGetRepliesFailure;
@@ -134,7 +135,7 @@ public class ReportActivity extends BaseActivity implements GoogleApiClient.Conn
 
     public void setupData(SpecialReport report) {
         this.report = report;
-        timeText.setText("Creado el "+ AppDatetime.longDatetime(report.createDate.getTime()));
+        timeText.setText("Creado el "+ AppDatetime.longDatetime(UTILITY.stringToDate(report.createDate).getTime()));
         incidenceText.setText(report.title);
         observationText.setText(report.observation);
 
