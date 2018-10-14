@@ -159,6 +159,10 @@ public class BaseActivity extends AppCompatActivity {
         return new AppPreferences(getApplicationContext());
     }
 
+    protected void showToastNoGuard() {
+        Toast.makeText(this, "Error al intentar obtener su información," +
+                " Cierre y vuelva a abrir esta ventana.", Toast.LENGTH_LONG).show();
+    }
 
     private AlertDialog dialogSOS;
     private Button cancelButton;

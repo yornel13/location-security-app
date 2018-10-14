@@ -169,6 +169,9 @@ public class MessageActivity extends BaseActivity implements BottomNavigationVie
     @Override
     protected void onResume() {
         super.onResume();
+        if (getPreferences().getGuard() == null) {
+            return;
+        }
         nameText.setText(getPreferences().getGuard().getFullname());
         dateText.setText(UTILITY.getCurrentDate());
         if (!EventBus.getDefault().isRegistered(this))

@@ -337,6 +337,7 @@ public class SyncAdapter {
             ConfigUtility data =  tasks.body();
             if (tasks.isSuccessful() && data != null) {
                 getPreferences().setGpsUpdate(data);
+                Log.d(TAG, "Update gps time is: " + data.value);
                 Log.d(TAG, "Update gps time was successful");
             } else {
                 Log.e(TAG, "Error in data gps time, code: " + tasks.code());

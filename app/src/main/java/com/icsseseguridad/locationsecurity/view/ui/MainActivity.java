@@ -168,6 +168,9 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
     @Override
     protected void onResume() {
         super.onResume();
+        if (getPreferences().getGuard() == null) {
+            return;
+        }
         nameText.setText(getPreferences().getGuard().getFullname());
         dateText.setText(UTILITY.getCurrentDate());
         bottomNavigationView.setSelectedItemId(R.id.nav_home);
@@ -301,6 +304,10 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
     }
 
     public void requestFinishWatch() {
+        if (getPreferences().getGuard() == null) {
+            showToastNoGuard();
+            return;
+        }
         RepoIntentService.run(this);
         builderDialog.text("Finalizando");
         dialog.show();

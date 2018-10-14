@@ -186,6 +186,9 @@ public class BinnacleActivity extends BaseActivity implements BottomNavigationVi
     @Override
     protected void onResume() {
         super.onResume();
+        if (getPreferences().getGuard() == null) {
+            return;
+        }
         nameText.setText(getPreferences().getGuard().getFullname());
         dateText.setText(UTILITY.getCurrentDate());
 

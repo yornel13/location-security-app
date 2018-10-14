@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.icsseseguridad.locationsecurity.R;
 import com.icsseseguridad.locationsecurity.service.dao.AppDatabase;
@@ -84,17 +85,20 @@ public class FinishVisitActivity extends BaseActivity {
 
     @OnClick(R.id.add_button)
     public void save() {
+        if (getPreferences().getGuard() == null) {
+            showToastNoGuard();
+            return;
+        }
         String comment = null;
         if (!commentText.getText().toString().trim().equals("")) {
             comment = commentText.getText().toString();
         }
         builderDialog.text("Guardando...");
         dialog.show();
-        // new VisitController().finish(visit.id, comment);
         visit.status = 0;
         visit.sync = false;
         visit.comment = comment;
-        visit.guardOutId = getPreferences().getWatch().guardId;
+        visit.guardOutId = getPreferences().getGuard().id;
         visit.finishDate = UTILITY.longToString(new Date().getTime());
 
         Completable.create(new CompletableOnSubscribe() {
@@ -120,35 +124,12 @@ public class FinishVisitActivity extends BaseActivity {
     public void saveFinishedVisit(ControlVisit visit, Location location) {
         visit.fLatitude = String.valueOf(location.getLatitude());
         visit.fLongitude = String.valueOf(location.getLongitude());
-
         try {
             AppDatabase.getInstance(getApplicationContext())
                     .getControlVisitDao().update(visit);
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    public void onFinishVisitSuccess(OnFinishVisitSuccess event) {
-        EventBus.getDefault().removeStickyEvent(OnFinishVisitSuccess.class);
-        dialog.dismiss();
-        setResult(RESULT_OK, getIntent());
-        finish();
-    }
-
-    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    public void onFinishVisitFailure(OnFinishVisitFailure event) {
-        EventBus.getDefault().removeStickyEvent(OnFinishVisitFailure.class);
-        dialog.dismiss();
-        final Snackbar snackbar = Snackbar.make(toolbar, event.response.message, Snackbar.LENGTH_INDEFINITE);
-        snackbar.setAction("OK", new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                snackbar.dismiss();
-            }
-        });
-        snackbar.show();
     }
 
     @OnClick(R.id.sos_alarm)

@@ -61,8 +61,8 @@ public class PositionIntentService extends IntentService {
             Date lastInsertDate = UTILITY.stringToDate(lastInsert.generatedTime);
             if (lastInsertDate != null) {
                 long lastInsertLong = lastInsertDate.getTime();
-                if ((lastInsertLong + 29999) > new Date().getTime()) {
-                    /*** Check if last insert was more than 30 seconds ***/
+                if ((lastInsertLong + 10000) > new Date().getTime()) {
+                    /*** Check if last insert was more than 10 seconds ***/
                     Log.d(TAG, "can't save position now, programing for later");
                     return;
                 }

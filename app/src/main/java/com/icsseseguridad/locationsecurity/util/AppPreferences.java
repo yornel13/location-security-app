@@ -17,7 +17,7 @@ import com.icsseseguridad.locationsecurity.service.entity.Watch;
 
 public class AppPreferences {
 
-    public static final String PREF_FILE_NAME = "app-security-v4";
+    public static final String PREF_FILE_NAME = "app-security-v5";
 
     private static final int VALUE_GPS_UPDATE_DEFAULT = 300; // SECONDS (= 10 minutes)
 
@@ -36,7 +36,7 @@ public class AppPreferences {
 
     public AppPreferences(Context context) {
         this.context = context;
-        preferences = context.getSharedPreferences(PREF_FILE_NAME, Context.MODE_MULTI_PROCESS);
+        preferences = context.getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE);
     }
 
     public void setGuard(Guard guard) {
@@ -46,7 +46,7 @@ public class AppPreferences {
         } else {
             editor.putString(GUARD, gson().toJson(guard));
         }
-        editor.apply();
+        editor.commit();
     }
 
     public void setAlert(Alert alert) {
@@ -56,7 +56,7 @@ public class AppPreferences {
         } else {
             editor.putString(ALERT, gson().toJson(alert));
         }
-        editor.apply();
+        editor.commit();
     }
 
     public Alert getAlert() {
@@ -90,7 +90,7 @@ public class AppPreferences {
         } else {
             editor.putString(WATCH, gson().toJson(watch));
         }
-        editor.apply();
+        editor.commit();
     }
 
     public Watch getWatch() {
@@ -103,12 +103,12 @@ public class AppPreferences {
 
     public void setImei(String imei) {
         if (imei != null) {
-            preferences.edit().putString(IMEI, imei).apply();
+            preferences.edit().putString(IMEI, imei).commit();
         }
     }
 
     public void setRegistered() {
-        preferences.edit().putBoolean(REGISTERED, true).apply();
+        preferences.edit().putBoolean(REGISTERED, true).commit();
     }
 
     public Boolean isRegistered() {
@@ -121,7 +121,7 @@ public class AppPreferences {
 
     public void setGpsUpdate(ConfigUtility update) {
         if (update != null) {
-            preferences.edit().putString(GPS_UPDATE, update.value).apply();
+            preferences.edit().putString(GPS_UPDATE, update.value).commit();
         }
     }
 
@@ -137,22 +137,22 @@ public class AppPreferences {
         if (location == null) {
             return false;
         } else {
-            preferences.edit().putString("LOCATION_LAT", String.valueOf(location.getLatitude())).apply();
-            preferences.edit().putString("LOCATION_LON", String.valueOf(location.getLongitude())).apply();
-            preferences.edit().putString("LOCATION_PROVIDER", String.valueOf(location.getProvider())).apply();
-            preferences.edit().putString("LOCATION_TIME", String.valueOf(location.getTime())).apply();
+            preferences.edit().putString("LOCATION_LAT", String.valueOf(location.getLatitude())).commit();
+            preferences.edit().putString("LOCATION_LON", String.valueOf(location.getLongitude())).commit();
+            preferences.edit().putString("LOCATION_PROVIDER", String.valueOf(location.getProvider())).commit();
+            preferences.edit().putString("LOCATION_TIME", String.valueOf(location.getTime())).commit();
             return true;
         }
     }
 
     public Boolean isDrop() {
         Boolean drop = preferences.getBoolean(DROP, false);
-        preferences.edit().putBoolean(DROP, false).apply();
+        preferences.edit().putBoolean(DROP, false).commit();
         return drop;
     }
 
     public void setDrop() {
-        preferences.edit().putBoolean(DROP, true).apply();
+        preferences.edit().putBoolean(DROP, true).commit();
     }
 
     public Location getLastKnownLoc() {
@@ -171,16 +171,16 @@ public class AppPreferences {
     }
 
     public void clearAll() {
-        preferences.edit().remove(GUARD).apply();
+        preferences.edit().remove(GUARD).commit();
     }
 
     public void clearWatch() {
-        preferences.edit().remove(GUARD).apply();
-        preferences.edit().remove(WATCH).apply();
+        preferences.edit().remove(GUARD).commit();
+        preferences.edit().remove(WATCH).commit();
     }
 
     public void saveLastSync(long millis) {
-        preferences.edit().putLong(LAST_SYNC, millis).apply();
+        preferences.edit().putLong(LAST_SYNC, millis).commit();
     }
 
     public boolean canSync() {
