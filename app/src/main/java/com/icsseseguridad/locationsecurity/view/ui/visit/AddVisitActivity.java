@@ -536,7 +536,7 @@ public class AddVisitActivity extends BaseActivity {
             cardVisitor.requestFocus();
             return;
         }
-        if (visit.persons <= 0) {
+        if (visit == null || visit.persons == null || visit.persons <= 0) {
             cardInfo.setCardBackgroundColor(getResources().getColor(R.color.colorPrimaryVeryLight));
             Snackbar.make(toolbar, "Debes ingresar la informacion de la visita", Snackbar.LENGTH_LONG).show();
             cardInfo.requestFocus();
@@ -548,6 +548,8 @@ public class AddVisitActivity extends BaseActivity {
         visit.visitorId = visitor.id;
         visit.clerkId = clerk.id;
         visit.guardId = getPreferences().getGuard().id;
+        visit.standName = getPreferences().getWatch().standName;
+        System.out.println("watch: " + getPreferences().getWatch());
         visit.createDate = UTILITY.longToString(new Date().getTime());
         visit.finishDate = null;
         visit.sync = false;

@@ -88,6 +88,10 @@ public class ControlVisit {
     @SerializedName("observation")
     public String materials;
 
+    @ColumnInfo(name = "stand_name")
+    @SerializedName("stand_name")
+    public String standName;
+
     @ColumnInfo(name = "latitude")
     @SerializedName("latitude")
     public String latitude;

@@ -49,7 +49,6 @@ public class AppLocationService extends Service {
                 }
             }
         };
-
         LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(5 * 1000);
         mLocationRequest.setMaxWaitTime(10 * 1000);

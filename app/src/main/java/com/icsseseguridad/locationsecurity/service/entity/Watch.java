@@ -25,6 +25,9 @@ public class Watch {
     @SerializedName("update_date")
     public String updateDate;
 
+    @SerializedName("stand_name")
+    public String standName;
+
     @SerializedName("status")
     public Integer active;
 

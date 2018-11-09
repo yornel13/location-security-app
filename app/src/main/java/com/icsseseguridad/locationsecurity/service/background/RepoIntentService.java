@@ -7,15 +7,9 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.os.Binder;
 import android.os.Build;
-import android.os.IBinder;
-import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
@@ -65,11 +59,7 @@ public class RepoIntentService extends IntentService {
             if (new AppPreferences(getApplicationContext()).getWatch() != null) {
                 setAlarm(this, INTERVAL_ALARM);
             } else {
-                if (syncAdapter.isNeedSyncPositions()) {
-                    setAlarm(this, TimeUnit.SECONDS.toMillis(60));
-                } else {
-                    Log.d(TAG, "No set alarm, is no active watch");
-                }
+                Log.d(TAG, "No set alarm, is no active watch");
             }
         }
     }
@@ -98,7 +88,6 @@ public class RepoIntentService extends IntentService {
 
     private void buildNotification() {
         String stop = "stop";
-        //registerReceiver(stopReceiver, new IntentFilter(stop));
         PendingIntent broadcastIntent = PendingIntent.getBroadcast(
                 this, 0, new Intent(stop), PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationManager notificationManager = (NotificationManager)

@@ -171,6 +171,7 @@ public interface APIInterface {
             @Field("guard_id") Long guardId,
             @Field("persons") Integer persons,
             @Field("observation") String materials,
+            @Field("stand_name") String standName,
             @Field("latitude") String latitude,
             @Field("longitude") String longitude,
             @Field("image_1") String image1,

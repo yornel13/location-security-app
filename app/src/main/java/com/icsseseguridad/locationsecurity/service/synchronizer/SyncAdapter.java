@@ -78,7 +78,6 @@ public class SyncAdapter {
         } else {
             updateDatabase();
         }
-        syncPositions();
     }
 
     public boolean needSync() {
@@ -96,11 +95,6 @@ public class SyncAdapter {
             return true;
         }
         return false;
-    }
-
-    public boolean isNeedSyncPositions() {
-        List<TabletPosition> positions = db.getPositionDao().getAll();
-        return positions.size() > 0;
     }
 
     private void updateDatabase() {
@@ -528,6 +522,7 @@ public class SyncAdapter {
                     visit.guardId,
                     visit.persons,
                     visit.materials,
+                    visit.standName,
                     visit.latitude,
                     visit.longitude,
                     visit.image1,
@@ -616,42 +611,42 @@ public class SyncAdapter {
         return isSuccess;
     }
 
-    private boolean syncPositions() {
-        List<TabletPosition> positions = db.getPositionDao().getAll();
-        boolean isSuccess = true;
-        for (TabletPosition position: positions) {
-            System.out.println(new Gson().toJson(position));
-            APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-            Call<MultipleResource> call = apiInterface.syncPosition(getPreferences().getToken(),
-                    position.latitude,
-                    position.longitude,
-                    position.generatedTime,
-                    position.messageTime,
-                    position.watchId,
-                    position.imei,
-                    position.message,
-                    position.alertMessage,
-                    position.isException ? 1 : 0);
-            try {
-                Response<MultipleResource> tasks = call.execute();
-                final MultipleResource data =  tasks.body();
-                if (tasks.isSuccessful() && data != null) {
-                    TabletPosition positionResponse = gson()
-                            .fromJson(gson().toJson(data.result), TabletPosition.class);
-                    db.getPositionDao().delete(position);
-                    Log.d(TAG, "-> Success sync position with id: " + positionResponse.id + " <-");
-                } else {
-                    isSuccess = false;
-                    Log.e(TAG, "Error sync position with id: " + position.id);
-                }
-            } catch (Exception e) {
-                isSuccess = false;
-                Log.e(TAG, "Error sync position");
-                e.printStackTrace();
-            }
-        }
-        return isSuccess;
-    }
+//    private boolean syncPositions() {
+//        List<TabletPosition> positions = db.getPositionDao().getAll();
+//        boolean isSuccess = true;
+//        for (TabletPosition position: positions) {
+//            System.out.println(new Gson().toJson(position));
+//            APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
+//            Call<MultipleResource> call = apiInterface.syncPosition(getPreferences().getToken(),
+//                    position.latitude,
+//                    position.longitude,
+//                    position.generatedTime,
+//                    position.messageTime,
+//                    position.watchId,
+//                    position.imei,
+//                    position.message,
+//                    position.alertMessage,
+//                    position.isException ? 1 : 0);
+//            try {
+//                Response<MultipleResource> tasks = call.execute();
+//                final MultipleResource data =  tasks.body();
+//                if (tasks.isSuccessful() && data != null) {
+//                    TabletPosition positionResponse = gson()
+//                            .fromJson(gson().toJson(data.result), TabletPosition.class);
+//                    db.getPositionDao().delete(position);
+//                    Log.d(TAG, "-> Success sync position with id: " + positionResponse.id + " <-");
+//                } else {
+//                    isSuccess = false;
+//                    Log.e(TAG, "Error sync position with id: " + position.id);
+//                }
+//            } catch (Exception e) {
+//                isSuccess = false;
+//                Log.e(TAG, "Error sync position");
+//                e.printStackTrace();
+//            }
+//        }
+//        return isSuccess;
+//    }
 
     private Gson gson() {
         return new GsonBuilder()

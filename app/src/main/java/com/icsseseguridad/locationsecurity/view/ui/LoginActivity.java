@@ -55,6 +55,7 @@ import com.icsseseguridad.locationsecurity.service.event.OnVerifySessionSuccess;
 import com.icsseseguridad.locationsecurity.service.entity.Guard;
 import com.icsseseguridad.locationsecurity.service.entity.TabletPosition;
 import com.icsseseguridad.locationsecurity.service.entity.Watch;
+import com.icsseseguridad.locationsecurity.service.synchronizer.SyncAdapter;
 import com.icsseseguridad.locationsecurity.util.AppPreferences;
 import com.icsseseguridad.locationsecurity.util.Const;
 import com.icsseseguridad.locationsecurity.util.CurrentLocation;
@@ -281,7 +282,7 @@ public class LoginActivity extends BaseActivity {
                 guard.id,
                 String.valueOf(location.getLatitude()),
                 String.valueOf(location.getLongitude()),
-                getImei());
+                getImeiAndSave());
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
@@ -328,6 +329,7 @@ public class LoginActivity extends BaseActivity {
             public void subscribe(CompletableEmitter e) throws Exception {
                 AppDatabase.getInstance(getApplicationContext())
                         .getPositionDao().insert(position);
+                clearDB();
                 e.onComplete();
             }})
                 .subscribeOn(Schedulers.io())
@@ -335,11 +337,21 @@ public class LoginActivity extends BaseActivity {
                 .subscribe(new Action() {
                     @Override
                     public void run() throws Exception {
+                        new AppPreferences(LoginActivity.this)
+                                .saveLastSyncPosition(System.currentTimeMillis());
                         dialog.dismiss();
                         startActivity(new Intent(LoginActivity.this, MainActivity.class));
                         finish();
                     }
                 }).isDisposed();
+    }
+
+    public void clearDB() { // clear db if can
+        if (!new SyncAdapter(getApplicationContext()).needSync()) {
+            AppDatabase db = AppDatabase.getInstance(getApplicationContext());
+            db.getControlVisitDao().deleteAll();
+            db.getSpecialReportDao().deleteAll();
+        }
     }
 
     public void login(View view) {
@@ -353,7 +365,6 @@ public class LoginActivity extends BaseActivity {
             dniText.requestFocus();
             return;
         }
-
         hideKeyboard();
 
         if (!getPreferences().isRegistered()) {

@@ -11,14 +11,17 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.icsseseguridad.locationsecurity.service.dao.AppDatabase;
+import com.icsseseguridad.locationsecurity.service.dao.PositionDao;
 import com.icsseseguridad.locationsecurity.service.entity.TabletPosition;
+import com.icsseseguridad.locationsecurity.service.synchronizer.SendPosition;
 import com.icsseseguridad.locationsecurity.util.AppPreferences;
 import com.icsseseguridad.locationsecurity.util.CurrentLocation;
 import com.icsseseguridad.locationsecurity.util.UTILITY;
 
-import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class PositionIntentService extends IntentService {
 
@@ -32,16 +35,13 @@ public class PositionIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        if (CurrentLocation.getPreferences(this).getWatch() == null) {
-            stopSelf();
-            return;
-        }
         completeWork();
     }
 
     private void completeWork() {
         Log.d(TAG, "Starting work");
         savePosition();
+        syncPositions();
         setupAlarm();
         stopSelf();
     }
@@ -50,23 +50,28 @@ public class PositionIntentService extends IntentService {
         if (CurrentLocation.getPreferences(this).getWatch() != null) {
             long interval = new AppPreferences(this).getGPSUpdate();
             setAlarm(this, interval);
+        } else {
+            if (isNeedSyncPositions()) {
+                setAlarm(this, TimeUnit.SECONDS.toMillis(30));
+            }
         }
     }
 
+    public boolean isNeedSyncPositions() {
+        List<TabletPosition> positions = AppDatabase.getInstance(getApplicationContext())
+                .getPositionDao().getAll();
+        return positions.size() > 0;
+    }
+
     private void savePosition() {
+        /*** Check if is ***/
+        if (CurrentLocation.getPreferences(this).getWatch() == null) {
+            return;
+        }
         /*** Check last insert ***/
-        TabletPosition lastInsert = AppDatabase.getInstance(getApplicationContext())
-                .getPositionDao().getLastInsert();
-        if (lastInsert != null) {
-            Date lastInsertDate = UTILITY.stringToDate(lastInsert.generatedTime);
-            if (lastInsertDate != null) {
-                long lastInsertLong = lastInsertDate.getTime();
-                if ((lastInsertLong + 10000) > new Date().getTime()) {
-                    /*** Check if last insert was more than 10 seconds ***/
-                    Log.d(TAG, "can't save position now, programing for later");
-                    return;
-                }
-            }
+        if (!new AppPreferences(this).canSyncPosition()) {
+            Log.d(TAG, "can't save position now, programing for later");
+            return;
         }
         /*** Check last insert ***/
         Location location = CurrentLocation.get(this);
@@ -79,9 +84,24 @@ public class PositionIntentService extends IntentService {
         position.id = AppDatabase.getInstance(getApplicationContext())
                 .getPositionDao().insert(position);
         if (position.id > 0) {
-            Log.d(TAG, "position saved");
+            new AppPreferences(this).saveLastSyncPosition(System.currentTimeMillis());
+            Log.d(TAG, "position local saved");
         } else {
-            Log.d(TAG, "position save failure");
+            Log.d(TAG, "position local save failure");
+        }
+    }
+
+    public void syncPositions() {
+        if (isNeedSyncPositions()) {
+            PositionDao positionDAO = AppDatabase.getInstance(getApplicationContext())
+                    .getPositionDao();
+            List<TabletPosition> positions = positionDAO.getAll();
+            for (TabletPosition position: positions) {
+                Log.d(TAG, "try sync a position");
+                boolean isSuccess = new SendPosition().sync(position,
+                        CurrentLocation.getPreferences(this));
+                if (isSuccess) { positionDAO.delete(position); }
+            }
         }
     }
 

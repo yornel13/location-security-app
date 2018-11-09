@@ -14,8 +14,8 @@ android {
         applicationId "com.icsseseguridad.locationsecurity"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 25
-        versionName "1.07"
+        versionCode 28
+        versionName "1.10"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
             annotationProcessorOptions {

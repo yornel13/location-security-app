@@ -17,9 +17,9 @@ import com.icsseseguridad.locationsecurity.service.entity.Watch;
 
 public class AppPreferences {
 
-    public static final String PREF_FILE_NAME = "app-security-v5";
+    public static final String PREF_FILE_NAME = "app-security-v7";
 
-    private static final int VALUE_GPS_UPDATE_DEFAULT = 300; // SECONDS (= 10 minutes)
+    private static final int VALUE_GPS_UPDATE_DEFAULT = 100; // SECONDS (= 1 minute & 40 Seconds)
 
     private static final String GUARD = "guard";
     private static final String WATCH = "watch";
@@ -29,13 +29,12 @@ public class AppPreferences {
     private static final String GPS_UPDATE = "gps_update";
     private static final String REGISTERED = "registered";
     private static final String LAST_SYNC = "last_sync";
+    private static final String LAST_SYNC_POSITION = "last_sync_position";
 
-    private Context context;
     private SharedPreferences preferences;
     private Editor editor;
 
     public AppPreferences(Context context) {
-        this.context = context;
         preferences = context.getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE);
     }
 
@@ -177,6 +176,19 @@ public class AppPreferences {
     public void clearWatch() {
         preferences.edit().remove(GUARD).commit();
         preferences.edit().remove(WATCH).commit();
+    }
+
+    public void saveLastSyncPosition(long millis) {
+        preferences.edit().putLong(LAST_SYNC_POSITION, millis).commit();
+    }
+
+    public boolean canSyncPosition() {
+        long lastSync = preferences.getLong(LAST_SYNC_POSITION, 0);
+        if (System.currentTimeMillis() > (lastSync + 10000)) { // more than 10 seconds last sync
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void saveLastSync(long millis) {

@@ -48,13 +48,9 @@ public class TrackingService extends Service {
             Log.e(TAG, "onStartCommand");
             buildNotification();
             requestLocationUpdates();
-            // Main sync job
+            /* another services */
             RepoIntentService.run(this);
             PositionIntentService.run(this);
-            //MainSyncJob.jobScheduler(this);
-            // Running save position job
-            // SavePositionJob.jobScheduler(this);
-            // Running alert sync job if need
             AlertSyncJob.jobScheduler(this);
             return START_STICKY;
         } else {
@@ -80,7 +76,6 @@ public class TrackingService extends Service {
 
     private void buildNotification() {
         String stop = "stop";
-        //registerReceiver(stopReceiver, new IntentFilter(stop));
         PendingIntent broadcastIntent = PendingIntent.getBroadcast(
                 this, 0, new Intent(stop), PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationManager notificationManager = (NotificationManager)
