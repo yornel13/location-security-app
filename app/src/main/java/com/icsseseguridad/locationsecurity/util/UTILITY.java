@@ -34,19 +34,34 @@ public class UTILITY {
         return format.format(calendar.getTime());
     }
 
-    public static String longToString(long time) {
-        Calendar cal = Calendar.getInstance(Locale.ENGLISH);
-        cal.setTimeInMillis(time);
-        return DateFormat.format("yyyy-MM-dd HH:mm:ss", cal).toString();
+    public static String getCurrentTimestamp() {
+        Calendar calendar = Calendar.getInstance();
+        return getFormat().format(calendar.getTime());
     }
 
     public static Date stringToDate(String time) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            return format.parse(time);
+            return getFormat(time).parse(time);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static SimpleDateFormat getFormat() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT-5"));
+        return dateFormat;
+    }
+
+    public static SimpleDateFormat getFormat(String date) {
+        SimpleDateFormat dateFormat;
+        if (date.contains("T")) {
+            dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+            dateFormat.setTimeZone(TimeZone.getTimeZone("GMT-5"));
+        } else {
+            dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        }
+        return dateFormat;
     }
 }

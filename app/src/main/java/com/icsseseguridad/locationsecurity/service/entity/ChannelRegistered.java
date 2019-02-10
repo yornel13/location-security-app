@@ -27,32 +27,11 @@ public class ChannelRegistered {
     @SerializedName("state")
     public Integer state;
 
-
-    public Integer unread;
-
-    /****    Channel data       *****/
     @SerializedName("channel_id")
     public Long channelId;
 
-    @SerializedName("channel_name")
-    public String channelName;
+    public Integer unread;
 
-    @SerializedName("channel_creator_id")
-    public Long channelCreatorId;
-
-    @SerializedName("channel_creator_type")
-    public Chat.TYPE channelCreatorType;
-
-    @SerializedName("channel_creator_name")
-    public String channelCreatorName;
-
-    @SerializedName("channel_create_at")
-    public String channelCreateAt;
-
-    @SerializedName("channel_update_at")
-    public String channelUpdateAt;
-
-    @SerializedName("channel_state")
-    public Integer channelState;
-
+    @SerializedName("channel")
+    public Channel channel;
 }

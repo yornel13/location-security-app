@@ -93,20 +93,20 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.View
             } else {
                 addUsers.setVisibility(View.VISIBLE);
                 unread.setVisibility(View.GONE);
-                final ChannelRegistered channel = (ChannelRegistered) list.get(position);
-                title.setText(channel.channelName);
-                time.setText(DateUtils.getRelativeTimeSpanString(UTILITY.stringToDate(channel.channelUpdateAt).getTime()));
+                final ChannelRegistered registered = (ChannelRegistered) list.get(position);
+                title.setText(registered.channel.name);
+                time.setText(DateUtils.getRelativeTimeSpanString(UTILITY.stringToDate(registered.channel.updateAt).getTime()));
                 image.setImageDrawable(mContext.getResources().getDrawable(R.drawable.group_icon));
                 holder.getBaseView().setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        EventBus.getDefault().post(new OnClickChannel(channel));
+                        EventBus.getDefault().post(new OnClickChannel(registered));
                     }
                 });
                 addUsers.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        EventBus.getDefault().post(new OnClickChannelAdd(channel));
+                        EventBus.getDefault().post(new OnClickChannelAdd(registered));
                     }
                 });
             }

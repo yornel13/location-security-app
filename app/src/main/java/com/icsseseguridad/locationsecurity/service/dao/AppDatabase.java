@@ -13,7 +13,6 @@ import com.icsseseguridad.locationsecurity.service.entity.ControlVisit;
 import com.icsseseguridad.locationsecurity.service.converter.LinkedTypeConverter;
 import com.icsseseguridad.locationsecurity.service.entity.Incidence;
 import com.icsseseguridad.locationsecurity.service.entity.Photo;
-import com.icsseseguridad.locationsecurity.service.converter.TimestampTypeConverter;
 import com.icsseseguridad.locationsecurity.service.entity.SpecialReport;
 import com.icsseseguridad.locationsecurity.service.entity.TabletPosition;
 import com.icsseseguridad.locationsecurity.service.entity.VehicleType;

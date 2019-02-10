@@ -78,7 +78,7 @@ public class PositionIntentService extends IntentService {
         String imei = CurrentLocation.getPreferences(this).getImei();
         Long watchId = CurrentLocation.getPreferences(this).getWatch().id;
         final TabletPosition position = new TabletPosition(location, imei);
-        position.generatedTime = UTILITY.longToString(new Date().getTime());
+        position.generatedTime = UTILITY.getCurrentTimestamp();
         position.watchId = watchId;
         position.isException = false;
         position.id = AppDatabase.getInstance(getApplicationContext())

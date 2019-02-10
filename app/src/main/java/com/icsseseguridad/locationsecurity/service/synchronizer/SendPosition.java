@@ -13,6 +13,9 @@ import com.icsseseguridad.locationsecurity.service.repository.APIClient;
 import com.icsseseguridad.locationsecurity.service.repository.APIInterface;
 import com.icsseseguridad.locationsecurity.util.AppPreferences;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -30,16 +33,7 @@ public class SendPosition {
         if (position != null) {
             try {
                 APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-                Call<MultipleResource> call = apiInterface.syncPosition(preferences.getToken(),
-                        position.latitude,
-                        position.longitude,
-                        position.generatedTime,
-                        position.messageTime,
-                        position.watchId,
-                        position.imei,
-                        position.message,
-                        position.alertMessage,
-                        position.isException ? 1 : 0);
+                Call<MultipleResource> call = apiInterface.syncPosition(preferences.getToken(), position);
                 Response<MultipleResource> tasks = call.execute();
                 MultipleResource data = tasks.body();
                 if (tasks.isSuccessful() && data != null) {

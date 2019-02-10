@@ -19,6 +19,8 @@ import com.icsseseguridad.locationsecurity.service.event.OnVerifyTabletSuccess;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -28,7 +30,12 @@ public class AuthController extends BaseController {
 
     public void singIn(String dni, String password) {
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-        Call<MultipleResource> call = apiInterface.signIn(dni, password);
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("dni", dni);
+        data.put("password", password);
+
+        Call<MultipleResource> call = apiInterface.signIn(data);
         call.enqueue(new Callback<MultipleResource>() {
             @Override
             public void onFailure(Call<MultipleResource> call, Throwable t) {
@@ -63,8 +70,13 @@ public class AuthController extends BaseController {
     }
 
     public void singInAdmin(String dni, String password) {
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("dni", dni);
+        data.put("password", password);
+
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-        Call<MultipleResource> call = apiInterface.signInAdmin(dni, password);
+        Call<MultipleResource> call = apiInterface.signInAdmin(data);
         call.enqueue(new Callback<MultipleResource>() {
             @Override
             public void onFailure(Call<MultipleResource> call, Throwable t) {
@@ -98,9 +110,13 @@ public class AuthController extends BaseController {
         });
     }
 
-    public void registeredTablet(String imei) {
+    public void registeredTablet(String token, String imei) {
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("imei", imei);
+
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-        Call<MultipleResource> call = apiInterface.registered(imei);
+        Call<MultipleResource> call = apiInterface.registered(token, data);
         call.enqueue(new Callback<MultipleResource>() {
             @Override
             public void onFailure(Call<MultipleResource> call, Throwable t) {

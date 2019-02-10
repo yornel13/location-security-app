@@ -61,7 +61,7 @@ public class TabletPosition {
     public TabletPosition(Location location, String imei) {
         this.latitude = String.valueOf(location.getLatitude());
         this.longitude = String.valueOf(location.getLongitude());
-        this.messageTime = UTILITY.longToString(location.getTime());
+        this.messageTime = UTILITY.getCurrentTimestamp();
         this.imei = imei;
         this.message = MESSAGE.UPDATE.name();
     }

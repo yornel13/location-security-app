@@ -215,9 +215,9 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()) {
-            case R.id.nav_exit:
-                dialogCloseSession();
-                break;
+//            case R.id.nav_exit:
+//                dialogCloseSession();
+//                break;
             case R.id.nav_finish:
                 dialogFinishWatch();
                 break;
@@ -341,7 +341,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
 
     private void updatePosition(Watch watch, Guard guard) {
         final TabletPosition position = new TabletPosition(location, getImei());
-        position.generatedTime = UTILITY.longToString(new Date().getTime());
+        position.generatedTime = UTILITY.getCurrentTimestamp();
         position.message = TabletPosition.MESSAGE.FINISHED_WATCH.name();
         position.alertMessage = guard.getFullname() + " ha finalizado su guardia";
         position.watchId = watch.id;

@@ -30,6 +30,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.gson.Gson;
 import com.icsseseguridad.locationsecurity.R;
+import com.icsseseguridad.locationsecurity.service.entity.ChatLine;
 import com.icsseseguridad.locationsecurity.util.UTILITY;
 import com.icsseseguridad.locationsecurity.view.adapter.ReplyAdapter;
 import com.icsseseguridad.locationsecurity.service.repository.BinnacleController;
@@ -50,6 +51,8 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -204,7 +207,16 @@ public class ReportActivity extends BaseActivity implements GoogleApiClient.Conn
     public void getRepliesSuccess(OnGetRepliesSuccess event) {
         EventBus.getDefault().removeStickyEvent(OnGetRepliesSuccess.class);
         replies = event.list.replies;
+        order(replies);
         setupReplies(replies);
+    }
+
+    public void order(List<Reply> objects) {
+        Collections.sort(objects, new Comparator<Reply>(){
+            public int compare(Reply obj1, Reply obj2) {
+                return UTILITY.stringToDate(obj2.createDate).compareTo(UTILITY.stringToDate(obj1.createDate));
+            }
+        });
     }
 
     private void setupReplies(List<Reply> replies) {

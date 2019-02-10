@@ -206,19 +206,6 @@ public class AddVisitActivity extends BaseActivity {
                 }).show();
     }
 
-//    @Subscribe(threadMode = ThreadMode.MAIN)
-//    public void onSyncVehicles(OnSyncVehicles event) {
-//        dialog.dismiss();
-//        if (!event.result) {
-//            Toast.makeText(this, R.string.no_connection,
-//                    Toast.LENGTH_LONG).show();
-//            finish();
-//        } else {
-//            Snackbar.make(toolbar, "Se han cargado los vehiculos con exito.",
-//                    Snackbar.LENGTH_SHORT).show();
-//        }
-//    }
-
     @OnClick(R.id.card_visitor)
     public void selectVisitor() {
         new VisitorSearchDialog<>(this, getString(R.string.select_visitor),
@@ -236,19 +223,6 @@ public class AddVisitActivity extends BaseActivity {
                     }
                 }).show();
     }
-
-//    @Subscribe(threadMode = ThreadMode.MAIN)
-//    public void onSyncVisitors(OnSyncVisitors event) {
-//        dialog.dismiss();
-//        if (!event.result) {
-//            Toast.makeText(this, R.string.no_connection,
-//                    Toast.LENGTH_LONG).show();
-//            finish();
-//        } else {
-//            Snackbar.make(toolbar, "Se han cargado los visitante con exito.",
-//                    Snackbar.LENGTH_SHORT).show();
-//        }
-//    }
 
     @OnClick(R.id.card_clerk)
     public void selectClerk() {
@@ -271,19 +245,6 @@ public class AddVisitActivity extends BaseActivity {
                 AddInfoVisitActivity.class), INTENT_ADD_MATERIAL);
 
     }
-
-//    @Subscribe(threadMode = ThreadMode.MAIN)
-//    public void onSyncClerks(OnSyncClerks event) {
-//        dialog.dismiss();
-//        if (!event.result) {
-//            Toast.makeText(this, R.string.no_connection,
-//                    Toast.LENGTH_LONG).show();
-//            finish();
-//        } else {
-//            Snackbar.make(toolbar, "Se han cargado los funcionarios con exito.",
-//                    Snackbar.LENGTH_SHORT).show();
-//        }
-//    }
 
     public void setupVehicle(final VisitorVehicle vehicle) {
         cardVehicle.setCardBackgroundColor(getResources().getColor(R.color.white));
@@ -337,7 +298,6 @@ public class AddVisitActivity extends BaseActivity {
         this.vehicle = vehicle;
 
         if (vehicle.lastVisit != null) {
-            System.out.println(gson().toJson(vehicle.lastVisit));
             for (Visitor visitor : visitors) {
                 if (visitor.id != null &&
                         visitor.id.longValue() == vehicle.lastVisit.visitorId.longValue()) {
@@ -550,7 +510,7 @@ public class AddVisitActivity extends BaseActivity {
         visit.guardId = getPreferences().getGuard().id;
         visit.standName = getPreferences().getWatch().standName;
         System.out.println("watch: " + getPreferences().getWatch());
-        visit.createDate = UTILITY.longToString(new Date().getTime());
+        visit.createDate = UTILITY.getCurrentTimestamp();
         visit.finishDate = null;
         visit.sync = false;
         visit.status = 1;

@@ -99,7 +99,7 @@ public class FinishVisitActivity extends BaseActivity {
         visit.sync = false;
         visit.comment = comment;
         visit.guardOutId = getPreferences().getGuard().id;
-        visit.finishDate = UTILITY.longToString(new Date().getTime());
+        visit.finishDate = UTILITY.getCurrentTimestamp();
 
         Completable.create(new CompletableOnSubscribe() {
             @Override

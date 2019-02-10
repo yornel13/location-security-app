@@ -258,7 +258,7 @@ public class LocationService extends Service implements SensorEventListener {
 
     public void callSavePosition(final Location location, final String imei, final Long watchId) {
         final TabletPosition position = new TabletPosition(location, imei);
-        position.generatedTime = UTILITY.longToString(new Date().getTime());
+        position.generatedTime = UTILITY.getCurrentTimestamp();
         position.watchId = watchId;
         position.isException = false;
         Completable.create(new CompletableOnSubscribe() {

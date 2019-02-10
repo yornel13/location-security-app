@@ -237,8 +237,8 @@ public class BaseActivity extends AppCompatActivity {
         alert.guardId = preferences.getGuard().id;
         //alert.latitude = String.valueOf(preferences.getLastKnownLoc().getLatitude());
         ///alert.longitude = String.valueOf(preferences.getLastKnownLoc().getLongitude());
-        alert.createDate = UTILITY.longToString(new Date().getTime());
-        alert.updateDate = UTILITY.longToString(new Date().getTime());
+        alert.createDate = UTILITY.getCurrentTimestamp();
+        alert.updateDate = UTILITY.getCurrentTimestamp();
         alert.status = 1;
         Single.create(new SingleOnSubscribe<Boolean>() {
             @Override
@@ -246,7 +246,7 @@ public class BaseActivity extends AppCompatActivity {
                 Location location = CurrentLocation.get(getBaseContext());
                 alert.latitude = String.valueOf(location.getLatitude());
                 alert.longitude = String.valueOf(location.getLongitude());
-                if (new SendAlert().send(alert)) {
+                if (new SendAlert().send(getPreferences().getToken(), alert)) {
                     e.onSuccess(true);
                 } else {
                     e.onError(new Exception("Error"));
@@ -318,7 +318,6 @@ public class BaseActivity extends AppCompatActivity {
         EventBus.getDefault().removeStickyEvent(OnUserUnauthorized.class);
         if (dialog != null)
             dialog.dismiss();
-
         Toast.makeText(this, "Sesión Expirada", Toast.LENGTH_LONG).show();
         clearSession();
     }

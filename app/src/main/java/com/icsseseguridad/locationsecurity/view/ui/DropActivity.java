@@ -123,13 +123,13 @@ public class DropActivity extends AppCompatActivity {
         alert.guardId = preferences.getGuard().id;
         alert.latitude = String.valueOf(preferences.getLastKnownLoc().getLatitude());
         alert.longitude = String.valueOf(preferences.getLastKnownLoc().getLongitude());
-        alert.createDate = UTILITY.longToString(new Date().getTime());
-        alert.updateDate = UTILITY.longToString(new Date().getTime());
+        alert.createDate = UTILITY.getCurrentTimestamp();
+        alert.updateDate = UTILITY.getCurrentTimestamp();
         alert.status = 1;
         Single.create(new SingleOnSubscribe<Boolean>() {
             @Override
             public void subscribe(SingleEmitter<Boolean> e) throws Exception {
-                if (new SendAlert().send(alert)) {
+                if (new SendAlert().send(preferences.getToken(), alert)) {
                     e.onSuccess(true);
                 } else {
                     e.onError(new Exception("Error"));

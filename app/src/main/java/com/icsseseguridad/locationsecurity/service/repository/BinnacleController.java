@@ -154,11 +154,7 @@ public class BinnacleController extends BaseController {
 
     public void postReply(Reply reply) {
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-        Call<MultipleResource> call = apiInterface.postReply(preferences.getToken(),
-                reply.reportId,
-                reply.guardId,
-                reply.userName,
-                reply.text);
+        Call<MultipleResource> call = apiInterface.postReply(preferences.getToken(), reply);
         call.enqueue(new Callback<MultipleResource>() {
             @Override
             public void onFailure(Call<MultipleResource> call, Throwable t) {

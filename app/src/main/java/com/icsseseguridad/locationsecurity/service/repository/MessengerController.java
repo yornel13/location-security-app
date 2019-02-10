@@ -40,7 +40,9 @@ import com.icsseseguridad.locationsecurity.service.entity.User;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -50,10 +52,15 @@ public class MessengerController extends BaseController {
 
     public void register(String imei, String token, Long guardId) {
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-        Call<MultipleResource> call = apiInterface.registerToken(preferences.getToken(),
-                imei,
-                token,
-                guardId);
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("imei", imei);
+        data.put("registration_id", token);
+        data.put("guard_id", guardId);
+
+        System.out.println(gson.toJson(data));
+
+        Call<MultipleResource> call = apiInterface.registerToken(preferences.getToken(), data);
         call.enqueue(new Callback<MultipleResource>() {
             @Override
             public void onFailure(Call<MultipleResource> call, Throwable t) {
@@ -120,13 +127,8 @@ public class MessengerController extends BaseController {
 
     public void chat(Chat chat) {
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-        Call<MultipleResource> call = apiInterface.createChat(preferences.getToken(),
-                chat.user1Id,
-                chat.user1Type.name(),
-                chat.user1Name,
-                chat.user2Id,
-                chat.user2Type.name(),
-                chat.user2Name);
+
+        Call<MultipleResource> call = apiInterface.createChat(preferences.getToken(), chat);
         call.enqueue(new Callback<MultipleResource>() {
             @Override
             public void onFailure(Call<MultipleResource> call, Throwable t) {
@@ -234,13 +236,7 @@ public class MessengerController extends BaseController {
     public void send(ChatLine message) {
         System.out.println(new Gson().toJson(message));
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-        Call<MultipleResource> call = apiInterface.sendMessage(preferences.getToken(),
-                message.chatId,
-                message.channelId,
-                message.senderId,
-                message.senderType.name(),
-                message.senderName,
-                message.text);
+        Call<MultipleResource> call = apiInterface.sendMessage(preferences.getToken(), message);
         call.enqueue(new Callback<MultipleResource>() {
             @Override
             public void onFailure(Call<MultipleResource> call, Throwable t) {
@@ -277,11 +273,7 @@ public class MessengerController extends BaseController {
 
     public void channel(Channel channel) {
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-        Call<MultipleResource> call = apiInterface.createChannel(preferences.getToken(),
-                channel.name,
-                channel.creatorId,
-                channel.creatorType.name(),
-                channel.creatorName);
+        Call<MultipleResource> call = apiInterface.createChannel(preferences.getToken(), channel);
         call.enqueue(new Callback<MultipleResource>() {
             @Override
             public void onFailure(Call<MultipleResource> call, Throwable t) {

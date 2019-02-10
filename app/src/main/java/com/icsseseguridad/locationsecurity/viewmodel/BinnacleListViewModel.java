@@ -8,6 +8,7 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
 import android.support.annotation.Nullable;
 
+import com.google.gson.Gson;
 import com.icsseseguridad.locationsecurity.service.dao.AppDatabase;
 import com.icsseseguridad.locationsecurity.service.entity.SpecialReport;
 import com.icsseseguridad.locationsecurity.util.AppPreferences;
@@ -29,25 +30,25 @@ public class BinnacleListViewModel extends AndroidViewModel {
         mInstance = this;
     }
 
-    public MutableLiveData<List<SpecialReport>> getVisits() {
+    public MutableLiveData<List<SpecialReport>> getReports() {
         return mObservableReports;
     }
 
     public void refreshObservables() {
         AppPreferences preferences = new AppPreferences(getApplication());
         if (preferences.getGuard() == null) return;
-        LiveData<List<SpecialReport>> visits = appDataBase.getSpecialReportDao()
+        LiveData<List<SpecialReport>> reportsData = appDataBase.getSpecialReportDao()
                 .findAllByGuardId(preferences.getGuard().id);
-        mObservableReports.addSource(visits, new Observer<List<SpecialReport>>() {
+        mObservableReports.addSource(reportsData, new Observer<List<SpecialReport>>() {
             @Override
-            public void onChanged(@Nullable List<SpecialReport> visits) {
-                mObservableReports.setValue(visits);
+            public void onChanged(@Nullable List<SpecialReport> reports) {
+                mObservableReports.setValue(reports);
             }
         });
     }
 
     public static void refreshIfIsActive() {
-        if (mInstance != null && mInstance.getVisits() != null && mInstance.appDataBase != null) {
+        if (mInstance != null && mInstance.getReports() != null && mInstance.appDataBase != null) {
             mInstance.refreshObservables();
         }
     }

@@ -190,8 +190,8 @@ public class AddVisitorActivity extends PhotoActivity {
         visitor.name = nameText.getText().toString();
         visitor.lastname = lastnameText.getText().toString();
         visitor.company = companyText.getText().toString();
-        visitor.createDate = UTILITY.longToString(new Date().getTime());
-        visitor.updateDate = UTILITY.longToString(new Date().getTime());
+        visitor.createDate = UTILITY.getCurrentTimestamp();
+        visitor.updateDate = UTILITY.getCurrentTimestamp();
         visitor.sync = false;
         visitor.active = 1;
 

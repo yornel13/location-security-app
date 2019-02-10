@@ -314,7 +314,7 @@ public class LoginActivity extends BaseActivity {
 
     private void updatePosition(Watch watch, Guard guard) {
         final TabletPosition position = new TabletPosition(location, getImei());
-        position.generatedTime = UTILITY.longToString(new Date().getTime());
+        position.generatedTime = UTILITY.getCurrentTimestamp();
         if (watch.resumed) {
             position.message = TabletPosition.MESSAGE.RESUMED_WATCH.name();
             position.alertMessage = guard.getFullname() + " ha retomado su guardia";
@@ -430,7 +430,7 @@ public class LoginActivity extends BaseActivity {
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void signAdminSuccess(OnSignAdminSuccess event) {
         EventBus.getDefault().removeStickyEvent(OnSignAdminSuccess.class);
-        new AuthController().registeredTablet(getImei());
+        new AuthController().registeredTablet(event.token, getImei());
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
@@ -438,6 +438,7 @@ public class LoginActivity extends BaseActivity {
         EventBus.getDefault().removeStickyEvent(OnRegisteredTabletSuccess.class);
         dialog.dismiss();
         Toast.makeText(this, "Tablet Registrada con Exito!", Toast.LENGTH_SHORT).show();
+        getPreferences().setImei(getImei());
         getPreferences().setRegistered();
         finish();
         startActivity(getIntent());

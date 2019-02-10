@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.icsseseguridad.locationsecurity.R;
+import com.icsseseguridad.locationsecurity.util.UTILITY;
 import com.icsseseguridad.locationsecurity.view.adapter.ChatAdapter;
 import com.icsseseguridad.locationsecurity.service.repository.MessengerController;
 import com.icsseseguridad.locationsecurity.service.event.OnListMessageFailure;
@@ -33,6 +34,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -159,7 +161,17 @@ public class ChatActivity extends BaseActivity {
     public void onListMessageSuccess(OnListMessageSuccess event) {
         EventBus.getDefault().removeStickyEvent(OnListMessageSuccess.class);
         messages = event.list.messages;
+        order(messages);
         setupMessages(messages);
+    }
+
+
+    public void order(List<ChatLine> objects) {
+        Collections.sort(objects, new Comparator<ChatLine>(){
+            public int compare(ChatLine obj1, ChatLine obj2) {
+                return UTILITY.stringToDate(obj2.createAt).compareTo(UTILITY.stringToDate(obj1.createAt));
+            }
+        });
     }
 
     private void setupMessages(List<ChatLine> messages) {

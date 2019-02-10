@@ -20,13 +20,7 @@ public class AlertController extends BaseController {
 
     public void send(Alert alert) {
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-        Call<MultipleResource> call = apiInterface.sendAlert(
-                alert.guardId,
-                alert.cause.name(),
-                alert.type.name(),
-                alert.message,
-                alert.latitude,
-                alert.longitude);
+        Call<MultipleResource> call = apiInterface.sendAlert(preferences.getToken(), alert);
         call.enqueue(new Callback<MultipleResource>() {
             @Override
             public void onFailure(Call<MultipleResource> call, Throwable t) {

@@ -54,7 +54,7 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ViewHolder
             TextView unread = holder.getViewById(R.id.unread);
             title.setText(report.title);
             subTitle.setText(report.observation);
-            time.setText(DateUtils.getRelativeTimeSpanString(UTILITY.stringToDate(report.createDate).getTime()));
+            time.setText(DateUtils.getRelativeTimeSpanString(UTILITY.stringToDate(report.updateDate).getTime()));
             if (report.unread != null && report.unread > 0) {
                 unread.setVisibility(View.VISIBLE);
                 unread.setText(report.unread.toString());

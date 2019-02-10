@@ -15,6 +15,9 @@ import java.util.List;
 public interface IncidenceDao {
 
     @Query("SELECT * FROM incidence")
+    List<Incidence> getAllSync();
+
+    @Query("SELECT * FROM incidence")
     LiveData<List<Incidence>> getAll();
 
     @Query("SELECT * FROM incidence WHERE id = :id LIMIT 1")

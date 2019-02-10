@@ -454,8 +454,8 @@ public class MessageActivity extends BaseActivity implements BottomNavigationVie
             Chat chat = (Chat) obj;
             return UTILITY.stringToDate(chat.updateAt);
         } else {
-            ChannelRegistered channel = (ChannelRegistered) obj;
-            return UTILITY.stringToDate(channel.channelUpdateAt);
+            ChannelRegistered registered = (ChannelRegistered) obj;
+            return UTILITY.stringToDate(registered.channel.updateAt);
         }
     }
 

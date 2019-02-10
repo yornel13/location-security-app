@@ -213,8 +213,8 @@ public class AddVehicleActivity extends PhotoActivity {
         vehicle.vehicle = vehicleType.name;
         vehicle.model = modelText.getText().toString();
         vehicle.type = typeText.getText().toString();
-        vehicle.createDate = UTILITY.longToString(new Date().getTime());
-        vehicle.updateDate = UTILITY.longToString(new Date().getTime());
+        vehicle.createDate = UTILITY.getCurrentTimestamp();
+        vehicle.updateDate = UTILITY.getCurrentTimestamp();
         vehicle.sync = false;
         vehicle.active = 1;
 

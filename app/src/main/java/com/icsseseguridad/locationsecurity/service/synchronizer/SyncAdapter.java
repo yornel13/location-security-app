@@ -426,14 +426,7 @@ public class SyncAdapter {
         for (VisitorVehicle vehicle: vehicles) {
             APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
             Call<MultipleResource> call = apiInterface.syncVehicle(getPreferences().getToken(),
-                    vehicle.plate,
-                    vehicle.vehicle,
-                    vehicle.model,
-                    vehicle.type,
-                    vehicle.photo,
-                    vehicle.createDate,
-                    vehicle.updateDate,
-                    1);
+                    vehicle);
             try {
                 Response<MultipleResource> tasks = call.execute();
                 final MultipleResource data =  tasks.body();
@@ -471,14 +464,7 @@ public class SyncAdapter {
         for (Visitor visitor: visitors) {
             APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
             Call<MultipleResource> call = apiInterface.syncVisitor(getPreferences().getToken(),
-                    visitor.dni,
-                    visitor.name,
-                    visitor.lastname,
-                    visitor.company,
-                    visitor.photo,
-                    visitor.createDate,
-                    visitor.updateDate,
-                    1);
+                    visitor);
             try {
                 Response<MultipleResource> tasks = call.execute();
                 final MultipleResource data =  tasks.body();
@@ -516,28 +502,7 @@ public class SyncAdapter {
         for (ControlVisit visit: visits) {
             APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
             Call<MultipleResource> call = apiInterface.syncVisit(getPreferences().getToken(),
-                    visit.vehicleId,
-                    visit.visitorId,
-                    visit.clerkId,
-                    visit.guardId,
-                    visit.persons,
-                    visit.materials,
-                    visit.standName,
-                    visit.latitude,
-                    visit.longitude,
-                    visit.image1,
-                    visit.image2,
-                    visit.image3,
-                    visit.image4,
-                    visit.image5,
-                    visit.createDate,
-                    visit.finishDate,
-                    visit.comment,
-                    visit.guardOutId,
-                    visit.fLatitude,
-                    visit.fLongitude,
-                    visit.syncId,
-                    visit.status);
+                    visit);
             try {
                 Response<MultipleResource> tasks = call.execute();
                 final MultipleResource data =  tasks.body();
@@ -566,29 +531,10 @@ public class SyncAdapter {
      */
     private boolean syncReports() {
         List<SpecialReport> reports = db.getSpecialReportDao().getAllUnsaved();
-        System.out.println("reports size: " + reports.size());
-        System.out.println(new Gson().toJson(reports));
         boolean isSuccess = true;
         for (SpecialReport report: reports) {
-            System.out.println(new Gson().toJson(report));
             APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-            Call<MultipleResource> call = apiInterface.syncReport(getPreferences().getToken(),
-                    report.watchId,
-                    report.incidenceId,
-                    report.title,
-                    report.observation,
-                    report.latitude,
-                    report.longitude,
-                    report.image1,
-                    report.image2,
-                    report.image3,
-                    report.image4,
-                    report.image5,
-                    report.createDate,
-                    report.updateDate,
-                    report.syncId,
-                    report.status,
-                    report.resolved);
+            Call<MultipleResource> call = apiInterface.syncReport(getPreferences().getToken(), report);
             try {
                 Response<MultipleResource> tasks = call.execute();
                 final MultipleResource data =  tasks.body();
@@ -610,43 +556,6 @@ public class SyncAdapter {
         }
         return isSuccess;
     }
-
-//    private boolean syncPositions() {
-//        List<TabletPosition> positions = db.getPositionDao().getAll();
-//        boolean isSuccess = true;
-//        for (TabletPosition position: positions) {
-//            System.out.println(new Gson().toJson(position));
-//            APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-//            Call<MultipleResource> call = apiInterface.syncPosition(getPreferences().getToken(),
-//                    position.latitude,
-//                    position.longitude,
-//                    position.generatedTime,
-//                    position.messageTime,
-//                    position.watchId,
-//                    position.imei,
-//                    position.message,
-//                    position.alertMessage,
-//                    position.isException ? 1 : 0);
-//            try {
-//                Response<MultipleResource> tasks = call.execute();
-//                final MultipleResource data =  tasks.body();
-//                if (tasks.isSuccessful() && data != null) {
-//                    TabletPosition positionResponse = gson()
-//                            .fromJson(gson().toJson(data.result), TabletPosition.class);
-//                    db.getPositionDao().delete(position);
-//                    Log.d(TAG, "-> Success sync position with id: " + positionResponse.id + " <-");
-//                } else {
-//                    isSuccess = false;
-//                    Log.e(TAG, "Error sync position with id: " + position.id);
-//                }
-//            } catch (Exception e) {
-//                isSuccess = false;
-//                Log.e(TAG, "Error sync position");
-//                e.printStackTrace();
-//            }
-//        }
-//        return isSuccess;
-//    }
 
     private Gson gson() {
         return new GsonBuilder()

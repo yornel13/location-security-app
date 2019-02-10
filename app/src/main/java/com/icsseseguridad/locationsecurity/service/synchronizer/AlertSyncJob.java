@@ -32,9 +32,10 @@ public class AlertSyncJob extends JobService {
     }
 
     public void completeJob(final JobParameters parameters) {
-        Alert alert = new AppPreferences(getApplicationContext()).getAlert();
+        AppPreferences preferences = new AppPreferences(getApplicationContext());
+        Alert alert = preferences.getAlert();
         Log.d(TAG, "Finished Job");
-        boolean isSuccess = new SendAlert().send(alert);
+        boolean isSuccess = new SendAlert().send(preferences.getToken(), alert);
         jobFinished(parameters, true);
         if (isSuccess || alert == null) {
             new AppPreferences(getApplicationContext()).setAlert(null);

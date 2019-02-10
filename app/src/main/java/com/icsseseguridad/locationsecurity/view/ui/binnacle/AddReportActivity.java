@@ -110,8 +110,6 @@ public class AddReportActivity extends PhotoActivity {
 
     private SpecialReport report;
 
-    private IncidenceListViewModel incidenceListViewModel;
-
     private List<Incidence> incidences = new ArrayList<>();
 
     @Override
@@ -126,15 +124,21 @@ public class AddReportActivity extends PhotoActivity {
     }
 
     private void getIncidences() {
-        incidenceListViewModel = ViewModelProviders
-                .of(this).get(IncidenceListViewModel.class);
-        incidenceListViewModel.getIncidences().observe(this, new Observer<List<Incidence>>() {
+        Completable.create(new CompletableOnSubscribe() {
             @Override
-            public void onChanged(@Nullable final List<Incidence> incidences) {
-                AddReportActivity.this.incidences = new ArrayList<>(incidences);
-                loadSpinner();
-            }
-        });
+            public void subscribe(CompletableEmitter e) throws Exception {
+                incidences = AppDatabase.getInstance(getApplicationContext())
+                        .getIncidenceDao().getAllSync();
+                e.onComplete();
+            }})
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        loadSpinner();
+                    }
+                }).isDisposed();
     }
 
     @Override
@@ -147,12 +151,14 @@ public class AddReportActivity extends PhotoActivity {
                 R.layout.spinner_item, incidences);
         spinner.setAdapter(adapterSpinner);
         int defaultIndex = 0;
-        for (Incidence incidence: incidences) {
-            if (incidence.name.toLowerCase().equals("general".toLowerCase())) {
-                defaultIndex = incidences.indexOf(incidence);
+        if (incidences != null) {
+            for (Incidence incidence: incidences) {
+                if (incidence.name.toLowerCase().equals("general".toLowerCase())) {
+                    defaultIndex = incidences.indexOf(incidence);
+                }
             }
+            spinner.setSelection(defaultIndex);
         }
-        spinner.setSelection(defaultIndex);
     }
 
     @OnClick(R.id.add_photo)
@@ -376,8 +382,8 @@ public class AddReportActivity extends PhotoActivity {
         report.watchId = getPreferences().getWatch().id;
         report.watch = getPreferences().getWatch();
         report.observation = observationText.getText().toString();
-        report.createDate = UTILITY.longToString(new Date().getTime());
-        report.updateDate = UTILITY.longToString(new Date().getTime());
+        report.createDate = UTILITY.getCurrentTimestamp();
+        report.updateDate = UTILITY.getCurrentTimestamp();
         report.guardId = getPreferences().getGuard().id;
         report.guardDni = getPreferences().getGuard().dni;
         report.guardName = getPreferences().getGuard().name;

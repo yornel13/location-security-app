@@ -43,6 +43,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> 
             TextView name = holder.getViewById(R.id.user_name);
             TextView comment = holder.getViewById(R.id.user_comment);
             TextView time = holder.getViewById(R.id.comment_time);
+            System.out.println(reply.createDate);
             comment.setText(reply.text);
             time.setText(DateUtils.getRelativeTimeSpanString(UTILITY.stringToDate(reply.createDate).getTime()));
             name.setText(reply.userName);

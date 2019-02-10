@@ -1,8 +1,11 @@
 package com.icsseseguridad.locationsecurity.service.repository;
 
-import android.support.annotation.Nullable;
-
+import com.icsseseguridad.locationsecurity.service.entity.Alert;
+import com.icsseseguridad.locationsecurity.service.entity.Channel;
+import com.icsseseguridad.locationsecurity.service.entity.Chat;
+import com.icsseseguridad.locationsecurity.service.entity.ChatLine;
 import com.icsseseguridad.locationsecurity.service.entity.ConfigUtility;
+import com.icsseseguridad.locationsecurity.service.entity.ControlVisit;
 import com.icsseseguridad.locationsecurity.service.entity.Guard;
 import com.icsseseguridad.locationsecurity.service.entity.ListAdmin;
 import com.icsseseguridad.locationsecurity.service.entity.ListBanner;
@@ -22,14 +25,19 @@ import com.icsseseguridad.locationsecurity.service.entity.ListVisit;
 import com.icsseseguridad.locationsecurity.service.entity.ListVisitor;
 import com.icsseseguridad.locationsecurity.service.entity.ListVisitorVehicle;
 import com.icsseseguridad.locationsecurity.service.entity.MultipleResource;
+import com.icsseseguridad.locationsecurity.service.entity.Reply;
+import com.icsseseguridad.locationsecurity.service.entity.SpecialReport;
+import com.icsseseguridad.locationsecurity.service.entity.TabletPosition;
 import com.icsseseguridad.locationsecurity.service.entity.User;
+import com.icsseseguridad.locationsecurity.service.entity.Visitor;
+import com.icsseseguridad.locationsecurity.service.entity.VisitorVehicle;
 
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
-import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
@@ -38,61 +46,43 @@ import retrofit2.http.Path;
 
 public interface APIInterface {
 
-    @GET("public/guard/active/1")
+    @GET("guard/active/1")
     Call<ListGuard> getGuards(@Header("APP-TOKEN") String appToken);
 
-    @GET("public/admin/active/1")
+    @GET("admin/active/1")
     Call<ListAdmin> getAdmins(@Header("APP-TOKEN") String appToken);
 
-    @FormUrlEncoded
-    @POST("public/auth/guard")
-    Call<MultipleResource> signIn(@Field("dni") String dni, @Field("password") String password);
+    @POST("auth/guard")
+    Call<MultipleResource> signIn(@Body Map<String, Object> body);
 
-    @FormUrlEncoded
-    @POST("public/auth/admin")
-    Call<MultipleResource> signInAdmin(@Field("dni") String dni, @Field("password") String password);
+    @POST("auth/admin")
+    Call<MultipleResource> signInAdmin(@Body Map<String, Object> body);
 
-    @GET("public/auth/verify")
+    @GET("auth/verify")
     Call<Guard> verifySession(@Header("APP-TOKEN") String appToken);
 
-    @GET("public/tablet/verify/{imei}")
+    @GET("tablet/verify/{imei}")
     Call<MultipleResource> verifyTablet(@Path("imei") String imei);
 
-    @FormUrlEncoded
-    @POST("public/watch/start")
+    @POST("watch/start")
     Call<MultipleResource> initWatch(
             @Header("APP-TOKEN") String appToken,
-            @Field("guard_id") Long guardId,
-            @Field("latitude") String latitude,
-            @Field("longitude") String longitude,
-            @Field("tablet_imei") String imei);
+            @Body Map<String, Object> body);
 
-    @FormUrlEncoded
-    @PUT("public/watch/{watch_id}/end")
+    @PUT("watch/{watch_id}/end")
     Call<MultipleResource> finishWatch(@Header("APP-TOKEN") String appToken,
            @Path("watch_id") Long watch_id,
-           @Field("f_latitude") String latitude,
-           @Field("f_longitude") String longitude,
-           @Nullable @Field("observation") String observation);
+           @Body Map<String, Object> body);
 
-    @GET("public/visitor")
+    @GET("visitor")
     Call<ListVisitor> getVisitors(@Header("APP-TOKEN") String appToken);
 
-    @FormUrlEncoded
-    @POST("public/visitor/sync")
+    @POST("visitor/sync")
     Call<MultipleResource> syncVisitor(
             @Header("APP-TOKEN") String appToken,
-            @Field("dni") String dni,
-            @Field("name") String name,
-            @Field("lastname") String lastname,
-            @Field("company") String company,
-            @Field("photo") String photo,
-            @Field("create_date") String createDate,
-            @Field("update_date") String updateDate,
-            @Field("active") int active);
+            @Body Visitor visitor);
 
-    @FormUrlEncoded
-    @POST("public/visitor")
+    @POST("visitor")
     Call<MultipleResource> addVisitor(
             @Header("APP-TOKEN") String appToken,
             @Field("dni") String dni,
@@ -101,11 +91,10 @@ public interface APIInterface {
             @Field("company") String company,
             @Field("photo") String photo);
 
-    @GET("public/visitor-vehicle")
+    @GET("visitor-vehicle")
     Call<ListVisitorVehicle> getVisitorVehicles(@Header("APP-TOKEN") String appToken);
 
-    @FormUrlEncoded
-    @POST("public/visitor-vehicle")
+    @POST("visitor-vehicle")
     Call<MultipleResource> addVehicle(
             @Header("APP-TOKEN") String appToken,
             @Field("plate") String plate,
@@ -114,24 +103,15 @@ public interface APIInterface {
             @Field("type") String type,
             @Field("photo") String photo);
 
-    @FormUrlEncoded
-    @POST("public/visitor-vehicle/sync")
+    @POST("visitor-vehicle/sync")
     Call<MultipleResource> syncVehicle(
             @Header("APP-TOKEN") String appToken,
-            @Field("plate") String plate,
-            @Field("vehicle") String vehicle,
-            @Field("model") String model,
-            @Field("type") String type,
-            @Field("photo") String photo,
-            @Field("create_date") String createDate,
-            @Field("update_date") String updateDate,
-            @Field("active") int active);
+            @Body VisitorVehicle vehicle);
 
-    @GET("public/clerk")
+    @GET("clerk")
     Call<ListClerk> getClerks(@Header("APP-TOKEN") String appToken);
 
-    @FormUrlEncoded
-    @POST("public/clerk")
+    @POST("clerk")
     Call<MultipleResource> addClerk(
             @Header("APP-TOKEN") String appToken,
             @Field("dni") String dni,
@@ -139,14 +119,13 @@ public interface APIInterface {
             @Field("lastname") String lastname,
             @Field("address") String address);
 
-    @GET("public/company")
+    @GET("company")
     Call<ListCompany> getCompanies(@Header("APP-TOKEN") String appToken);
 
-    @GET("public/visit/active/1")
+    @GET("visit/active/1")
     Call<ListVisit> getActiveVisits(@Header("APP-TOKEN") String appToken);
 
-    @FormUrlEncoded
-    @POST("public/visit")
+    @POST("visit")
     Call<MultipleResource> addVisit(@Header("APP-TOKEN") String appToken,
             @Field("vehicle_id") Long vehicleId,
             @Field("visitor_id") Long visitorId,
@@ -162,44 +141,20 @@ public interface APIInterface {
             @Field("image_4") String image4,
             @Field("image_5") String image5);
 
-    @FormUrlEncoded
-    @POST("public/visit/sync")
+    @POST("visit/sync")
     Call<MultipleResource> syncVisit(@Header("APP-TOKEN") String appToken,
-            @Field("vehicle_id") Long vehicleId,
-            @Field("visitor_id") Long visitorId,
-            @Field("visited_id") Long clerkId,
-            @Field("guard_id") Long guardId,
-            @Field("persons") Integer persons,
-            @Field("observation") String materials,
-            @Field("stand_name") String standName,
-            @Field("latitude") String latitude,
-            @Field("longitude") String longitude,
-            @Field("image_1") String image1,
-            @Field("image_2") String image2,
-            @Field("image_3") String image3,
-            @Field("image_4") String image4,
-            @Field("image_5") String image5,
-            @Field("create_date") String createDate,
-            @Field("finish_date") String finishDate,
-            @Field("comment") String comment,
-            @Field("guard_out_id") Long guardOutId,
-            @Field("f_latitude") String fLatitude,
-            @Field("f_longitude") String fLongitude,
-            @Field("sync_id") String syncId,
-            @Field("status") int status);
+                                     @Body ControlVisit visit);
 
-    @FormUrlEncoded
-    @PUT("public/visit/{id}")
+    @PUT("visit/{id}")
     Call<MultipleResource> finishVisit(
             @Header("APP-TOKEN") String appToken,
             @Path("id") Long id,
             @Field("comment") String comment);
 
-    @GET("public/incidence")
+    @GET("incidence")
     Call<ListIncidence> getIncidences(@Header("APP-TOKEN") String appToken);
 
-    @FormUrlEncoded
-    @POST("public/binnacle")
+    @POST("binnacle")
     Call<MultipleResource> addReport(
             @Header("APP-TOKEN") String appToken,
             @Field("watch_id") Long watchId,
@@ -214,52 +169,31 @@ public interface APIInterface {
             @Field("image_4") String image4,
             @Field("image_5") String image5);
 
-    @FormUrlEncoded
-    @POST("public/binnacle/sync")
+    @POST("binnacle/sync")
     Call<MultipleResource> syncReport(@Header("APP-TOKEN") String appToken,
-            @Field("watch_id") Long watchId,
-            @Field("incidence_id") Long incidenceId,
-            @Field("title") String title,
-            @Field("observation") String observation,
-            @Field("latitude") String latitude,
-            @Field("longitude") String longitude,
-            @Field("image_1") String image1,
-            @Field("image_2") String image2,
-            @Field("image_3") String image3,
-            @Field("image_4") String image4,
-            @Field("image_5") String image5,
-            @Field("create_date") String createDate,
-            @Field("update_date") String finishDate,
-            @Field("sync_id") String syncId,
-            @Field("status") int status,
-            @Field("resolved") int resolved);
+                                      @Body SpecialReport report);
 
-    @GET("public/binnacle/resolved/all/guard/{id}")
+    @GET("binnacle/resolved/all/guard/{id}")
     Call<ListReport> getGuardReports(@Header("APP-TOKEN") String appToken, @Path("id") Long id);
 
-    @GET("public/binnacle/{id}/replies")
+    @GET("binnacle/{id}/replies")
     Call<ListReply> getReplies(@Header("APP-TOKEN") String appToken, @Path("id") Long reportId);
 
-    @FormUrlEncoded
-    @POST("public/binnacle-reply")
+    @POST("binnacle-reply")
     Call<MultipleResource> postReply(
             @Header("APP-TOKEN") String appToken,
-            @Field("report_id") Long reportId,
-            @Field("guard_id") Long guardId,
-            @Field("user_name") String userName,
-            @Field("text") String text);
+            @Body Reply reply);
 
-    @GET("public/binnacle-reply/guard/{guard_id}/comment/unread")
+    @GET("binnacle-reply/guard/{guard_id}/comment/unread")
     Call<ListRepliesWithUnread> getUnreadReplies(@Header("APP-TOKEN") String appToken , @Path("guard_id") Long guardId);
 
-    @PUT("public/binnacle-reply/guard/report/{report_id}/read")
+    @PUT("binnacle-reply/guard/report/{report_id}/read")
     Call<MultipleResource> putReportRead(@Header("APP-TOKEN") String appToken, @Path("report_id") Long reportId);
 
-    @GET("public/utility/name/TABLET_GPS_UPDATE")
+    @GET("utility/name/TABLET_GPS_UPDATE")
     Call<ConfigUtility> getUpdateGPS(@Header("APP-TOKEN") String appToken);
 
-    @FormUrlEncoded
-    @POST("public/tablet/position")
+    @POST("tablet/position")
     Call<MultipleResource> postPosition(
             @Header("APP-TOKEN") String appToken,
             @Field("latitude") String latitude,
@@ -269,112 +203,71 @@ public interface APIInterface {
             @Field("message") String message,
             @Field("message_time") String messageTime);
 
-    @FormUrlEncoded
-    @POST("public/tablet/position/sync")
+    @POST("tablet/position/sync")
     Call<MultipleResource> syncPosition(@Header("APP-TOKEN") String appToken,
-            @Field("latitude") String latitude,
-            @Field("longitude") String longitude,
-            @Field("generated_time") String generatedTime,
-            @Field("message_time") String messageTime,
-            @Field("watch_id") Long watch_id,
-            @Field("imei") String imei,
-            @Field("message") String message,
-            @Field("alert_message") String alertMessage,
-            @Field("is_exception") int isException);
+            @Body TabletPosition position);
 
-    @FormUrlEncoded
-    @POST("public/messenger/register/tablet")
+    @POST("messenger/register/tablet")
     Call<MultipleResource> registerToken(
             @Header("APP-TOKEN") String appToken,
-            @Field("imei") String imei,
-            @Field("registration_id") String registrationId,
-            @Field("guard_id") Long guard_id);
+            @Body Map<String, Object> body);
 
-    @FormUrlEncoded
-    @POST("public/messenger/chat")
+    @POST("messenger/chat")
     Call<MultipleResource> createChat(
             @Header("APP-TOKEN") String appToken,
-            @Field("user_1_id") Long user1Id,
-            @Field("user_1_type") String user1Type,
-            @Field("user_1_name") String user1Name,
-            @Field("user_2_id") Long user2Id,
-            @Field("user_2_type") String user2Type,
-            @Field("user_2_name") String user2Name);
+            @Body Chat chat);
 
-    @GET("public/messenger/conversations/guard/{id}")
+    @GET("messenger/conversations/guard/{id}")
     Call<ListChat> getConversations(@Header("APP-TOKEN") String appToken , @Path("id") Long guardId);
 
-    @GET("public/messenger/conversations/chat/{id}")
+    @GET("messenger/conversations/chat/{id}")
     Call<ListChatLine> getMessages(@Header("APP-TOKEN") String appToken , @Path("id") Long chatId);
 
-    @GET("public/messenger/conversations/channel/{id}")
+    @GET("messenger/conversations/channel/{id}")
     Call<ListChatLine> getChannelMessages(@Header("APP-TOKEN") String appToken , @Path("id") Long chatId);
 
-    @GET("public/messenger/channel/guard/{id}")
+    @GET("messenger/channel/guard/{id}")
     Call<ListChannel> getChannels(@Header("APP-TOKEN") String appToken , @Path("id") Long guardId);
 
-    @FormUrlEncoded
-    @POST("public/messenger/send")
+    @POST("messenger/send")
     Call<MultipleResource> sendMessage(
             @Header("APP-TOKEN") String appToken,
-            @Field("chat_id") Long chatId,
-            @Field("channel_id") Long channelId,
-            @Field("sender_id") Long senderId,
-            @Field("sender_type") String senderType,
-            @Field("sender_name") String senderName,
-            @Field("text") String text);
+            @Body ChatLine chat);
 
-    @FormUrlEncoded
-    @POST("public/messenger/channel")
+    @POST("messenger/channel")
     Call<MultipleResource> createChannel(
             @Header("APP-TOKEN") String appToken,
-            @Field("name") String name,
-            @Field("creator_id") Long creatorId,
-            @Field("creator_type") String creatorType,
-            @Field("creator_name") String creatorName);
+            @Body Channel channel);
 
-    @POST("public/messenger/channel/{channel_id}/add")
+    @POST("messenger/channel/{channel_id}/add")
     Call<MultipleResource> addToChannel(
             @Header("APP-TOKEN") String appToken,
             @Path("channel_id") Long channelId,
             @Body List<User> body);
 
-    @GET("public/messenger/conversations/guard/{guard_id}/chat/unread")
+    @GET("messenger/conversations/guard/{guard_id}/chat/unread")
     Call<ListChatWithUnread> getUnreadMessages(@Header("APP-TOKEN") String appToken , @Path("guard_id") Long guardId);
 
-    @PUT("public/messenger/conversations/guard/{guard_id}/chat/{chat_id}/read")
+    @PUT("messenger/conversations/guard/{guard_id}/chat/{chat_id}/read")
     Call<MultipleResource> putChatRead(@Header("APP-TOKEN") String appToken, @Path("guard_id") Long guardId, @Path("chat_id") Long chatId);
 
-    @FormUrlEncoded
-    @POST("public/alert")
+    @POST("alert")
     Call<MultipleResource> sendAlert(
-            @Field("guard_id") Long guardId,
-            @Field("cause") String cause,
-            @Field("type") String type,
-            @Field("message") String message,
-            @Field("latitude") String latitude,
-            @Field("longitude") String longitude);
+            @Header("APP-TOKEN") String appToken,
+            @Body Alert alert);
 
-    @FormUrlEncoded
-    @POST("public/alert/sync")
+    @POST("alert/sync")
     Call<MultipleResource> syncAlert(
-            @Field("guard_id") Long guardId,
-            @Field("cause") String cause,
-            @Field("type") String type,
-            @Field("latitude") String latitude,
-            @Field("longitude") String longitude,
-            @Field("message") String message,
-            @Field("create_date") String createDate,
-            @Field("update_date") String updateDate,
-            @Field("status") int status);
+            @Header("APP-TOKEN") String appToken,
+            @Body Alert alert);
 
-    @GET("public/banner")
+    @GET("banner")
     Call<ListBanner> getBanners(@Header("APP-TOKEN") String appToken);
 
-    @FormUrlEncoded
-    @POST("public/tablet")
-    Call<MultipleResource> registered(@Field("imei") String imei);
+    @POST("tablet")
+    Call<MultipleResource> registered(@Header("APP-TOKEN") String appToken,
+                                      @Body Map<String, Object> body);
 
-    @GET("public/vehicle_type")
+    @GET("vehicle_type")
     Call<ListVehicleType> getVehiclesTypes(@Header("APP-TOKEN") String appToken);
 }

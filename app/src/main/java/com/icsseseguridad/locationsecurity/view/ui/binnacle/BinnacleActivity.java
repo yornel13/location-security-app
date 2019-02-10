@@ -82,7 +82,6 @@ public class BinnacleActivity extends BaseActivity implements BottomNavigationVi
         emptyView.setVisibility(View.GONE);
         loadingView.setVisibility(View.VISIBLE);
         searchField.setVisibility(View.GONE);
-        // new BinnacleController().getGuardReports(getPreferences().getGuard().id);
 
         bottomNavigationView.setSelectedItemId(R.id.nav_binnacle);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
@@ -100,7 +99,7 @@ public class BinnacleActivity extends BaseActivity implements BottomNavigationVi
                 .of(this)
                 .get(BinnacleListViewModel.class);
 
-        binnacleListViewModel.getVisits().observe(this, new Observer<List<SpecialReport>>() {
+        binnacleListViewModel.getReports().observe(this, new Observer<List<SpecialReport>>() {
             @Override
             public void onChanged(@Nullable final List<SpecialReport> reports) {
                 BinnacleActivity.this.reports = reports;
@@ -229,20 +228,6 @@ public class BinnacleActivity extends BaseActivity implements BottomNavigationVi
         startActivityForResult(new Intent(this, AddReportActivity.class), INTENT_REGISTER_REPORT);
     }
 
-//    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-//    public void onListGuardReportFailure(OnListGuardReportFailure event) {
-//        EventBus.getDefault().removeStickyEvent(OnListGuardReportFailure.class);
-//        loadingView.setVisibility(View.GONE);
-//        Snackbar.make(toolbar, event.message, Snackbar.LENGTH_LONG).show();
-//    }
-//
-//    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-//    public void onListGuardReportSuccess(OnListGuardReportSuccess event) {
-//        EventBus.getDefault().removeStickyEvent(OnListGuardReportSuccess.class);
-//        reports = event.list.reports;
-//        checkView();
-//    }
-
     public void checkView() {
         loadingView.setVisibility(View.GONE);
         if (reports.size() > 0) {
@@ -285,7 +270,7 @@ public class BinnacleActivity extends BaseActivity implements BottomNavigationVi
     public void orderList() {
         Collections.sort(reports, new Comparator<SpecialReport>(){
             public int compare(SpecialReport obj1, SpecialReport obj2) {
-                return obj2.unread.compareTo(obj1.unread);
+                return UTILITY.stringToDate(obj2.updateDate).compareTo(UTILITY.stringToDate(obj1.updateDate));
             }
         });
     }

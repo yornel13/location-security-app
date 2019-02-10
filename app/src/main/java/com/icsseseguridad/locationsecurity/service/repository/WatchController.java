@@ -15,6 +15,8 @@ import com.icsseseguridad.locationsecurity.service.entity.Watch;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -24,8 +26,17 @@ public class WatchController extends BaseController {
 
     public void register(String authorization, Long guardId, String latitude, String longitude, @Nullable String imei) {
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-        Call<MultipleResource> call = apiInterface.initWatch(authorization, guardId, latitude, longitude, imei);
-        System.out.println(preferences.getToken() + " " + guardId + " " +  latitude + " " +  longitude + " " +  imei);
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("guard_id", guardId);
+        data.put("latitude", latitude);
+        data.put("longitude", longitude);
+        data.put("tablet_imei", imei);
+
+        System.out.println(authorization);
+        System.out.println(gson.toJson(data));
+
+        Call<MultipleResource> call = apiInterface.initWatch(authorization, data);
         call.enqueue(new Callback<MultipleResource>() {
             @Override
             public void onFailure(Call<MultipleResource> call, Throwable t) {
@@ -63,7 +74,12 @@ public class WatchController extends BaseController {
 
     public void finish(Long watchId, String latitude, String longitude, @Nullable String observation) {
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-        Call<MultipleResource> call = apiInterface.finishWatch(preferences.getToken(), watchId, latitude, longitude, observation);
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("f_latitude", latitude);
+        data.put("f_longitude", longitude);
+
+        Call<MultipleResource> call = apiInterface.finishWatch(preferences.getToken(), watchId, data);
         call.enqueue(new Callback<MultipleResource>() {
             @Override
             public void onFailure(Call<MultipleResource> call, Throwable t) {

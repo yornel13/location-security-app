@@ -28,6 +28,7 @@ public class APIClient {
                 .create();
 
         retrofit = new Retrofit.Builder()
+                //.baseUrl("http://10.0.2.2:8080/")
                 .baseUrl(Const.REPO_URL)
                 .client(provideOkHttpClient())
                 .addConverterFactory(GsonConverterFactory.create(gson))
@@ -44,8 +45,8 @@ public class APIClient {
                 Log.e("APIClient", "401 User Unauthorized");
                 EventBus.getDefault().postSticky(new OnUserUnauthorized());
             }
-            return mainResponse;
 
+            return mainResponse;
         }
     };
 
@@ -54,7 +55,6 @@ public class APIClient {
         okHttpClientBuilder.connectTimeout(30, TimeUnit.SECONDS);
         okHttpClientBuilder.readTimeout(30, TimeUnit.SECONDS);
         okHttpClientBuilder.writeTimeout(30, TimeUnit.SECONDS);
-
         okHttpClientBuilder.addInterceptor(authInterceptor);
         return okHttpClientBuilder.build();
     }

@@ -21,22 +21,13 @@ public class SendAlert {
         StrictMode.setThreadPolicy(policy);
     }
 
-    public boolean send(Alert alert) {
+    public boolean send(String token, Alert alert) {
         System.out.println(new Gson().toJson(alert));
         boolean isSuccess = false;
         if (alert != null)
             try {
                 APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-                Call<MultipleResource> call = apiInterface.syncAlert(
-                        alert.guardId,
-                        alert.cause.name(),
-                        alert.type.name(),
-                        alert.latitude,
-                        alert.longitude,
-                        alert.message,
-                        alert.createDate,
-                        alert.updateDate,
-                        alert.status);
+                Call<MultipleResource> call = apiInterface.syncAlert(token, alert);
                 Response<MultipleResource> tasks = call.execute();
                 MultipleResource data = tasks.body();
                 if (tasks.isSuccessful() && data != null) {
